@@ -26,7 +26,7 @@ Usage: DNSPing [-h] [-t] [-a] [-n Count] [-i HopLimit/TTL] [-w Timeout]
                [-ann Count] [-aun Count] [-adn Count] [-ti Time] [-edns0]
                [-payload Length] [-dnssec] [-qt Type] [-qc Classes]
                [-p ServiceName] [-rawdata RAW_Data] [-raw ServiceName]
-               [-buf Size] [-of FileName] Test_DomainName Target
+               [-buf Size] [-dv] [-of FileName] Test_DomainName Target
 
 
 -------------------------------------------------------------------------------
@@ -107,6 +107,7 @@ Options:
                                    SCTP|RAW
    -buf Size         Specifie receive buffer size.
                      Buffer size must between 512 - 4096 bytes.
+   -dv               Disable packet validated.
    -of FileName      Output result to file.
                      FileName must less than 260 bytes.
    -6                Using IPv6.

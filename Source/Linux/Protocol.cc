@@ -19,6 +19,8 @@
 
 #include "DNSPing.h"
 
+extern bool EDNS0, DNSSEC;
+
 //Check empty buffer
 bool CheckEmptyBuffer(const void *Buffer, const size_t Length)
 {
@@ -145,4 +147,39 @@ size_t CharToDNSQuery(const char *FName, char *TName)
 	TName[Index[2U]] = Index[1U];
 
 	return strlen(TName) + 1U;
+}
+
+//Validate packets
+bool ValidatePacket(const char *Buffer, const size_t Length, const uint16_t DNS_ID)
+{
+	auto pdns_hdr = (dns_hdr *)Buffer;
+
+//DNS ID and Questions check
+	if (pdns_hdr->ID != DNS_ID || pdns_hdr->Questions == 0)
+		return false;
+
+//EDNS0 Lable check
+	if (EDNS0)
+	{
+		if (pdns_hdr->Additional == 0)
+		{
+			return false;
+		}
+		else if (pdns_hdr->Additional == 1U)
+		{
+			if (Length > sizeof(dns_edns0_label))
+			{
+				auto pEDNS0 = (dns_edns0_label *)(Buffer + Length - sizeof(dns_edns0_label));
+
+			//UDP Payload Size and Z Field of DNSSEC check
+				if (pEDNS0->UDPPayloadSize == 0 || DNSSEC && pEDNS0->Z_Field == 0)
+					return false;
+			}
+			else {
+				return false;
+			}
+		}
+	}
+
+	return true;
 }

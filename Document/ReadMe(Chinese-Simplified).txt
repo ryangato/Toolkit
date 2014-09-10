@@ -26,7 +26,7 @@ TraceTCP(https://simulatedsimian.github.io/tracetcp.html):
                [-ann Count] [-aun Count] [-adn Count] [-ti Time] [-edns0]
                [-payload Length] [-dnssec] [-qt Type] [-qc Classes]
                [-p ServiceName] [-rawdata RAW_Data] [-raw ServiceName]
-               [-buf Size] [-of FileName] Test_DomainName Target
+               [-buf Size] [-dv] [-of FileName] Test_DomainName Target
 
 
 -------------------------------------------------------------------------------
@@ -106,6 +106,7 @@ TraceTCP(https://simulatedsimian.github.io/tracetcp.html):
                                    SCTP|RAW
    -buf Size         设定接收缓冲区长度
                      接收缓冲区长度必须介乎于 512 - 4096 字节
+   -dv               关闭数据包验证
    -of FileName      输出结果到文本文件
                      文本文件名称长度必须小于 260 字节
    -6                强制使用IPv6

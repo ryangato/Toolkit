@@ -337,20 +337,23 @@ typedef struct _dns_edns0_
 #define RETURN_ERROR         -1
 #define PACKET_MINSIZE       64U                  //Minimum size of packets in Ethernet network.
 #define PACKET_MAXSIZE       1512U                //Maximum size of packets(1500 bytes maximum payload length + 8 bytes Ethernet header + 4 bytes FCS), Standard MTU of Ethernet network
-#define LARGE_PACKET_MAXSIZE 4096U                //Maximum size of packets(4KB/4096 bytes) of TCP protocol
-#define ADDR_STRING_MAXSIZE  64U                  //Maximum size of addresses(IPv4/IPv6) words
-#define U4_MAXNUM            0x000F               //Maximum value of half of uint8_t/4 bits
-#define U8_MAXNUM            0x00FF               //Maximum value of uint8_t/8 bits
-#define U16_MAXNUM           0xFFFF               //Maximum value of uint16_t/16 bits
-#define TIME_OUT             1000000U             //Timeout(1000000 us or 1000 ms or 1 second)
-#define TIME_OUT_MIN         500U                 //Minimum timeout(500 ms)
-#define DEFAULT_TIME_OUT     2U                   //Default timeout(2 seconds)
-#define DEFAULT_SEND_TIMES   4U                   //Default send times
+#define LARGE_PACKET_MAXSIZE         4096U        //Maximum size of packets(4KB/4096 bytes) of TCP protocol
+#define ADDR_STRING_MAXSIZE          64U          //Maximum size of addresses(IPv4/IPv6) words
+#define U4_MAXNUM                    0x000F       //Maximum value of half of uint8_t/4 bits
+#define U8_MAXNUM                    0x00FF       //Maximum value of uint8_t/8 bits
+#define U16_MAXNUM                   0xFFFF       //Maximum value of uint16_t/16 bits
+#define STANDARD_TIME_OUT            1000000U     //Standard timeout, 1000000 us(1000 ms or 1 second)
+#define SECOND_TO_MILLISECOND        1000U        //1000 milliseconds(1 second)
+#define MICROSECOND_TO_MILLISECOND   1000U        //1000 microseconds(1 millisecond)
+#define TIME_OUT_MIN                 500U         //Minimum timeout, 500 ms
+#define DEFAULT_TIME_OUT             2U           //Default timeout, 2 seconds
+#define DEFAULT_SEND_TIMES           4U           //Default send times
 
 //Protocol.cc
 bool CheckEmptyBuffer(const void *Buffer, const size_t Length);
 size_t AddressStringToBinary(const char *AddrString, void *pAddr, const uint16_t Protocol, ssize_t &ErrorCode);
 size_t CharToDNSQuery(const char *FName, char *TName);
+bool ValidatePacket(const char *Buffer, const size_t Length, const uint16_t DNS_ID);
 
 //Process.cc
 size_t SendProcess(const sockaddr_storage Target);

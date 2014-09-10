@@ -27,7 +27,7 @@ uint16_t Protocol = 0, ServiceName = 0;
 std::shared_ptr<char> RawData;
 int IP_HopLimits = 0;
 timeval SocketTimeout = {DEFAULT_TIME_OUT, 0};
-auto RawSocket = false, /* IPv4_DF = false, */ EDNS0 = false;
+auto RawSocket = false, /* IPv4_DF = false, */ EDNS0 = false, DNSSEC = false, Validate = true;
 dns_hdr HeaderParameter = {0};
 dns_qry QueryParameter = {0};
 dns_edns0_label EDNS0Parameter = {0};
@@ -136,8 +136,8 @@ int main(int argc, char *argv[])
 					Result = strtol(Parameter.c_str(), nullptr, 0);
 					if (Result >= TIME_OUT_MIN && Result < U16_MAXNUM)
 					{
-						SocketTimeout.tv_sec = (time_t)(Result / 1000);
-						SocketTimeout.tv_usec = (suseconds_t)(Result % 1000 * 1000);
+						SocketTimeout.tv_sec = (time_t)(Result / SECOND_TO_MILLISECOND);
+						SocketTimeout.tv_usec = (suseconds_t)(Result % MICROSECOND_TO_MILLISECOND * MICROSECOND_TO_MILLISECOND);
 					}
 					else {
 						wprintf(L"\nParameter[-w Timeout] error.\n");
@@ -372,7 +372,7 @@ int main(int argc, char *argv[])
 					Result = strtol(Parameter.c_str(), nullptr, 0);
 					if (Result >= 0)
 					{
-						TransmissionInterval = Result * 1000;
+						TransmissionInterval = Result * SECOND_TO_MILLISECOND;
 					}
 					else {
 						wprintf(L"\nParameter[-ti Time] error.\n");
@@ -1233,6 +1233,11 @@ int main(int argc, char *argv[])
 					return EXIT_FAILURE;
 				}
 			}
+		//Disable packet validated.
+			else if (Parameter == ("-DV") || Parameter == ("-dv"))
+			{
+				Validate = false;
+			}
 		//Output result to file.
 			else if (Parameter == ("-OF") || Parameter == ("-of"))
 			{
@@ -1433,7 +1438,7 @@ int main(int argc, char *argv[])
 		}
 
 	//Check parameter.
-		MinTime = SocketTimeout.tv_sec * 1000 + SocketTimeout.tv_usec / 1000;
+		MinTime = SocketTimeout.tv_sec * SECOND_TO_MILLISECOND + SocketTimeout.tv_usec / MICROSECOND_TO_MILLISECOND;
 
 	//Check DNS header.
 		if (HeaderParameter.Flags == 0)

@@ -27,7 +27,7 @@ extern uint16_t Protocol, ServiceName;
 extern std::shared_ptr<char> RawData;
 extern int IP_HopLimits;
 extern timeval SocketTimeout;
-extern bool RawSocket, /* IPv4_DF, */ EDNS0;
+extern bool RawSocket, /* IPv4_DF, */ EDNS0, DNSSEC, Validate;
 extern dns_hdr HeaderParameter;
 extern dns_qry QueryParameter;
 extern dns_edns0_label EDNS0Parameter;
@@ -108,6 +108,7 @@ size_t SendProcess(const sockaddr_storage Target)
 */
 	}
 
+	dns_hdr *pdns_hdr = nullptr;
 //Make packet.
 	if (!RawData)
 	{
@@ -115,7 +116,7 @@ size_t SendProcess(const sockaddr_storage Target)
 		memcpy(Buffer.get() + DataLength, &HeaderParameter, sizeof(dns_hdr));
 		if (HeaderParameter.ID == 0)
 		{
-			auto pdns_hdr = (dns_hdr *)(Buffer.get() + DataLength);
+			pdns_hdr = (dns_hdr *)(Buffer.get() + DataLength);
 			pdns_hdr->ID = htons(pthread_self());
 		}
 		DataLength += sizeof(dns_hdr);
@@ -156,22 +157,96 @@ size_t SendProcess(const sockaddr_storage Target)
 		return EXIT_FAILURE;
 	}
 
-//Get time.
-	long double Result = (long double)(AfterTime.tv_sec - BeforeTime.tv_sec) * (long double)1000;
+//Get waiting time.
+	long double Result = (long double)(AfterTime.tv_sec - BeforeTime.tv_sec) * (long double)SECOND_TO_MILLISECOND;
 	if (AfterTime.tv_sec >= BeforeTime.tv_sec)
-		Result += (long double)(AfterTime.tv_usec - BeforeTime.tv_usec) / (long double)1000;
+		Result += (long double)(AfterTime.tv_usec - BeforeTime.tv_usec) / (long double)MICROSECOND_TO_MILLISECOND;
 	else 
-		Result += (long double)(AfterTime.tv_usec + 1000000 - BeforeTime.tv_usec) / (long double)1000;
+		Result += (long double)(AfterTime.tv_usec + SECOND_TO_MILLISECOND * MICROSECOND_TO_MILLISECOND - BeforeTime.tv_usec) / (long double)MICROSECOND_TO_MILLISECOND;
 
 
 //Print to screen.
 	if (DataLength > 0)
 	{
-		wprintf(L"Receive from %s:%u -> %d bytes, waiting %Lf ms.\n", TargetString.c_str(), ntohs(ServiceName), (int)DataLength, Result);
+	//Validate packet.
+		if (Validate && pdns_hdr != nullptr && !ValidatePacket(RecvBuffer.get(), DataLength, pdns_hdr->ID))
+		{
+		//Main print
+			wprintf(L"Receive from %s:%u -> %d bytes but validate error, waiting %Lf ms.\n", TargetString.c_str(), ntohs(ServiceName), (int)DataLength, Result);
+
+		//Output to file.
+			if (OutputFile != nullptr)
+				fwprintf(OutputFile, L"Receive from %s:%u -> %d bytes but validate error, waiting %Lf ms.\n", TargetString.c_str(), ntohs(ServiceName), (int)DataLength, Result);
+
+		//Try to waiting correct packet.
+			while (true)
+			{
+			//Timeout
+				if (Result >= SocketTimeout.tv_usec / MICROSECOND_TO_MILLISECOND + SocketTimeout.tv_sec * SECOND_TO_MILLISECOND)
+					break;
+
+			//Receive.
+				memset(RecvBuffer.get(), 0, BufferSize);
+				DataLength = recvfrom(Socket, RecvBuffer.get(), (int)BufferSize, 0, (sockaddr *)&Target, &AddrLen);
+
+			//Get waiting time.
+				if (gettimeofday(&AfterTime, NULL) != 0)
+				{
+					wprintf(L"Get current time error, error code is %d.\n", errno);
+					return EXIT_FAILURE;
+				}
+				Result = (long double)(AfterTime.tv_sec - BeforeTime.tv_sec) * (long double)SECOND_TO_MILLISECOND;
+				if (AfterTime.tv_sec >= BeforeTime.tv_sec)
+					Result += (long double)(AfterTime.tv_usec - BeforeTime.tv_usec) / (long double)MICROSECOND_TO_MILLISECOND;
+				else 
+					Result += (long double)(AfterTime.tv_usec + SECOND_TO_MILLISECOND * MICROSECOND_TO_MILLISECOND - BeforeTime.tv_usec) / (long double)MICROSECOND_TO_MILLISECOND;
+
+			//SOCKET_ERROR
+				if (DataLength <= 0)
+					break;
+
+			//Validate packet.
+				if (!ValidatePacket(RecvBuffer.get(), DataLength, pdns_hdr->ID))
+				{
+				//Main print
+					wprintf(L"Receive from %s:%u -> %d bytes but validate error, waiting %Lf ms.\n", TargetString.c_str(), ntohs(ServiceName), (int)DataLength, Result);
+
+				//Output to file.
+					if (OutputFile != nullptr)
+						fwprintf(OutputFile, L"Receive from %s:%u -> %d bytes but validate error, waiting %Lf ms.\n", TargetString.c_str(), ntohs(ServiceName), (int)DataLength, Result);
+				}
+				else {
+					break;
+				}
+			}
+
+			if (DataLength <= 0)
+			{
+			//Main print
+				wprintf(L"Receive error: %d(%d), waiting correct answers timeout(%Lf ms).\n", (int)DataLength, errno, Result);
+
+			//Output to file.
+				if (OutputFile != nullptr)
+					fwprintf(OutputFile, L"Receive error: %d(%d), waiting correct answers timeout(%Lf ms).\n", (int)DataLength, errno, Result);
+
+				return EXIT_SUCCESS;
+			}
+			else {
+			//Main print
+				wprintf(L"Receive from %s:%u -> %d bytes, waiting %Lf ms.\n", TargetString.c_str(), ntohs(ServiceName), (int)DataLength, Result);
+	
+			//Output to file.
+				if (OutputFile != nullptr)
+					fwprintf(OutputFile, L"Receive from %s:%u -> %d bytes, waiting %Lf ms.\n", TargetString.c_str(), ntohs(ServiceName), (int)DataLength, Result);
+			}
+		}
+		else {
+			wprintf(L"Receive from %s:%u -> %d bytes, waiting %Lf ms.\n", TargetString.c_str(), ntohs(ServiceName), (int)DataLength, Result);
 		
-	//Output to file.
-		if (OutputFile != nullptr)
-			fwprintf(OutputFile, L"Receive from %s:%u -> %d bytes, waiting %Lf ms.\n", TargetString.c_str(), ntohs(ServiceName), (int)DataLength, Result);
+		//Output to file.
+			if (OutputFile != nullptr)
+				fwprintf(OutputFile, L"Receive from %s:%u -> %d bytes, waiting %Lf ms.\n", TargetString.c_str(), ntohs(ServiceName), (int)DataLength, Result);
+		}
 		
 		TotalTime += Result;
 		RecvNum++;
@@ -190,12 +265,6 @@ size_t SendProcess(const sockaddr_storage Target)
 		{
 			MaxTime = Result;
 		}
-
-	//Transmission interval
-		if (TransmissionInterval != 0 && TransmissionInterval > Result)
-			usleep(TransmissionInterval - Result);
-		else 
-			usleep(TIME_OUT);
 	}
 	else { //RETURN_ERROR
 		wprintf(L"Receive error: %d(%d), waiting %Lf ms.\n", (int)DataLength, errno, Result);
@@ -203,13 +272,13 @@ size_t SendProcess(const sockaddr_storage Target)
 	//Output to file.
 		if (OutputFile != nullptr)
 			fwprintf(OutputFile, L"Receive error: %d(%d), waiting %Lf ms.\n", (int)DataLength, errno, Result);
-
-	//Transmission interval
-		if (TransmissionInterval != 0 && TransmissionInterval > Result)
-			usleep(TransmissionInterval - Result);
-		else if (Result <= TIME_OUT)
-			usleep(TIME_OUT);
 	}
+
+//Transmission interval
+	if (TransmissionInterval != 0 && TransmissionInterval > Result)
+		usleep(TransmissionInterval - Result);
+	else if (Result <= STANDARD_TIME_OUT)
+		usleep(STANDARD_TIME_OUT);
 
 	return EXIT_SUCCESS;
 }
@@ -290,6 +359,7 @@ void PrintDescription(void)
 //Description
 	wprintf(L"--------------------------------------------------\n");
 	wprintf(L"DNSPing v0.1 Beta(Linux)\n");
+	wprintf(L"DNSPing, Ping with DNS requesting.\n");
 	wprintf(L"Copyright (C) 2014 Chengr28\n");
 	wprintf(L"--------------------------------------------------\n");
 
@@ -302,7 +372,7 @@ void PrintDescription(void)
 	wprintf(L"               [-ann Count] [-aun Count] [-adn Count] [-ti Time] [-edns0]\n");
 	wprintf(L"               [-payload Length] [-dnssec] [-qt Type] [-qc Classes]\n");
 	wprintf(L"               [-p ServiceName] [-rawdata RAW_Data] [-raw ServiceName]\n");
-	wprintf(L"               [-buf Size] [-of FileName] Test_DomainName Target\n");
+	wprintf(L"               [-buf Size] [-dv] [-of FileName] Test_DomainName Target\n");
 
 //Options
 	wprintf(L"\nOptions:\n");
@@ -364,6 +434,7 @@ void PrintDescription(void)
 	wprintf(L"                                   ICMPV6|NONE|DSTOPTS|ND|ICLFXBM|PIM|PGM|L2TP|\n");
 	wprintf(L"                                   SCTP|RAW\n");
 	wprintf(L"   -buf Size         Specifie receive buffer size.\n                     Buffer size must between 512 - 4096 bytes.\n");
+	wprintf(L"   -dv               Disable packet validated.\n");
 	wprintf(L"   -of FileName      Output result to file.\n                     FileName must less than 260 bytes.\n");
 	wprintf(L"   -6                Using IPv6.\n");
 	wprintf(L"   -4                Using IPv4.\n");

@@ -3,8 +3,8 @@
 Ping with DNS requesting.
 
 ### Version
-* **Windows: v0.1 Beta(2014-08-26)**
-* **Linux: v0.1 Beta(2014-08-26)**
+* **Windows: v0.1 Beta(2014-09-10)**
+* **Linux: v0.1 Beta(2014-09-10)**
 
 ### ReadMe
 * [Windows(English)](https://github.com/chengr28/DNSPing/wiki/ReadMe)
@@ -13,7 +13,7 @@ Ping with DNS requesting.
 * [Linux(Chinese-Simplified)](https://github.com/chengr28/DNSPing/wiki/ReadMe_Linux#%E7%94%A8%E6%B3%95)
 
 ### Usage
-`DNSPing [-h] [-t] [-a] [-n Count] [-f] [-i HopLimit/TTL] [-w Timeout] [-id DNS_ID] [-qr] [-opcode OPCode] [-aa] [-tc] [-rd] [-ra] [-ad] [-cd] [-rcode RCode] [-qn Count] [-ann Count] [-aun Count] [-adn Count] [-ti Time] [-edns0] [-payload Length] [-dnssec] [-qt Type] [-qc Classes] [-p ServiceName] [-rawdata RAW_Data] [-raw ServiceName] [-buf Size] [-of FileName] Test_DomainName Target`<br />
+`DNSPing [-h] [-t] [-a] [-n Count] [-f] [-i HopLimit/TTL] [-w Timeout] [-id DNS_ID] [-qr] [-opcode OPCode] [-aa] [-tc] [-rd] [-ra] [-ad] [-cd] [-rcode RCode] [-qn Count] [-ann Count] [-aun Count] [-adn Count] [-ti Time] [-edns0] [-payload Length] [-dnssec] [-qt Type] [-qc Classes] [-p ServiceName] [-rawdata RAW_Data] [-raw ServiceName] [-buf Size] [-dv] [-of FileName] Test_DomainName Target`<br />
 
 * `[-f]` is only available in Windows.<br />
 
@@ -124,6 +124,8 @@ Ping with DNS requesting.
 * `-buf Size`
     * Specifie receive buffer size.<br />
     * `Buffer size` must between 512 - 4096 bytes.<br />
+* `-dv`
+    * Disable packet validated.<br />
 * `-of FileName`
     * Output result to file.<br />
     * FileName must less than 260 bytes.<br />
@@ -142,4 +144,4 @@ GNU General Public License/GNU GPL v2
 ### Thanks
 * [tcping.exe - Ping over a tcp connection.](http://www.elifulkerson.com/projects/tcping.php)
 * [tracetcp.exe - Traceroute utility that uses tcp syn packets to trace network routes.](https://simulatedsimian.github.io/tracetcp.html)
-* [tcpping - Ping look-alike that uses TCP SYN packets to get around firewalls and ICMP blackholes](https://github.com/jwyllie83/tcpping)
+* [tcpping - Ping look-alike that uses TCP SYN packets to get around firewalls and ICMP blackholes.](https://github.com/jwyllie83/tcpping)
