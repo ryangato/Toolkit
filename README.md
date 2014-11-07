@@ -3,19 +3,22 @@
 Ping with DNS requesting.
 
 ### Version
-* **Windows: v0.1 Beta(2014-09-10)**
+* **Windows: v0.1 Beta(2014-11-07)**
 * **Linux: v0.1 Beta(2014-09-10)**
 
 ### ReadMe
 * [Windows(English)](https://github.com/chengr28/DNSPing/wiki/ReadMe)
-* [Windows(Chinese-Simplified)](https://github.com/chengr28/DNSPing/wiki/ReadMe#%E7%94%A8%E6%B3%95)
+* [简体中文 Windows 版本](https://github.com/chengr28/DNSPing/wiki/ReadMe(Chinese_Simplified))
+* [繁體中文 Windows 版本](https://github.com/chengr28/DNSPing/wiki/ReadMe(Chinese_Traditional))
 * [Linux(English)](https://github.com/chengr28/DNSPing/wiki/ReadMe_Linux)
-* [Linux(Chinese-Simplified)](https://github.com/chengr28/DNSPing/wiki/ReadMe_Linux#%E7%94%A8%E6%B3%95)
+* [简体中文 Linux 版本](https://github.com/chengr28/DNSPing/wiki/ReadMe_Linux(Chinese_Simplified))
+* [繁體中文 Linux 版本](https://github.com/chengr28/DNSPing/wiki/ReadMe_Linux(Chinese_Traditional))
 
 ### Usage
 `DNSPing [-h] [-t] [-a] [-n Count] [-f] [-i HopLimit/TTL] [-w Timeout] [-id DNS_ID] [-qr] [-opcode OPCode] [-aa] [-tc] [-rd] [-ra] [-ad] [-cd] [-rcode RCode] [-qn Count] [-ann Count] [-aun Count] [-adn Count] [-ti Time] [-edns0] [-payload Length] [-dnssec] [-qt Type] [-qc Classes] [-p ServiceName] [-rawdata RAW_Data] [-raw ServiceName] [-buf Size] [-dv] [-of FileName] Test_DomainName Target`<br />
 
 * `[-f]` is only available in Windows.<br />
+* Minimum Windows supported system is Windows XP SP3/2003 SP2(x86) and Vista(x64).
 
 ### Options
 * N/A
