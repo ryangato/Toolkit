@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{4C357338-72CD-4F8E-A29A-B84BF4BF5EEC}</ProjectGuid>
+    <ProjectGuid>{1A44814B-B4E7-4EC5-98A5-73A1845C22B3}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>DNSPing</RootNamespace>
   </PropertyGroup>
@@ -108,7 +108,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <WarningLevel>Level4</WarningLevel>
+      <WarningLevel>Level3</WarningLevel>
       <PrecompiledHeader>
       </PrecompiledHeader>
       <Optimization>MaxSpeed</Optimization>
@@ -137,7 +137,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <WarningLevel>Level4</WarningLevel>
+      <WarningLevel>Level3</WarningLevel>
       <PrecompiledHeader>
       </PrecompiledHeader>
       <Optimization>MaxSpeed</Optimization>
@@ -169,6 +169,7 @@
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Process.cpp" />
     <ClCompile Include="Protocol.cpp" />
+    <ClCompile Include="Resolver.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DNSPing.h" />

@@ -29,7 +29,7 @@ BOOL __fastcall CtrlHandler(const DWORD fdwCtrlType)
 	//Handle the CTRL-C signal.
 		case CTRL_C_EVENT:
 		{
-			wprintf(L"Get Control-C.\n");
+			wprintf_s(L"Get Control-C.\n");
 			PrintProcess(true, true);
 
 		//Close file handle.
@@ -42,7 +42,7 @@ BOOL __fastcall CtrlHandler(const DWORD fdwCtrlType)
 	//Handle the CTRL-Break signal.
 		case CTRL_BREAK_EVENT:
 		{
-			wprintf(L"Get Control-Break.\n");
+			wprintf_s(L"Get Control-Break.\n");
 			PrintProcess(true, true);
 
 			WSACleanup();
