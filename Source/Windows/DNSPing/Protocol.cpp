@@ -1,6 +1,6 @@
 ﻿// This code is part of DNSPing(Windows)
 // DNSPing, Ping with DNS requesting.
-// Copyright (C) 2014 Chengr28
+// Copyright (C) 2014-2015 Chengr28
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -40,14 +40,14 @@ bool __fastcall IsLowerThanWin8(void)
 #endif
 
 //Check empty buffer
-bool __fastcall CheckEmptyBuffer(const void *Buffer, const size_t Length)
+bool __fastcall CheckEmptyBuffer(const void *Buffer, const size_t &Length)
 {
 	if (Buffer == nullptr)
 		return true;
 
-	for (size_t Index = 0;Index < Length;Index++)
+	for (size_t Index = 0;Index < Length;++Index)
 	{
-		if (((uint8_t *)Buffer)[Index] != NULL)
+		if (((uint8_t *)Buffer)[Index] != 0)
 			return false;
 	}
 
@@ -55,11 +55,11 @@ bool __fastcall CheckEmptyBuffer(const void *Buffer, const size_t Length)
 }
 
 //Convert lowercase/uppercase word(s) to uppercase/lowercase word(s).
-size_t __fastcall CaseConvert(bool LowerUpper, const PSTR Buffer, const size_t Length)
+size_t __fastcall CaseConvert(const bool &IsLowerUpper, const PSTR Buffer, const size_t &Length)
 {
-	for (size_t Index = 0;Index < Length;Index++)
+	for (size_t Index = 0;Index < Length;++Index)
 	{
-		if (LowerUpper) //Lowercase to uppercase
+		if (IsLowerUpper) //Lowercase to uppercase
 		{
 			if (Buffer[Index] > ASCII_ACCENT && Buffer[Index] < ASCII_BRACES_LEAD)
 				Buffer[Index] -= ASCII_LOWER_TO_UPPER;
@@ -74,7 +74,7 @@ size_t __fastcall CaseConvert(bool LowerUpper, const PSTR Buffer, const size_t L
 }
 
 //Convert address strings to binary.
-size_t __fastcall AddressStringToBinary(const PSTR AddrString, void *pAddr, const uint16_t Protocol, SSIZE_T &ErrorCode)
+size_t __fastcall AddressStringToBinary(const PSTR AddrString, void *pAddr, const uint16_t &Protocol, SSIZE_T &ErrorCode)
 {
 	SSIZE_T Result = 0;
 
@@ -89,7 +89,7 @@ size_t __fastcall AddressStringToBinary(const PSTR AddrString, void *pAddr, cons
 	if (Protocol == AF_INET6)
 	{
 	//Check IPv6 addresses
-		for (Result = 0;Result < (SSIZE_T)strlen(AddrString);Result++)
+		for (Result = 0;Result < (SSIZE_T)strlen(AddrString);++Result)
 		{
 			if (AddrString[Result] < ASCII_ZERO || AddrString[Result] > ASCII_COLON && AddrString[Result] < ASCII_UPPERCASE_A || AddrString[Result] > ASCII_UPPERCASE_F && AddrString[Result] < ASCII_LOWERCASE_A || AddrString[Result] > ASCII_LOWERCASE_F)
 				break;
@@ -114,7 +114,7 @@ size_t __fastcall AddressStringToBinary(const PSTR AddrString, void *pAddr, cons
 		if (Result == SOCKET_ERROR || Result == FALSE)
 	#else //x86
 		SockLength = sizeof(sockaddr_in6);
-		if (WSAStringToAddressA((PSTR)sAddrString.c_str(), AF_INET6, NULL, (LPSOCKADDR)&SockAddr, &SockLength) == SOCKET_ERROR)
+		if (WSAStringToAddressA((PSTR)sAddrString.c_str(), AF_INET6, nullptr, (LPSOCKADDR)&SockAddr, &SockLength) == SOCKET_ERROR)
 	#endif
 		{
 			ErrorCode = WSAGetLastError();
@@ -122,18 +122,19 @@ size_t __fastcall AddressStringToBinary(const PSTR AddrString, void *pAddr, cons
 		}
 	#ifdef _WIN64
 	#else //x86
-		memcpy(pAddr, &((PSOCKADDR_IN6)&SockAddr)->sin6_addr, sizeof(in6_addr));
+//		memcpy(pAddr, &((PSOCKADDR_IN6)&SockAddr)->sin6_addr, sizeof(in6_addr));
+		memcpy_s(pAddr, sizeof(in6_addr), &((PSOCKADDR_IN6)&SockAddr)->sin6_addr, sizeof(in6_addr));
 	#endif
 	}
 //IPv4
 	else {
 		size_t CommaNum = 0;
-		for (Result = 0;Result < (SSIZE_T)strlen(AddrString);Result++)
+		for (Result = 0;Result < (SSIZE_T)strlen(AddrString);++Result)
 		{
 			if (AddrString[Result] != ASCII_PERIOD && AddrString[Result] < ASCII_ZERO || AddrString[Result] > ASCII_NINE)
 				return EXIT_FAILURE;
 			else if (AddrString[Result] == ASCII_PERIOD)
-				CommaNum++;
+				++CommaNum;
 		}
 
 		std::string sAddrString(AddrString);
@@ -173,7 +174,7 @@ size_t __fastcall AddressStringToBinary(const PSTR AddrString, void *pAddr, cons
 		if (Result == SOCKET_ERROR || Result == FALSE)
 	#else //x86
 		SockLength = sizeof(sockaddr_in);
-		if (WSAStringToAddressA((PSTR)sAddrString.c_str(), AF_INET, NULL, (LPSOCKADDR)&SockAddr, &SockLength) == SOCKET_ERROR)
+		if (WSAStringToAddressA((PSTR)sAddrString.c_str(), AF_INET, nullptr, (LPSOCKADDR)&SockAddr, &SockLength) == SOCKET_ERROR)
 	#endif
 		{
 			ErrorCode = WSAGetLastError();
@@ -181,7 +182,8 @@ size_t __fastcall AddressStringToBinary(const PSTR AddrString, void *pAddr, cons
 		}
 	#ifdef _WIN64
 	#else //x86
-		memcpy(pAddr, &((PSOCKADDR_IN)&SockAddr)->sin_addr, sizeof(in_addr));
+//		memcpy(pAddr, &((PSOCKADDR_IN)&SockAddr)->sin_addr, sizeof(in_addr));
+		memcpy_s(pAddr, sizeof(in_addr), &((PSOCKADDR_IN)&SockAddr)->sin_addr, sizeof(in_addr));
 	#endif
 	}
 
@@ -874,7 +876,7 @@ uint16_t __fastcall DNSTypeNameToHex(const LPWSTR Buffer)
 //Convert data from char(s) to DNS query
 size_t __fastcall CharToDNSQuery(const PSTR FName, PSTR TName)
 {
-	int Index[] = {(int)strlen(FName) - 1, 0, 0};
+	int Index[] = {(int)strnlen_s(FName, DOMAIN_MAXSIZE) - 1, 0, 0};
 	Index[2U] = Index[0] + 1;
 	TName[Index[0] + 2] = 0;
 
@@ -888,12 +890,12 @@ size_t __fastcall CharToDNSQuery(const PSTR FName, PSTR TName)
 		else
 		{
 			TName[Index[2U]] = FName[Index[0]];
-			Index[1U]++;
+			++Index[1U];
 		}
 	}
 	TName[Index[2U]] = (char)Index[1U];
 
-	return strlen(TName) + 1U;
+	return strnlen_s(TName, DOMAIN_MAXSIZE - 1U) + 1U;
 }
 
 //Convert data from DNS query to char(s)
@@ -904,7 +906,7 @@ size_t __fastcall DNSQueryToChar(const PSTR TName, PSTR FName, uint16_t &Truncat
 	int Index[] = {0, 0};
 
 //Convert domain.
-	for (uIndex = 0;uIndex < DOMAIN_MAXSIZE;uIndex++)
+	for (uIndex = 0;uIndex < DOMAIN_MAXSIZE;++uIndex)
 	{
 	//Pointer
 		if ((UCHAR)TName[uIndex] >= 0xC0)
@@ -937,7 +939,7 @@ size_t __fastcall DNSQueryToChar(const PSTR TName, PSTR FName, uint16_t &Truncat
 }
 
 //Validate packets
-bool __fastcall ValidatePacket(const PSTR Buffer, const size_t Length, const uint16_t DNS_ID)
+bool __fastcall ValidatePacket(const PSTR Buffer, const size_t &Length, const uint16_t &DNS_ID)
 {
 	auto pdns_hdr = (dns_hdr *)Buffer;
 
@@ -972,7 +974,7 @@ bool __fastcall ValidatePacket(const PSTR Buffer, const size_t Length, const uin
 }
 
 //Print date from seconds
-void __fastcall PrintSecondsInDateTime(const time_t Seconds)
+void __fastcall PrintSecondsInDateTime(const time_t &Seconds)
 {
 //Less than 1 minute
 	if (Seconds < SECONDS_IN_MINUTE)
@@ -1051,7 +1053,7 @@ void __fastcall PrintSecondsInDateTime(const time_t Seconds)
 }
 
 //Print date from seconds to file
-void __fastcall PrintSecondsInDateTime(const time_t Seconds, FILE *OutputFile)
+void __fastcall PrintSecondsInDateTime(const time_t &Seconds, FILE *OutputFile)
 {
 //Less than 1 minute
 	if (Seconds < SECONDS_IN_MINUTE)
@@ -1130,7 +1132,7 @@ void __fastcall PrintSecondsInDateTime(const time_t Seconds, FILE *OutputFile)
 }
 
 //Print Date and Time with UNIX time
-void __fastcall PrintDateTime(const time_t Time)
+void __fastcall PrintDateTime(const time_t &Time)
 {
 	std::shared_ptr<tm> TimeStructure(new tm());
 	localtime_s(TimeStructure.get(), &Time);
@@ -1140,7 +1142,7 @@ void __fastcall PrintDateTime(const time_t Time)
 }
 
 //Print Date and Time with UNIX time to file
-void __fastcall PrintDateTime(const time_t Time, FILE *OutputFile)
+void __fastcall PrintDateTime(const time_t &Time, FILE *OutputFile)
 {
 	std::shared_ptr<tm> TimeStructure(new tm());
 	localtime_s(TimeStructure.get(), &Time);

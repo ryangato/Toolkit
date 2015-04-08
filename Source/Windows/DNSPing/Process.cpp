@@ -1,6 +1,6 @@
 ﻿// This code is part of DNSPing(Windows)
 // DNSPing, Ping with DNS requesting.
-// Copyright (C) 2014 Chengr28
+// Copyright (C) 2014-2015 Chengr28
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -33,7 +33,7 @@ extern dns_opt_record EDNS0Parameter;
 extern FILE *OutputFile;
 
 //Send DNS requesting process
-size_t __fastcall SendProcess(const sockaddr_storage Target)
+size_t __fastcall SendProcess(const sockaddr_storage &Target)
 {
 //Initialization
 	std::shared_ptr<char> Buffer(new char[BufferSize]()), RecvBuffer(new char[BufferSize]());
@@ -114,7 +114,8 @@ size_t __fastcall SendProcess(const sockaddr_storage Target)
 	if (!RawData)
 	{
 	//DNS requesting
-		memcpy(Buffer.get() + DataLength, &HeaderParameter, sizeof(dns_hdr));
+//		memcpy(Buffer.get() + DataLength, &HeaderParameter, sizeof(dns_hdr));
+		memcpy_s(Buffer.get() + DataLength, BufferSize, &HeaderParameter, sizeof(dns_hdr));
 		if (HeaderParameter.ID == 0)
 		{
 			pdns_hdr = (dns_hdr *)(Buffer.get() + DataLength);
@@ -122,22 +123,26 @@ size_t __fastcall SendProcess(const sockaddr_storage Target)
 		}
 		DataLength += sizeof(dns_hdr);
 		DataLength += CharToDNSQuery((PSTR)TestDomain.c_str(), Buffer.get() + DataLength);
-		memcpy(Buffer.get() + DataLength, &QueryParameter, sizeof(dns_qry));
+//		memcpy(Buffer.get() + DataLength, &QueryParameter, sizeof(dns_qry));
+		memcpy_s(Buffer.get() + DataLength, BufferSize, &QueryParameter, sizeof(dns_qry));
 		DataLength += sizeof(dns_qry);
 		if (EDNS0)
 		{
-			memcpy(Buffer.get() + DataLength, &EDNS0Parameter, sizeof(dns_opt_record));
+//			memcpy(Buffer.get() + DataLength, &EDNS0Parameter, sizeof(dns_opt_record));
+			memcpy_s(Buffer.get() + DataLength, BufferSize, &EDNS0Parameter, sizeof(dns_opt_record));
 			DataLength += sizeof(dns_opt_record);
 		}
 	}
 	else {
 		if (BufferSize >= RawDataLen)
 		{
-			memcpy(Buffer.get(), RawData.get(), RawDataLen);
+//			memcpy(Buffer.get(), RawData.get(), RawDataLen);
+			memcpy_s(Buffer.get(), BufferSize, RawData.get(), RawDataLen);
 			DataLength = RawDataLen;
 		}
 		else {
-			memcpy(Buffer.get(), RawData.get(), BufferSize);
+//			memcpy(Buffer.get(), RawData.get(), BufferSize);
+			memcpy_s(Buffer.get(), BufferSize, RawData.get(), BufferSize);
 			DataLength = BufferSize;
 		}
 	}
@@ -148,10 +153,10 @@ size_t __fastcall SendProcess(const sockaddr_storage Target)
 		wprintf_s(L"Get current time form High Precision Event Timer/HPET error, error code is %d.\n", (int)GetLastError());
 		return EXIT_FAILURE;
 	}
-	sendto(Socket, Buffer.get(), (int)DataLength, NULL, (PSOCKADDR)&Target, AddrLen);
+	sendto(Socket, Buffer.get(), (int)DataLength, 0, (PSOCKADDR)&Target, AddrLen);
 
 //Receive response.
-	DataLength = recvfrom(Socket, RecvBuffer.get(), (int)BufferSize, NULL, (PSOCKADDR)&Target, &AddrLen);
+	DataLength = recvfrom(Socket, RecvBuffer.get(), (int)BufferSize, 0, (PSOCKADDR)&Target, &AddrLen);
 	if (QueryPerformanceCounter(&AfterTime) == 0)
 	{
 		wprintf_s(L"Get current time form High Precision Event Timer/HPET error, error code is %d.\n", (int)GetLastError());
@@ -180,7 +185,7 @@ size_t __fastcall SendProcess(const sockaddr_storage Target)
 
 			//Receive.
 				memset(RecvBuffer.get(), 0, BufferSize);
-				DataLength = recvfrom(Socket, RecvBuffer.get(), (int)BufferSize, NULL, (PSOCKADDR)&Target, &AddrLen);
+				DataLength = recvfrom(Socket, RecvBuffer.get(), (int)BufferSize, 0, (PSOCKADDR)&Target, &AddrLen);
 				if (QueryPerformanceCounter(&AfterTime) == 0)
 				{
 					wprintf_s(L"Get current time form High Precision Event Timer/HPET error, error code is %d.\n", (int)GetLastError());
@@ -242,7 +247,7 @@ size_t __fastcall SendProcess(const sockaddr_storage Target)
 
 	//Calculate time.
 		TotalTime += Result;
-		RecvNum++;
+		++RecvNum;
 
 	//Mark time.
 		if (MaxTime == 0)
@@ -277,10 +282,10 @@ size_t __fastcall SendProcess(const sockaddr_storage Target)
 }
 
 //Print statistics to screen(and/or output result to file)
-size_t __fastcall PrintProcess(const bool PacketStatistics, const bool TimeStatistics)
+size_t __fastcall PrintProcess(const bool &IsPacketStatistics, const bool &IsTimeStatistics)
 {
 //Packet Statistics
-	if (PacketStatistics)
+	if (IsPacketStatistics)
 	{
 		wprintf_s(L"\nPacket statistics for pinging %ls:\n", wTargetString.c_str());
 		wprintf_s(L"   Send: %lu\n", (ULONG)RealSendNum);
@@ -322,7 +327,7 @@ size_t __fastcall PrintProcess(const bool PacketStatistics, const bool TimeStati
 	}
 
 //Time Statistics
-	if (TimeStatistics && 
+	if (IsTimeStatistics && 
 		RecvNum > 0 && MaxTime > 0 && MinTime > 0)
 	{
 		wprintf_s(L"\nTime statistics for pinging %ls:\n", wTargetString.c_str());
@@ -351,9 +356,9 @@ void __fastcall PrintDescription(void)
 
 //Description
 	wprintf_s(L"--------------------------------------------------\n");
-	wprintf_s(L"DNSPing v0.1 Beta(Windows)\n");
+	wprintf_s(L"DNSPing v0.1(Windows)\n");
 	wprintf_s(L"DNSPing, Ping with DNS requesting.\n");
-	wprintf_s(L"Copyright (C) 2014 Chengr28\n");
+	wprintf_s(L"Copyright (C) 2014-2015 Chengr28\n");
 	wprintf_s(L"--------------------------------------------------\n");
 
 //Usage
@@ -364,7 +369,7 @@ void __fastcall PrintDescription(void)
 	wprintf_s(L"               [-payload Length] [-dnssec] [-qt Type] [-qc Classes]\n");
 	wprintf_s(L"               [-p ServiceName] [-rawdata RAW_Data] [-raw ServiceName]\n");
 	wprintf_s(L"               [-buf Size] [-dv] [-show Response] [-of FileName]\n");
-	wprintf_s(L"               Test_DomainName Target\n");
+	wprintf_s(L"               [-4] [-6] Test_DomainName Target\n");
 
 //Options
 	wprintf_s(L"\nOptions:\n");
@@ -423,7 +428,7 @@ void __fastcall PrintDescription(void)
 	wprintf_s(L"                               IPP|LDAPS|MSDP|AODV|FTPSDATA|FTPS|NAS|TELNETS\n");
 	wprintf_s(L"   -rawdata RAW_Data Specifie Raw data to send.\n");
 	wprintf_s(L"                     RAW_Data is hex, but do not add \"0x\" before hex.\n");
-	wprintf_s(L"                     Length of RAW_Data must between 64 - 1512 bytes.\n");
+	wprintf_s(L"                     Length of RAW_Data must between 64 - 1500 bytes.\n");
 	wprintf_s(L"   -raw ServiceName  Specifie Raw socket type.\n");
 	wprintf_s(L"                     Service Name: HOPOPTS|ICMP|IGMP|GGP|IPV4|ST|TCP|CBT|EGP|\n");
 	wprintf_s(L"                                   IGP|BBNRCCMON|NVPII|PUP|ARGUS|EMCON|XNET|\n");

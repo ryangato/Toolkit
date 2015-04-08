@@ -1,6 +1,6 @@
 ﻿// This code is part of DNSPing(Windows)
 // DNSPing, Ping with DNS requesting.
-// Copyright (C) 2014 Chengr28
+// Copyright (C) 2014-2015 Chengr28
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -34,7 +34,7 @@ dns_opt_record EDNS0Parameter = {0};
 FILE *OutputFile = nullptr;
 
 //Main function of program
-int wmain(int argc, _TCHAR* argv[])
+int wmain(int argc, wchar_t* argv[])
 {
 //Handle the system signal.
 	if (SetConsoleCtrlHandler((PHANDLER_ROUTINE)CtrlHandler, TRUE) == false)
@@ -61,7 +61,7 @@ int wmain(int argc, _TCHAR* argv[])
 
 	//Read parameter
 		auto ReverseLookup = false;
-		for (size_t Index = 1U;Index < (size_t)argc;Index++)
+		for (size_t Index = 1U;Index < (size_t)argc;++Index)
 		{
 			Parameter = argv[Index];
 			Result = 0;
@@ -86,11 +86,11 @@ int wmain(int argc, _TCHAR* argv[])
 			{
 				if (Index + 1U < (size_t)argc)
 				{
-					Index++;
+					++Index;
 					Parameter = argv[Index];
 
-					Result = wcstol(Parameter.c_str(), nullptr, NULL);
-					if (Result > 0 && Result <= U16_MAXNUM)
+					Result = wcstol(Parameter.c_str(), nullptr, 0);
+					if (Result > 0 && Result <= UINT16_MAX)
 					{
 						SendNum = Result;
 					}
@@ -118,11 +118,11 @@ int wmain(int argc, _TCHAR* argv[])
 			{
 				if (Index + 1U < (size_t)argc)
 				{
-					Index++;
+					++Index;
 					Parameter = argv[Index];
 
-					Result = wcstol(Parameter.c_str(), nullptr, NULL);
-					if (Result > 0 && Result <= U8_MAXNUM)
+					Result = wcstol(Parameter.c_str(), nullptr, 0);
+					if (Result > 0 && Result <= UINT8_MAX)
 					{
 						IP_HopLimits = (int)Result;
 					}
@@ -145,11 +145,11 @@ int wmain(int argc, _TCHAR* argv[])
 			{
 				if (Index + 1U < (size_t)argc)
 				{
-					Index++;
+					++Index;
 					Parameter = argv[Index];
 
-					Result = wcstol(Parameter.c_str(), nullptr, NULL);
-					if (Result >= TIME_OUT_MIN && Result < U16_MAXNUM)
+					Result = wcstol(Parameter.c_str(), nullptr, 0);
+					if (Result >= TIME_OUT_MIN && Result < UINT16_MAX)
 					{
 					//Minimum supported system of Windows Version Helpers is Windows Vista.
 					#ifdef _WIN64
@@ -180,11 +180,11 @@ int wmain(int argc, _TCHAR* argv[])
 			{
 				if (Index + 1U < (size_t)argc)
 				{
-					Index++;
+					++Index;
 					Parameter = argv[Index];
 
-					Result = wcstol(Parameter.c_str(), nullptr, NULL);
-					if (Result > 0 && Result <= U16_MAXNUM)
+					Result = wcstol(Parameter.c_str(), nullptr, 0);
+					if (Result > 0 && Result <= UINT16_MAX)
 					{
 						HeaderParameter.ID = htons((uint16_t)Result);
 					}
@@ -212,11 +212,11 @@ int wmain(int argc, _TCHAR* argv[])
 			{
 				if (Index + 1U < (size_t)argc)
 				{
-					Index++;
+					++Index;
 					Parameter = argv[Index];
 
-					Result = wcstol(Parameter.c_str(), nullptr, NULL);
-					if (Result > 0 && Result <= U4_MAXNUM)
+					Result = wcstol(Parameter.c_str(), nullptr, 0);
+					if (Result > 0 && Result <= UINT4_MAX)
 					{
 					#if __BYTE_ORDER == __LITTLE_ENDIAN
 						uint16_t TempFlags = (uint16_t)Result;
@@ -277,11 +277,11 @@ int wmain(int argc, _TCHAR* argv[])
 			{
 				if (Index + 1U < (size_t)argc)
 				{
-					Index++;
+					++Index;
 					Parameter = argv[Index];
 
-					Result = wcstol(Parameter.c_str(), nullptr, NULL);
-					if (Result > 0 && Result <= U4_MAXNUM)
+					Result = wcstol(Parameter.c_str(), nullptr, 0);
+					if (Result > 0 && Result <= UINT4_MAX)
 					{
 					#if __BYTE_ORDER == __LITTLE_ENDIAN
 						uint16_t TempFlags = (uint16_t)Result;
@@ -312,11 +312,11 @@ int wmain(int argc, _TCHAR* argv[])
 			{
 				if (Index + 1U < (size_t)argc)
 				{
-					Index++;
+					++Index;
 					Parameter = argv[Index];
 
-					Result = wcstol(Parameter.c_str(), nullptr, NULL);
-					if (Result > 0 && Result <= U16_MAXNUM)
+					Result = wcstol(Parameter.c_str(), nullptr, 0);
+					if (Result > 0 && Result <= UINT16_MAX)
 					{
 						HeaderParameter.Questions = htons((uint16_t)Result);
 					}
@@ -339,11 +339,11 @@ int wmain(int argc, _TCHAR* argv[])
 			{
 				if (Index + 1U < (size_t)argc)
 				{
-					Index++;
+					++Index;
 					Parameter = argv[Index];
 
-					Result = wcstol(Parameter.c_str(), nullptr, NULL);
-					if (Result > 0 && Result <= U16_MAXNUM)
+					Result = wcstol(Parameter.c_str(), nullptr, 0);
+					if (Result > 0 && Result <= UINT16_MAX)
 					{
 						HeaderParameter.Answer = htons((uint16_t)Result);
 					}
@@ -366,11 +366,11 @@ int wmain(int argc, _TCHAR* argv[])
 			{
 				if (Index + 1U < (size_t)argc)
 				{
-					Index++;
+					++Index;
 					Parameter = argv[Index];
 
-					Result = wcstol(Parameter.c_str(), nullptr, NULL);
-					if (Result > 0 && Result <= U16_MAXNUM)
+					Result = wcstol(Parameter.c_str(), nullptr, 0);
+					if (Result > 0 && Result <= UINT16_MAX)
 					{
 						HeaderParameter.Authority = htons((uint16_t)Result);
 					}
@@ -393,11 +393,11 @@ int wmain(int argc, _TCHAR* argv[])
 			{
 				if (Index + 1U < (size_t)argc)
 				{
-					Index++;
+					++Index;
 					Parameter = argv[Index];
 
-					Result = wcstol(Parameter.c_str(), nullptr, NULL);
-					if (Result > 0 && Result <= U16_MAXNUM)
+					Result = wcstol(Parameter.c_str(), nullptr, 0);
+					if (Result > 0 && Result <= UINT16_MAX)
 					{
 						HeaderParameter.Additional = htons((uint16_t)Result);
 					}
@@ -420,10 +420,10 @@ int wmain(int argc, _TCHAR* argv[])
 			{
 				if (Index + 1U < (size_t)argc)
 				{
-					Index++;
+					++Index;
 					Parameter = argv[Index];
 
-					Result = wcstol(Parameter.c_str(), nullptr, NULL);
+					Result = wcstol(Parameter.c_str(), nullptr, 0);
 					if (Result >= 0)
 					{
 						TransmissionInterval = Result;
@@ -452,11 +452,11 @@ int wmain(int argc, _TCHAR* argv[])
 			{
 				if (Index + 1U < (size_t)argc)
 				{
-					Index++;
+					++Index;
 					Parameter = argv[Index];
 
-					Result = wcstol(Parameter.c_str(), nullptr, NULL);
-					if (Result > OLD_DNS_MAXSIZE && Result <= U16_MAXNUM)
+					Result = wcstol(Parameter.c_str(), nullptr, 0);
+					if (Result > OLD_DNS_MAXSIZE && Result <= UINT16_MAX)
 					{
 						EDNS0PayloadSize = Result;
 					}
@@ -487,7 +487,7 @@ int wmain(int argc, _TCHAR* argv[])
 			{
 				if (Index + 1U < (size_t)argc)
 				{
-					Index++;
+					++Index;
 					Parameter = argv[Index];
 
 				//Type name
@@ -495,8 +495,8 @@ int wmain(int argc, _TCHAR* argv[])
 					if (Result == 0)
 					{
 				//Type number
-						Result = wcstol(Parameter.c_str(), nullptr, NULL);
-						if (Result > 0 && Result <= U16_MAXNUM)
+						Result = wcstol(Parameter.c_str(), nullptr, 0);
+						if (Result > 0 && Result <= UINT16_MAX)
 						{
 							QueryParameter.Type = htons((uint16_t)Result);
 						}
@@ -523,7 +523,7 @@ int wmain(int argc, _TCHAR* argv[])
 			{
 				if (Index + 1U < (size_t)argc)
 				{
-					Index++;
+					++Index;
 					Parameter = argv[Index];
 
 				//Classes name
@@ -531,8 +531,8 @@ int wmain(int argc, _TCHAR* argv[])
 					if (Result == 0)
 					{
 				//Classes number
-						Result = wcstol(Parameter.c_str(), nullptr, NULL);
-						if (Result > 0 && Result <= U16_MAXNUM)
+						Result = wcstol(Parameter.c_str(), nullptr, 0);
+						if (Result > 0 && Result <= UINT16_MAX)
 						{
 							QueryParameter.Classes = htons((uint16_t)Result);
 						}
@@ -559,7 +559,7 @@ int wmain(int argc, _TCHAR* argv[])
 			{
 				if (Index + 1U < (size_t)argc)
 				{
-					Index++;
+					++Index;
 					Parameter = argv[Index];
 
 				//Server name
@@ -567,8 +567,8 @@ int wmain(int argc, _TCHAR* argv[])
 					if (Result == 0)
 					{
 					//Number port
-						Result = wcstol(Parameter.c_str(), nullptr, NULL);
-						if (Result > 0 && Result <= U16_MAXNUM)
+						Result = wcstol(Parameter.c_str(), nullptr, 0);
+						if (Result > 0 && Result <= UINT16_MAX)
 						{
 							ServiceName = htons((uint16_t)Result);
 						}
@@ -595,12 +595,12 @@ int wmain(int argc, _TCHAR* argv[])
 			{
 				if (Index + 1U < (size_t)argc)
 				{
-					Index++;
+					++Index;
 
 				//Initialization
 					std::shared_ptr<char> RawDataStringPTR(new char[lstrlenW(argv[Index]) + 1U]());
-					WideCharToMultiByte(CP_ACP, NULL, Parameter.c_str(), (int)Parameter.length(), RawDataStringPTR.get(), lstrlenW(argv[Index]) + 1U, NULL, NULL);
-					std::string RawDataString = RawDataStringPTR.get();
+					WideCharToMultiByte(CP_ACP, 0, Parameter.c_str(), (int)Parameter.length(), RawDataStringPTR.get(), lstrlenW(argv[Index]) + 1U, nullptr, nullptr);
+					std::string RawDataString(RawDataStringPTR.get());
 					RawDataStringPTR.reset();
 					if (RawDataString.length() < PACKET_MINSIZE && RawDataString.length() > PACKET_MAXSIZE)
 					{
@@ -617,16 +617,16 @@ int wmain(int argc, _TCHAR* argv[])
 					Temp.get()[1U] = 120; //"x"
 
 				//Read raw data.
-					for (size_t InnerIndex = 0;InnerIndex < RawDataString.length();InnerIndex++)
+					for (size_t InnerIndex = 0;InnerIndex < RawDataString.length();++InnerIndex)
 					{
 						Temp.get()[2U] = RawDataString[InnerIndex];
-						InnerIndex++;
+						++InnerIndex;
 						Temp.get()[3U] = RawDataString[InnerIndex];
-						Result = strtol(Temp.get(), nullptr, NULL);
-						if (Result > 0 && Result <= U8_MAXNUM)
+						Result = (SSIZE_T)strtoul(Temp.get(), nullptr, 0);
+						if (Result > 0 && Result <= UINT8_MAX)
 						{
 							RawData.get()[RawDataLen] = (char)Result;
-							RawDataLen++;
+							++RawDataLen;
 						}
 						else {
 							wprintf_s(L"\nParameter [-rawdata RAW_Data] error.\n");
@@ -648,7 +648,7 @@ int wmain(int argc, _TCHAR* argv[])
 			{
 				if (Index + 1U < (size_t)argc)
 				{
-					Index++;
+					++Index;
 					Parameter = argv[Index];
 					RawSocket = true;
 
@@ -657,12 +657,12 @@ int wmain(int argc, _TCHAR* argv[])
 					if (Result == 0)
 					{
 				//Protocol number
-						Result = wcstol(Parameter.c_str(), nullptr, NULL);
+						Result = wcstol(Parameter.c_str(), nullptr, 0);
 						if (Result == IPPROTO_UDP)
 						{
 							RawSocket = false;
 						}
-						else if (Result > 0 && Result <= U4_MAXNUM)
+						else if (Result > 0 && Result <= UINT4_MAX)
 						{
 							ServiceName = (uint8_t)Result;
 						}
@@ -693,10 +693,10 @@ int wmain(int argc, _TCHAR* argv[])
 			{
 				if (Index + 1U < (size_t)argc)
 				{
-					Index++;
+					++Index;
 					Parameter = argv[Index];
 
-					Result = wcstol(Parameter.c_str(), nullptr, NULL);
+					Result = wcstol(Parameter.c_str(), nullptr, 0);
 					if (Result >= OLD_DNS_MAXSIZE && Result <= LARGE_PACKET_MAXSIZE)
 					{
 						BufferSize = Result;
@@ -725,7 +725,7 @@ int wmain(int argc, _TCHAR* argv[])
 			{
 				if (Index + 1U < (size_t)argc)
 				{
-					Index++;
+					++Index;
 					Parameter = argv[Index];
 
 					if (Parameter == L"Result" || Parameter == L"result")
@@ -755,7 +755,7 @@ int wmain(int argc, _TCHAR* argv[])
 			{
 				if (Index + 1U < (size_t)argc)
 				{
-					Index++;
+					++Index;
 					Parameter = argv[Index];
 
 					if (Parameter.length() <= MAX_PATH)
@@ -790,7 +790,7 @@ int wmain(int argc, _TCHAR* argv[])
 			else if (!RawData && TestDomain.empty() && Index == (size_t)(argc - 2) && Parameter.length() > 2U)
 			{
 				std::shared_ptr<char> TestDomainPTR(new char[Parameter.length() + 1U]());
-				WideCharToMultiByte(CP_ACP, NULL, Parameter.c_str(), (int)Parameter.length(), TestDomainPTR.get(), (int)(Parameter.length() + 1U), NULL, NULL);
+				WideCharToMultiByte(CP_ACP, 0, Parameter.c_str(), (int)Parameter.length(), TestDomainPTR.get(), (int)(Parameter.length() + 1U), nullptr, nullptr);
 				TestDomain = TestDomainPTR.get();
 			}
 		//Specifie target.
@@ -798,8 +798,8 @@ int wmain(int argc, _TCHAR* argv[])
 			{
 			//Initialization
 				std::shared_ptr<char> ParameterPTR(new char[Parameter.length() + 1U]());
-				WideCharToMultiByte(CP_ACP, NULL, Parameter.c_str(), (int)Parameter.length(), ParameterPTR.get(), (int)(Parameter.length() + 1U), NULL, NULL);
-				std::string ParameterString = ParameterPTR.get();
+				WideCharToMultiByte(CP_ACP, 0, Parameter.c_str(), (int)Parameter.length(), ParameterPTR.get(), (int)(Parameter.length() + 1U), nullptr, nullptr);
+				std::string ParameterString(ParameterPTR.get());
 				ParameterPTR.reset();
 
 			//IPv6 address
@@ -828,7 +828,7 @@ int wmain(int argc, _TCHAR* argv[])
 					TargetString.append("]");
 				}
 				else {
-					for (auto StringIter = ParameterString.begin();StringIter != ParameterString.end();StringIter++)
+					for (auto StringIter = ParameterString.begin();StringIter != ParameterString.end();++StringIter)
 					{
 					//Domain
 						if (*StringIter < ASCII_PERIOD || *StringIter == ASCII_SLASH || *StringIter > ASCII_NINE)
@@ -841,14 +841,14 @@ int wmain(int argc, _TCHAR* argv[])
 							SockAddr.ss_family = Protocol;
 
 						//Get address.
-							if (getaddrinfo(ParameterString.c_str(), NULL, &AddrInfoHints, &AddrInfo) != 0)
+							if (getaddrinfo(ParameterString.c_str(), nullptr, &AddrInfoHints, &AddrInfo) != 0)
 							{
 							//Retry with IPv4.
 								Protocol = AF_INET;
 								AddrInfoHints.ai_family = Protocol;
 								SockAddr.ss_family = Protocol;
 
-								if (getaddrinfo(ParameterString.c_str(), NULL, &AddrInfoHints, &AddrInfo) != 0)
+								if (getaddrinfo(ParameterString.c_str(), nullptr, &AddrInfoHints, &AddrInfo) != 0)
 								{
 									wprintf_s(L"\nResolve domain name error, error code is %d.\n", WSAGetLastError());
 
@@ -863,8 +863,8 @@ int wmain(int argc, _TCHAR* argv[])
 								for (auto PTR = AddrInfo;PTR != nullptr;PTR = PTR->ai_next)
 								{
 								//IPv6
-									if (PTR->ai_family == AF_INET6 && SockAddr.ss_family == AF_INET6 &&
-										!IN6_IS_ADDR_LINKLOCAL((in6_addr *)(PTR->ai_addr)) &&
+									if (PTR->ai_family == AF_INET6 && SockAddr.ss_family == AF_INET6 && 
+										!IN6_IS_ADDR_LINKLOCAL((in6_addr *)(PTR->ai_addr)) && 
 										!(((PSOCKADDR_IN6)(PTR->ai_addr))->sin6_scope_id == 0)) //Get port from first(Main) IPv6 device
 									{
 										((PSOCKADDR_IN6)&SockAddr)->sin6_addr = ((PSOCKADDR_IN6)(PTR->ai_addr))->sin6_addr;
@@ -878,7 +878,7 @@ int wmain(int argc, _TCHAR* argv[])
 										inet_ntop(AF_INET6, &((PSOCKADDR_IN6)&SockAddr)->sin6_addr, Buffer.get(), ADDR_STRING_MAXSIZE);
 									#else //x86
 										DWORD BufferLength = ADDR_STRING_MAXSIZE;
-										WSAAddressToStringA((LPSOCKADDR)&SockAddr, sizeof(sockaddr_in6), NULL, Buffer.get(), &BufferLength);
+										WSAAddressToStringA((LPSOCKADDR)&SockAddr, sizeof(sockaddr_in6), nullptr, Buffer.get(), &BufferLength);
 									#endif
 										CaseConvert(true, Buffer.get(), strlen(Buffer.get()));
 
@@ -888,8 +888,8 @@ int wmain(int argc, _TCHAR* argv[])
 										break;
 									}
 								//IPv4
-									else if (PTR->ai_family == AF_INET && SockAddr.ss_family == AF_INET &&
-										((PSOCKADDR_IN)(PTR->ai_addr))->sin_addr.S_un.S_addr != INADDR_LOOPBACK &&
+									else if (PTR->ai_family == AF_INET && SockAddr.ss_family == AF_INET && 
+										((PSOCKADDR_IN)(PTR->ai_addr))->sin_addr.S_un.S_addr != INADDR_LOOPBACK && 
 										((PSOCKADDR_IN)(PTR->ai_addr))->sin_addr.S_un.S_addr != INADDR_BROADCAST)
 									{
 										((PSOCKADDR_IN)&SockAddr)->sin_addr = ((PSOCKADDR_IN)(PTR->ai_addr))->sin_addr;
@@ -903,7 +903,7 @@ int wmain(int argc, _TCHAR* argv[])
 										inet_ntop(AF_INET, &((PSOCKADDR_IN)&SockAddr)->sin_addr, Buffer.get(), ADDR_STRING_MAXSIZE);
 									#else //x86
 										DWORD BufferLength = ADDR_STRING_MAXSIZE;
-										WSAAddressToStringA((LPSOCKADDR)&SockAddr, sizeof(sockaddr_in), NULL, Buffer.get(), &BufferLength);
+										WSAAddressToStringA((LPSOCKADDR)&SockAddr, sizeof(sockaddr_in), nullptr, Buffer.get(), &BufferLength);
 									#endif
 
 										TargetString = Buffer.get();
@@ -1006,15 +1006,15 @@ int wmain(int argc, _TCHAR* argv[])
 			wprintf_s(L"\nTest Domain or Target is/are too long.\n");
 			return EXIT_FAILURE;
 		}
-		MultiByteToWideChar(CP_ACP, NULL, TargetString.c_str(), MBSTOWCS_NULLTERMINATE, wTargetStringPTR.get(), (int)TargetString.length());
+		MultiByteToWideChar(CP_ACP, 0, TargetString.c_str(), MBSTOWCS_NULLTERMINATE, wTargetStringPTR.get(), (int)TargetString.length());
 		wTargetString = wTargetStringPTR.get();
 		memset(wTargetStringPTR.get(), 0, sizeof(wchar_t) * LARGE_PACKET_MAXSIZE);
-		MultiByteToWideChar(CP_ACP, NULL, TestDomain.c_str(), MBSTOWCS_NULLTERMINATE, wTargetStringPTR.get(), (int)TestDomain.length());
+		MultiByteToWideChar(CP_ACP, 0, TestDomain.c_str(), MBSTOWCS_NULLTERMINATE, wTargetStringPTR.get(), (int)TestDomain.length());
 		wTestDomain = wTargetStringPTR.get();
 		if (!TargetDomainString.empty())
 		{
 			memset(wTargetStringPTR.get(), 0, sizeof(wchar_t) * LARGE_PACKET_MAXSIZE);
-			MultiByteToWideChar(CP_ACP, NULL, TargetDomainString.c_str(), MBSTOWCS_NULLTERMINATE, wTargetStringPTR.get(), (int)TargetDomainString.length());
+			MultiByteToWideChar(CP_ACP, 0, TargetDomainString.c_str(), MBSTOWCS_NULLTERMINATE, wTargetStringPTR.get(), (int)TargetDomainString.length());
 			wTargetDomainString = wTargetStringPTR.get();
 		}
 		wTargetStringPTR.reset();
@@ -1023,7 +1023,7 @@ int wmain(int argc, _TCHAR* argv[])
 		if (HeaderParameter.Flags == 0)
 			HeaderParameter.Flags = htons(DNS_STANDARD);
 		if (HeaderParameter.Questions == 0)
-			HeaderParameter.Questions = htons(U16_NUM_1);
+			HeaderParameter.Questions = htons(U16_NUM_ONE);
 
 	//Check DNS query.
 		if (QueryParameter.Classes == 0)
@@ -1041,7 +1041,7 @@ int wmain(int argc, _TCHAR* argv[])
 			EDNS0 = true;
 		if (EDNS0)
 		{
-			HeaderParameter.Additional = htons(U16_NUM_1);
+			HeaderParameter.Additional = htons(U16_NUM_ONE);
 			EDNS0Parameter.Type = htons(DNS_RECORD_OPT);
 			if (EDNS0PayloadSize == 0)
 				EDNS0Parameter.UDPPayloadSize = htons(EDNS0_MINSIZE);
@@ -1084,7 +1084,7 @@ int wmain(int argc, _TCHAR* argv[])
 			if (wTargetDomainString.empty())
 			{
 				std::shared_ptr<char> FQDN(new char[NI_MAXHOST]());
-				if (getnameinfo((PSOCKADDR)&SockAddr, sizeof(sockaddr_in), FQDN.get(), NI_MAXHOST, NULL, NULL, NI_NUMERICSERV) != 0)
+				if (getnameinfo((PSOCKADDR)&SockAddr, sizeof(sockaddr_in), FQDN.get(), NI_MAXHOST, nullptr, 0, NI_NUMERICSERV) != 0)
 				{
 					wprintf_s(L"\nResolve addresses to host names error, error code is %d.\n", WSAGetLastError());
 					wprintf_s(L"DNSPing %ls:%u with %ls:\n", wTargetString.c_str(), ntohs(ServiceName), wTestDomain.c_str());
@@ -1100,7 +1100,7 @@ int wmain(int argc, _TCHAR* argv[])
 					}
 					else {
 						std::shared_ptr<wchar_t> wFQDN(new wchar_t[strlen(FQDN.get())]());
-						MultiByteToWideChar(CP_ACP, NULL, FQDN.get(), MBSTOWCS_NULLTERMINATE, wFQDN.get(), (int)strlen(FQDN.get()));
+						MultiByteToWideChar(CP_ACP, 0, FQDN.get(), MBSTOWCS_NULLTERMINATE, wFQDN.get(), (int)strlen(FQDN.get()));
 						wprintf_s(L"DNSPing %ls:%u [%ls] with %ls:\n", wFQDN.get(), ntohs(ServiceName), wTargetString.c_str(), wTestDomain.c_str());
 						if (OutputFile != nullptr)
 							fwprintf_s(OutputFile, L"DNSPing %ls:%u [%ls] with %ls:\n", wFQDN.get(), ntohs(ServiceName), wTargetString.c_str(), wTestDomain.c_str());
@@ -1132,9 +1132,9 @@ int wmain(int argc, _TCHAR* argv[])
 		{
 			while (true)
 			{
-				if (RealSendNum <= U16_MAXNUM)
+				if (RealSendNum <= UINT16_MAX)
 				{
-					RealSendNum++;
+					++RealSendNum;
 					if (SendProcess(SockAddr) == EXIT_FAILURE)
 					{
 						WSACleanup();
@@ -1157,9 +1157,9 @@ int wmain(int argc, _TCHAR* argv[])
 			}
 		}
 		else {
-			for (size_t Index = 0;Index < SendNum;Index++)
+			for (size_t Index = 0;Index < SendNum;++Index)
 			{
-				RealSendNum++;
+				++RealSendNum;
 				if (SendProcess(SockAddr) == EXIT_FAILURE)
 				{
 				//Close file handle.

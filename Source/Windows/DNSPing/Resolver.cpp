@@ -1,6 +1,6 @@
 ﻿// This code is part of DNSPing(Windows)
 // DNSPing, Ping with DNS requesting.
-// Copyright (C) 2014 Chengr28
+// Copyright (C) 2014-2015 Chengr28
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -22,7 +22,7 @@
 extern FILE *OutputFile;
 
 //Print response hexs
-void __fastcall PrintResponseHex(const PSTR Buffer, const size_t Length)
+void __fastcall PrintResponseHex(const PSTR Buffer, const size_t &Length)
 {
 //Initialization
 	size_t Index = 0;
@@ -31,7 +31,7 @@ void __fastcall PrintResponseHex(const PSTR Buffer, const size_t Length)
 	wprintf_s(L"------------------------------ Response Hex ------------------------------\n");
 
 //Print hexs.
-	for (Index = 0;Index < Length;Index++)
+	for (Index = 0;Index < Length;++Index)
 	{
 		if (Index == 0)
 		{
@@ -40,7 +40,7 @@ void __fastcall PrintResponseHex(const PSTR Buffer, const size_t Length)
 		else if (Index % NUM_HEX + 1U == NUM_HEX)
 		{
 			wprintf_s(L"%02x   ", (UCHAR)Buffer[Index]);
-			for (size_t InnerIndex = Index - (NUM_HEX - 1U);InnerIndex < Index + 1U;InnerIndex++)
+			for (size_t InnerIndex = Index - (NUM_HEX - 1U);InnerIndex < Index + 1U;++InnerIndex)
 			{
 				if (InnerIndex != Index - (NUM_HEX - 1U) && InnerIndex % (NUM_HEX / 2U) == 0)
 					wprintf_s(L" ");
@@ -62,13 +62,13 @@ void __fastcall PrintResponseHex(const PSTR Buffer, const size_t Length)
 	}
 	if (NUM_HEX - Length % NUM_HEX < NUM_HEX)
 	{
-		for (Index = 0;Index < NUM_HEX - Length % NUM_HEX;Index++)
+		for (Index = 0;Index < NUM_HEX - Length % NUM_HEX;++Index)
 			wprintf_s(L"   ");
 	}
 	if (Length % NUM_HEX > 0)
 	{
 		wprintf_s(L"   ");
-		for (Index = Length - Length % NUM_HEX;Index < Length;Index++)
+		for (Index = Length - Length % NUM_HEX;Index < Length;++Index)
 		{
 			if ((UCHAR)Buffer[Index] >= ASCII_SPACE && (UCHAR)Buffer[Index] <= ASCII_TILDE)
 				wprintf_s(L"%c", (UCHAR)Buffer[Index]);
@@ -84,7 +84,7 @@ void __fastcall PrintResponseHex(const PSTR Buffer, const size_t Length)
 }
 
 //Print response hexs to file
-void __fastcall PrintResponseHex(const PSTR Buffer, const size_t Length, FILE *OutputFile)
+void __fastcall PrintResponseHex(const PSTR Buffer, const size_t &Length, FILE *OutputFile)
 {
 //Initialization
 	size_t Index = 0;
@@ -93,7 +93,7 @@ void __fastcall PrintResponseHex(const PSTR Buffer, const size_t Length, FILE *O
 	fwprintf_s(OutputFile, L"------------------------------ Response Hex ------------------------------\n");
 
 //Print hexs.
-	for (Index = 0;Index < Length;Index++)
+	for (Index = 0;Index < Length;++Index)
 	{
 		if (Index == 0)
 		{
@@ -102,7 +102,7 @@ void __fastcall PrintResponseHex(const PSTR Buffer, const size_t Length, FILE *O
 		else if (Index % NUM_HEX + 1U == NUM_HEX)
 		{
 			fwprintf_s(OutputFile, L"%02x   ", (UCHAR)Buffer[Index]);
-			for (size_t InnerIndex = Index - (NUM_HEX - 1U);InnerIndex < Index + 1U;InnerIndex++)
+			for (size_t InnerIndex = Index - (NUM_HEX - 1U);InnerIndex < Index + 1U;++InnerIndex)
 			{
 				if (InnerIndex != Index - (NUM_HEX - 1U) && InnerIndex % (NUM_HEX / 2U) == 0)
 					fwprintf_s(OutputFile, L" ");
@@ -124,13 +124,13 @@ void __fastcall PrintResponseHex(const PSTR Buffer, const size_t Length, FILE *O
 	}
 	if (NUM_HEX - Length % NUM_HEX < NUM_HEX)
 	{
-		for (Index = 0;Index < NUM_HEX - Length % NUM_HEX;Index++)
+		for (Index = 0;Index < NUM_HEX - Length % NUM_HEX;++Index)
 			fwprintf_s(OutputFile, L"   ");
 	}
 	if (Length % NUM_HEX > 0)
 	{
 		fwprintf_s(OutputFile, L"   ");
-		for (Index = Length - Length % NUM_HEX;Index < Length;Index++)
+		for (Index = Length - Length % NUM_HEX;Index < Length;++Index)
 		{
 			if ((UCHAR)Buffer[Index] >= ASCII_SPACE && (UCHAR)Buffer[Index] <= ASCII_TILDE)
 				fwprintf_s(OutputFile, L"%c", (UCHAR)Buffer[Index]);
@@ -146,7 +146,7 @@ void __fastcall PrintResponseHex(const PSTR Buffer, const size_t Length, FILE *O
 }
 
 //Print response result or data
-void __fastcall PrintResponse(const PSTR Buffer, const size_t Length)
+void __fastcall PrintResponse(const PSTR Buffer, const size_t &Length)
 {
 //Initialization
 	size_t Index = 0, CurrentLength = sizeof(dns_hdr);
@@ -169,19 +169,19 @@ void __fastcall PrintResponse(const PSTR Buffer, const size_t Length)
 	{
 		wprintf_s(L"Questions RR:\n   Name: ");
 		dns_qry *pdns_qry = nullptr;
-		for (Index = 0;Index < ntohs(pdns_hdr->Questions);Index++)
+		for (Index = 0;Index < ntohs(pdns_hdr->Questions);++Index)
 		{
 		//Print Name.
 			PrintDomainName(Buffer, CurrentLength);
 			wprintf_s(L"\n");
-			CurrentLength += strlen(Buffer + CurrentLength) + 1U;
+			CurrentLength += strnlen_s(Buffer + CurrentLength, Length - CurrentLength) + 1U;
 
 		//Print Type and Classes.
 			pdns_qry = (dns_qry *)(Buffer + CurrentLength);
 			wprintf_s(L"   Type: 0x%04x", ntohs(pdns_qry->Type));
-			PrintTypeClassesName(pdns_qry->Type, NULL);
+			PrintTypeClassesName(pdns_qry->Type, 0);
 			wprintf_s(L"   Classes: 0x%04x", ntohs(pdns_qry->Classes));
-			PrintTypeClassesName(NULL, pdns_qry->Classes);
+			PrintTypeClassesName(0, pdns_qry->Classes);
 			CurrentLength += sizeof(dns_qry);
 		}
 	}
@@ -191,7 +191,7 @@ void __fastcall PrintResponse(const PSTR Buffer, const size_t Length)
 	if (ntohs(pdns_hdr->Answer) > 0)
 	{
 		wprintf_s(L"Answer RR:\n");
-		for (Index = 0;Index < ntohs(pdns_hdr->Answer);Index++)
+		for (Index = 0;Index < ntohs(pdns_hdr->Answer);++Index)
 		{
 		//Print Name.
 			wprintf_s(L" RR(%u)\n   Name: ", (UINT)(Index + 1U));
@@ -201,9 +201,9 @@ void __fastcall PrintResponse(const PSTR Buffer, const size_t Length)
 		//Print Type, Classes, TTL and Length.
 			pdns_standard_record = (dns_standard_record *)(Buffer + CurrentLength);
 			wprintf_s(L"   Type: 0x%04x", ntohs(pdns_standard_record->Type));
-			PrintTypeClassesName(pdns_standard_record->Type, NULL);
+			PrintTypeClassesName(pdns_standard_record->Type, 0);
 			wprintf_s(L"   Classes: 0x%04x", ntohs(pdns_standard_record->Classes));
-			PrintTypeClassesName(NULL, pdns_standard_record->Classes);
+			PrintTypeClassesName(0, pdns_standard_record->Classes);
 			wprintf_s(L"   TTL: %u", ntohl(pdns_standard_record->TTL));
 			PrintSecondsInDateTime(ntohl(pdns_standard_record->TTL));
 			wprintf_s(L"\n");
@@ -218,7 +218,7 @@ void __fastcall PrintResponse(const PSTR Buffer, const size_t Length)
 	if (ntohs(pdns_hdr->Authority) > 0)
 	{
 		wprintf_s(L"Authority RR:\n");
-		for (Index = 0;Index < ntohs(pdns_hdr->Authority);Index++)
+		for (Index = 0;Index < ntohs(pdns_hdr->Authority);++Index)
 		{
 		//Print Name.
 			wprintf_s(L" RR(%u)\n   Name: ", (UINT)(Index + 1U));
@@ -228,9 +228,9 @@ void __fastcall PrintResponse(const PSTR Buffer, const size_t Length)
 		//Print Type, Classes, TTL and Length.
 			pdns_standard_record = (dns_standard_record *)(Buffer + CurrentLength);
 			wprintf_s(L"   Type: 0x%04x", ntohs(pdns_standard_record->Type));
-			PrintTypeClassesName(pdns_standard_record->Type, NULL);
+			PrintTypeClassesName(pdns_standard_record->Type, 0);
 			wprintf_s(L"   Classes: 0x%04x", ntohs(pdns_standard_record->Classes));
-			PrintTypeClassesName(NULL, pdns_standard_record->Classes);
+			PrintTypeClassesName(0, pdns_standard_record->Classes);
 			wprintf_s(L"   TTL: %u", ntohl(pdns_standard_record->TTL));
 			PrintSecondsInDateTime(ntohl(pdns_standard_record->TTL));
 			wprintf_s(L"\n");
@@ -245,7 +245,7 @@ void __fastcall PrintResponse(const PSTR Buffer, const size_t Length)
 	if (ntohs(pdns_hdr->Additional) > 0)
 	{
 		wprintf_s(L"Additional RR:\n");
-		for (Index = 0;Index < ntohs(pdns_hdr->Additional);Index++)
+		for (Index = 0;Index < ntohs(pdns_hdr->Additional);++Index)
 		{
 		//Print Name.
 			wprintf_s(L" RR(%u)\n   Name: ", (UINT)(Index + 1U));
@@ -255,7 +255,7 @@ void __fastcall PrintResponse(const PSTR Buffer, const size_t Length)
 		//Print Type, Classes, TTL and Length.
 			pdns_standard_record = (dns_standard_record *)(Buffer + CurrentLength);
 			wprintf_s(L"   Type: 0x%04x", ntohs(pdns_standard_record->Type));
-			PrintTypeClassesName(pdns_standard_record->Type, NULL);
+			PrintTypeClassesName(pdns_standard_record->Type, 0);
 			if (pdns_standard_record->Type == htons(DNS_RECORD_OPT)) //EDNS0 Label
 			{
 				PrintResourseData(Buffer, CurrentLength - 1U, ntohs(pdns_standard_record->Length), pdns_standard_record->Type, pdns_standard_record->Classes);
@@ -263,7 +263,7 @@ void __fastcall PrintResponse(const PSTR Buffer, const size_t Length)
 			}
 			else {
 				wprintf_s(L"   Classes: 0x%04x", ntohs(pdns_standard_record->Classes));
-				PrintTypeClassesName(NULL, pdns_standard_record->Classes);
+				PrintTypeClassesName(0, pdns_standard_record->Classes);
 				wprintf_s(L"   TTL: %u", ntohl(pdns_standard_record->TTL));
 				PrintSecondsInDateTime(ntohl(pdns_standard_record->TTL));
 				wprintf_s(L"\n");
@@ -281,7 +281,7 @@ void __fastcall PrintResponse(const PSTR Buffer, const size_t Length)
 }
 
 //Print response result or data to file
-void __fastcall PrintResponse(const PSTR Buffer, const size_t Length, FILE *OutputFile)
+void __fastcall PrintResponse(const PSTR Buffer, const size_t &Length, FILE *OutputFile)
 {
 //Initialization
 	size_t Index = 0, CurrentLength = sizeof(dns_hdr);
@@ -304,19 +304,19 @@ void __fastcall PrintResponse(const PSTR Buffer, const size_t Length, FILE *Outp
 	{
 		fwprintf_s(OutputFile, L"Questions RR:\n   Name: ");
 		dns_qry *pdns_qry = nullptr;
-		for (Index = 0;Index < ntohs(pdns_hdr->Questions);Index++)
+		for (Index = 0;Index < ntohs(pdns_hdr->Questions);++Index)
 		{
 		//Print Name.
 			PrintDomainName(Buffer, CurrentLength, OutputFile);
 			fwprintf_s(OutputFile, L"\n");
-			CurrentLength += strlen(Buffer + CurrentLength) + 1U;
+			CurrentLength += strnlen_s(Buffer + CurrentLength, Length - CurrentLength) + 1U;
 
 		//Print Type and Classes.
 			pdns_qry = (dns_qry *)(Buffer + CurrentLength);
 			fwprintf_s(OutputFile, L"   Type: 0x%04x", ntohs(pdns_qry->Type));
-			PrintTypeClassesName(pdns_qry->Type, NULL, OutputFile);
+			PrintTypeClassesName(pdns_qry->Type, 0, OutputFile);
 			fwprintf_s(OutputFile, L"   Classes: 0x%04x", ntohs(pdns_qry->Classes));
-			PrintTypeClassesName(NULL, pdns_qry->Classes, OutputFile);
+			PrintTypeClassesName(0, pdns_qry->Classes, OutputFile);
 			CurrentLength += sizeof(dns_qry);
 		}
 	}
@@ -326,7 +326,7 @@ void __fastcall PrintResponse(const PSTR Buffer, const size_t Length, FILE *Outp
 	if (ntohs(pdns_hdr->Answer) > 0)
 	{
 		fwprintf_s(OutputFile, L"Answer RR:\n");
-		for (Index = 0;Index < ntohs(pdns_hdr->Answer);Index++)
+		for (Index = 0;Index < ntohs(pdns_hdr->Answer);++Index)
 		{
 		//Print Name.
 			fwprintf_s(OutputFile, L" RR(%u)\n   Name: ", (UINT)(Index + 1U));
@@ -336,9 +336,9 @@ void __fastcall PrintResponse(const PSTR Buffer, const size_t Length, FILE *Outp
 		//Print Type, Classes, TTL and Length.
 			pdns_standard_record = (dns_standard_record *)(Buffer + CurrentLength);
 			fwprintf_s(OutputFile, L"   Type: 0x%04x", ntohs(pdns_standard_record->Type));
-			PrintTypeClassesName(pdns_standard_record->Type, NULL, OutputFile);
+			PrintTypeClassesName(pdns_standard_record->Type, 0, OutputFile);
 			fwprintf_s(OutputFile, L"   Classes: 0x%04x", ntohs(pdns_standard_record->Classes));
-			PrintTypeClassesName(NULL, pdns_standard_record->Classes, OutputFile);
+			PrintTypeClassesName(0, pdns_standard_record->Classes, OutputFile);
 			fwprintf_s(OutputFile, L"   TTL: %u", ntohl(pdns_standard_record->TTL));
 			PrintSecondsInDateTime(ntohl(pdns_standard_record->TTL));
 			fwprintf_s(OutputFile, L"\n");
@@ -353,7 +353,7 @@ void __fastcall PrintResponse(const PSTR Buffer, const size_t Length, FILE *Outp
 	if (ntohs(pdns_hdr->Authority) > 0)
 	{
 		fwprintf_s(OutputFile, L"Authority RR:\n");
-		for (Index = 0;Index < ntohs(pdns_hdr->Authority);Index++)
+		for (Index = 0;Index < ntohs(pdns_hdr->Authority);++Index)
 		{
 		//Print Name.
 			fwprintf_s(OutputFile, L" RR(%u)\n   Name: ", (UINT)(Index + 1U));
@@ -363,9 +363,9 @@ void __fastcall PrintResponse(const PSTR Buffer, const size_t Length, FILE *Outp
 		//Print Type, Classes, TTL and Length.
 			pdns_standard_record = (dns_standard_record *)(Buffer + CurrentLength);
 			fwprintf_s(OutputFile, L"   Type: 0x%04x", ntohs(pdns_standard_record->Type));
-			PrintTypeClassesName(pdns_standard_record->Type, NULL, OutputFile);
+			PrintTypeClassesName(pdns_standard_record->Type, 0, OutputFile);
 			fwprintf_s(OutputFile, L"   Classes: 0x%04x", ntohs(pdns_standard_record->Classes));
-			PrintTypeClassesName(NULL, pdns_standard_record->Classes, OutputFile);
+			PrintTypeClassesName(0, pdns_standard_record->Classes, OutputFile);
 			fwprintf_s(OutputFile, L"   TTL: %u", ntohl(pdns_standard_record->TTL));
 			PrintSecondsInDateTime(ntohl(pdns_standard_record->TTL));
 			fwprintf_s(OutputFile, L"\n");
@@ -380,7 +380,7 @@ void __fastcall PrintResponse(const PSTR Buffer, const size_t Length, FILE *Outp
 	if (ntohs(pdns_hdr->Additional) > 0)
 	{
 		fwprintf_s(OutputFile, L"Additional RR:\n");
-		for (Index = 0;Index < ntohs(pdns_hdr->Additional);Index++)
+		for (Index = 0;Index < ntohs(pdns_hdr->Additional);++Index)
 		{
 		//Print Name.
 			fwprintf_s(OutputFile, L" RR(%u)\n   Name: ", (UINT)(Index + 1U));
@@ -390,7 +390,7 @@ void __fastcall PrintResponse(const PSTR Buffer, const size_t Length, FILE *Outp
 		//Print Type, Classes, TTL and Length.
 			pdns_standard_record = (dns_standard_record *)(Buffer + CurrentLength);
 			fwprintf_s(OutputFile, L"   Type: 0x%04x", ntohs(pdns_standard_record->Type));
-			PrintTypeClassesName(pdns_standard_record->Type, NULL, OutputFile);
+			PrintTypeClassesName(pdns_standard_record->Type, 0, OutputFile);
 			if (pdns_standard_record->Type == htons(DNS_RECORD_OPT)) //EDNS0 Label
 			{
 				PrintResourseData(Buffer, CurrentLength - 1U, ntohs(pdns_standard_record->Length), pdns_standard_record->Type, pdns_standard_record->Classes, OutputFile);
@@ -398,7 +398,7 @@ void __fastcall PrintResponse(const PSTR Buffer, const size_t Length, FILE *Outp
 			}
 			else {
 				fwprintf_s(OutputFile, L"   Classes: 0x%04x", ntohs(pdns_standard_record->Classes));
-				PrintTypeClassesName(NULL, pdns_standard_record->Classes, OutputFile);
+				PrintTypeClassesName(0, pdns_standard_record->Classes, OutputFile);
 				fwprintf_s(OutputFile, L"   TTL: %u", ntohl(pdns_standard_record->TTL));
 				PrintSecondsInDateTime(ntohl(pdns_standard_record->TTL));
 				fwprintf_s(OutputFile, L"\n");
@@ -416,7 +416,7 @@ void __fastcall PrintResponse(const PSTR Buffer, const size_t Length, FILE *Outp
 }
 
 //Print Header Flags
-void __fastcall PrintFlags(const uint16_t Flags)
+void __fastcall PrintFlags(const uint16_t &Flags)
 {
 //Print Flags
 	if (Flags > 0)
@@ -443,7 +443,7 @@ void __fastcall PrintFlags(const uint16_t Flags)
 	//Print RCode.
 		wprintf_s(L"/RCode: ");
 		FlagsBits = ntohs(Flags);
-		FlagsBits = FlagsBits & U4_MAXNUM;
+		FlagsBits = FlagsBits & UINT4_MAX;
 		if (FlagsBits == DNS_RCODE_NOERROR)
 			wprintf_s(L"No Error");
 		else if (FlagsBits == DNS_RCODE_FORMERR)
@@ -494,7 +494,7 @@ void __fastcall PrintFlags(const uint16_t Flags)
 }
 
 //Print Header Flags to file
-void __fastcall PrintFlags(const uint16_t Flags, FILE *OutputFile)
+void __fastcall PrintFlags(const uint16_t &Flags, FILE *OutputFile)
 {
 //Print Flags
 	if (Flags > 0)
@@ -521,7 +521,7 @@ void __fastcall PrintFlags(const uint16_t Flags, FILE *OutputFile)
 	//Print RCode.
 		fwprintf_s(OutputFile, L"/RCode: ");
 		FlagsBits = ntohs(Flags);
-		FlagsBits = FlagsBits & U4_MAXNUM;
+		FlagsBits = FlagsBits & UINT4_MAX;
 		if (FlagsBits == DNS_RCODE_NOERROR)
 			fwprintf_s(OutputFile, L"No Error");
 		else if (FlagsBits == DNS_RCODE_FORMERR)
@@ -572,7 +572,7 @@ void __fastcall PrintFlags(const uint16_t Flags, FILE *OutputFile)
 }
 
 //Print Type and Classes name
-void __fastcall PrintTypeClassesName(const uint16_t Type, const uint16_t Classes)
+void __fastcall PrintTypeClassesName(const uint16_t &Type, const uint16_t &Classes)
 {
 //Print Classes.
 	if (Classes > 0)
@@ -811,7 +811,7 @@ void __fastcall PrintTypeClassesName(const uint16_t Type, const uint16_t Classes
 }
 
 //Print Type and Classes name to file
-void __fastcall PrintTypeClassesName(const uint16_t Type, const uint16_t Classes, FILE *OutputFile)
+void __fastcall PrintTypeClassesName(const uint16_t &Type, const uint16_t &Classes, FILE *OutputFile)
 {
 //Print Classes.
 	if (Classes > 0)
@@ -1050,7 +1050,7 @@ void __fastcall PrintTypeClassesName(const uint16_t Type, const uint16_t Classes
 }
 
 //Print Domain Name in response
-size_t __fastcall PrintDomainName(const PSTR Buffer, const size_t Location)
+size_t __fastcall PrintDomainName(const PSTR Buffer, const size_t &Location)
 {
 //Root check
 	if (Buffer[Location] == 0)
@@ -1072,7 +1072,7 @@ size_t __fastcall PrintDomainName(const PSTR Buffer, const size_t Location)
 	//Print once when pointer is not at first.
 		if (Result > sizeof(uint16_t))
 		{
-			for (Index = 0;Index < strlen(BufferTemp.get());Index++)
+			for (Index = 0;Index < strnlen_s(BufferTemp.get(), PACKET_MAXSIZE);++Index)
 				wprintf_s(L"%c", BufferTemp.get()[Index]);
 			memset(BufferTemp.get(), 0, PACKET_MAXSIZE);
 			wprintf_s(L".");
@@ -1084,24 +1084,24 @@ size_t __fastcall PrintDomainName(const PSTR Buffer, const size_t Location)
 			if (MultiplePTR)
 				wprintf_s(L".");
 			DNSQueryToChar(Buffer + Truncated, BufferTemp.get(), Truncated);
-			for (Index = 0;Index < strlen(BufferTemp.get());Index++)
+			for (Index = 0;Index < strnlen_s(BufferTemp.get(), PACKET_MAXSIZE);++Index)
 				wprintf_s(L"%c", BufferTemp.get()[Index]);
 			memset(BufferTemp.get(), 0, PACKET_MAXSIZE);
 			MultiplePTR = true;
 		}
 	}
 	else {
-		Result++;
+		++Result;
 	}
 
 //Print last.
-	for (Index = 0;Index < strlen(BufferTemp.get());Index++)
+	for (Index = 0;Index < strnlen_s(BufferTemp.get(), PACKET_MAXSIZE);++Index)
 		wprintf_s(L"%c", BufferTemp.get()[Index]);
 	return Result;
 }
 
 //Print Domain Name in response to file
-size_t __fastcall PrintDomainName(const PSTR Buffer, const size_t Location, FILE *OutputFile)
+size_t __fastcall PrintDomainName(const PSTR Buffer, const size_t &Location, FILE *OutputFile)
 {
 //Root check
 	if (Buffer[Location] == 0)
@@ -1123,7 +1123,7 @@ size_t __fastcall PrintDomainName(const PSTR Buffer, const size_t Location, FILE
 	//Print once when pointer is not at first.
 		if (Result > sizeof(uint16_t))
 		{
-			for (Index = 0;Index < strlen(BufferTemp.get());Index++)
+			for (Index = 0;Index < strnlen_s(BufferTemp.get(), PACKET_MAXSIZE);++Index)
 				fwprintf_s(OutputFile, L"%c", BufferTemp.get()[Index]);
 			memset(BufferTemp.get(), 0, PACKET_MAXSIZE);
 			fwprintf_s(OutputFile, L".");
@@ -1135,24 +1135,24 @@ size_t __fastcall PrintDomainName(const PSTR Buffer, const size_t Location, FILE
 			if (MultiplePTR)
 				fwprintf_s(OutputFile, L".");
 			DNSQueryToChar(Buffer + Truncated, BufferTemp.get(), Truncated);
-			for (Index = 0;Index < strlen(BufferTemp.get());Index++)
+			for (Index = 0;Index < strnlen_s(BufferTemp.get(), PACKET_MAXSIZE);++Index)
 				fwprintf_s(OutputFile, L"%c", BufferTemp.get()[Index]);
 			memset(BufferTemp.get(), 0, PACKET_MAXSIZE);
 			MultiplePTR = true;
 		}
 	}
 	else {
-		Result++;
+		++Result;
 	}
 
 //Print last.
-	for (Index = 0;Index < strlen(BufferTemp.get());Index++)
+	for (Index = 0;Index < strnlen_s(BufferTemp.get(), PACKET_MAXSIZE);++Index)
 		fwprintf_s(OutputFile, L"%c", BufferTemp.get()[Index]);
 	return Result;
 }
 
 //Print Resourse data
-void __fastcall PrintResourseData(const PSTR Buffer, const size_t Location, const uint16_t Length, const uint16_t Type, const uint16_t Classes)
+void __fastcall PrintResourseData(const PSTR Buffer, const size_t &Location, const uint16_t &Length, const uint16_t &Type, const uint16_t &Classes)
 {
 //Length and Type check
 	if (Length == 0 && Type != htons(DNS_RECORD_OPT))
@@ -1228,7 +1228,7 @@ void __fastcall PrintResourseData(const PSTR Buffer, const size_t Location, cons
 		auto pdns_txt_record = (dns_txt_record *)(Buffer + Location);
 		wprintf_s(L"Length: %u", pdns_txt_record->Length);
 		wprintf_s(L"\n         TXT: \"");
-		for (Index = Location + sizeof(dns_txt_record);Index < Location + Length;Index++)
+		for (Index = Location + sizeof(dns_txt_record);Index < Location + Length;++Index)
 			wprintf_s(L"%c", Buffer[Index]);
 		wprintf_s(L"\"");
 	}
@@ -1245,11 +1245,11 @@ void __fastcall PrintResourseData(const PSTR Buffer, const size_t Location, cons
 		std::shared_ptr<sockaddr_storage> SockAddr(new sockaddr_storage());
 		SockAddr->ss_family = AF_INET6;
 		((PSOCKADDR_IN6)SockAddr.get())->sin6_addr = *(in6_addr *)(Buffer + Location);
-		WSAAddressToStringA((LPSOCKADDR)SockAddr.get(), sizeof(sockaddr_in6), NULL, BufferTemp.get(), &BufferLength);
+		WSAAddressToStringA((LPSOCKADDR)SockAddr.get(), sizeof(sockaddr_in6), nullptr, BufferTemp.get(), &BufferLength);
 #endif
-		CaseConvert(true, BufferTemp.get(), strlen(BufferTemp.get()));
+		CaseConvert(true, BufferTemp.get(), strnlen_s(BufferTemp.get(), PACKET_MAXSIZE));
 
-		for (Index = 0;Index < strlen(BufferTemp.get());Index++)
+		for (Index = 0;Index < strnlen_s(BufferTemp.get(), PACKET_MAXSIZE);++Index)
 			wprintf_s(L"%c", BufferTemp.get()[Index]);
 	}
 //SRV Record(Server Selection)
@@ -1322,7 +1322,7 @@ void __fastcall PrintResourseData(const PSTR Buffer, const size_t Location, cons
 
 		auto pdns_rrsig_record = (dns_rrsig_record *)(Buffer + Location);
 		wprintf_s(L"Type Covered: 0x%04x", ntohs(pdns_rrsig_record->TypeCovered));
-		PrintTypeClassesName(pdns_rrsig_record->TypeCovered, NULL);
+		PrintTypeClassesName(pdns_rrsig_record->TypeCovered, 0);
 		wprintf_s(L"         Algorithm: ");
 		if (pdns_rrsig_record->Algorithm == DNSSEC_AlGORITHM_RSA_MD5)
 			wprintf_s(L"RSA/MD5");
@@ -1370,7 +1370,7 @@ void __fastcall PrintResourseData(const PSTR Buffer, const size_t Location, cons
 		CurrentLength = PrintDomainName(Buffer, Location + sizeof(dns_rrsig_record)) + 1U;
 		CurrentLength += sizeof(dns_rrsig_record);
 		wprintf_s(L"\n         Signature: ");
-		for (Index = Location + CurrentLength;Index < Location + Length;Index++)
+		for (Index = Location + CurrentLength;Index < Location + Length;++Index)
 			wprintf_s(L"%02x", (UCHAR)Buffer[Index]);
 	}
 //NSEC Record(Next-SECure)
@@ -1381,7 +1381,7 @@ void __fastcall PrintResourseData(const PSTR Buffer, const size_t Location, cons
 		wprintf_s(L"Next Domain Name: ");
 		CurrentLength = PrintDomainName(Buffer, Location);
 		wprintf_s(L"\n         List of Type Bit Map: ");
-		for (Index = Location + CurrentLength;Index < Location + Length;Index++)
+		for (Index = Location + CurrentLength;Index < Location + Length;++Index)
 			wprintf_s(L"%x", (UCHAR)Buffer[Index]);
 	}
 //DNSKEY Record(DNS public KEY)
@@ -1400,11 +1400,11 @@ void __fastcall PrintResourseData(const PSTR Buffer, const size_t Location, cons
 		wprintf_s(L"Flags: %x", pdns_caa_record->Flags);
 		wprintf_s(L"\n         Length: %u", pdns_caa_record->Length);
 		wprintf_s(L"\n         Tag: \"");
-		for (Index = Location + sizeof(dns_caa_record);Index < Location + sizeof(dns_caa_record) + pdns_caa_record->Length;Index++)
+		for (Index = Location + sizeof(dns_caa_record);Index < Location + sizeof(dns_caa_record) + pdns_caa_record->Length;++Index)
 			wprintf_s(L"%c", Buffer[Index]);
 		wprintf_s(L"\"");
 		wprintf_s(L"\n         Value: \"");
-		for (Index = Location + sizeof(dns_caa_record) + pdns_caa_record->Length;Index < Location + Length;Index++)
+		for (Index = Location + sizeof(dns_caa_record) + pdns_caa_record->Length;Index < Location + Length;++Index)
 			wprintf_s(L"%c", Buffer[Index]);
 		wprintf_s(L"\"");
 	}
@@ -1414,7 +1414,7 @@ void __fastcall PrintResourseData(const PSTR Buffer, const size_t Location, cons
 }
 
 //Print Resourse data to file
-void __fastcall PrintResourseData(const PSTR Buffer, const size_t Location, const uint16_t Length, const uint16_t Type, const uint16_t Classes, FILE *OutputFile)
+void __fastcall PrintResourseData(const PSTR Buffer, const size_t &Location, const uint16_t &Length, const uint16_t &Type, const uint16_t &Classes, FILE *OutputFile)
 {
 //Length and Type check
 	if (Length == 0 && Type != htons(DNS_RECORD_OPT))
@@ -1478,7 +1478,7 @@ void __fastcall PrintResourseData(const PSTR Buffer, const size_t Location, cons
 		auto pdns_txt_record = (dns_txt_record *)(Buffer + Location);
 		fwprintf_s(OutputFile, L"Length: %u", pdns_txt_record->Length);
 		fwprintf_s(OutputFile, L"\n         TXT: \"");
-		for (Index = Location + sizeof(dns_txt_record);Index < Location + Length;Index++)
+		for (Index = Location + sizeof(dns_txt_record);Index < Location + Length;++Index)
 			fwprintf_s(OutputFile, L"%c", Buffer[Index]);
 		fwprintf_s(OutputFile, L"\"");
 	}
@@ -1495,11 +1495,11 @@ void __fastcall PrintResourseData(const PSTR Buffer, const size_t Location, cons
 		std::shared_ptr<sockaddr_storage> SockAddr(new sockaddr_storage());
 		SockAddr->ss_family = AF_INET6;
 		((PSOCKADDR_IN6)SockAddr.get())->sin6_addr = *(in6_addr *)(Buffer + Location);
-		WSAAddressToStringA((LPSOCKADDR)SockAddr.get(), sizeof(sockaddr_in6), NULL, BufferTemp.get(), &BufferLength);
+		WSAAddressToStringA((LPSOCKADDR)SockAddr.get(), sizeof(sockaddr_in6), nullptr, BufferTemp.get(), &BufferLength);
 #endif
-		CaseConvert(true, BufferTemp.get(), strlen(BufferTemp.get()));
+		CaseConvert(true, BufferTemp.get(), strnlen_s(BufferTemp.get(), ADDR_STRING_MAXSIZE));
 
-		for (Index = 0;Index < strlen(BufferTemp.get());Index++)
+		for (Index = 0;Index < strnlen_s(BufferTemp.get(), ADDR_STRING_MAXSIZE);++Index)
 			fwprintf_s(OutputFile, L"%c", BufferTemp.get()[Index]);
 	}
 //SRV Record(Server Selection)
@@ -1565,7 +1565,7 @@ void __fastcall PrintResourseData(const PSTR Buffer, const size_t Location, cons
 
 		auto pdns_rrsig_record = (dns_rrsig_record *)(Buffer + Location);
 		fwprintf_s(OutputFile, L"Type Covered: 0x%04x", ntohs(pdns_rrsig_record->TypeCovered));
-		PrintTypeClassesName(pdns_rrsig_record->TypeCovered, NULL);
+		PrintTypeClassesName(pdns_rrsig_record->TypeCovered, 0);
 		fwprintf_s(OutputFile, L"         Algorithm: ");
 		if (pdns_rrsig_record->Algorithm == DNSSEC_AlGORITHM_RSA_MD5)
 			fwprintf_s(OutputFile, L"RSA/MD5");
@@ -1613,7 +1613,7 @@ void __fastcall PrintResourseData(const PSTR Buffer, const size_t Location, cons
 		CurrentLength = PrintDomainName(Buffer, Location + sizeof(dns_rrsig_record), OutputFile) + 1U;
 		CurrentLength += sizeof(dns_rrsig_record);
 		fwprintf_s(OutputFile, L"\n         Signature: ");
-		for (Index = Location + CurrentLength;Index < Location + Length;Index++)
+		for (Index = Location + CurrentLength;Index < Location + Length;++Index)
 			fwprintf_s(OutputFile, L"%02x", (UCHAR)Buffer[Index]);
 	}
 //NSEC Record(Next-SECure)
@@ -1624,7 +1624,7 @@ void __fastcall PrintResourseData(const PSTR Buffer, const size_t Location, cons
 		fwprintf_s(OutputFile, L"Next Domain Name: ");
 		CurrentLength = PrintDomainName(Buffer, Location, OutputFile);
 		fwprintf_s(OutputFile, L"\n         List of Type Bit Map: ");
-		for (Index = Location + CurrentLength;Index < Location + Length;Index++)
+		for (Index = Location + CurrentLength;Index < Location + Length;++Index)
 			fwprintf_s(OutputFile, L"%x", (UCHAR)Buffer[Index]);
 	}
 //CAA Record(Certification Authority Authorization)
@@ -1636,11 +1636,11 @@ void __fastcall PrintResourseData(const PSTR Buffer, const size_t Location, cons
 		fwprintf_s(OutputFile, L"Flags: %x", pdns_caa_record->Flags);
 		fwprintf_s(OutputFile, L"\n         Length: %u", pdns_caa_record->Length);
 		fwprintf_s(OutputFile, L"\n         Tag: \"");
-		for (Index = Location + sizeof(dns_caa_record);Index < Location + sizeof(dns_caa_record) + pdns_caa_record->Length;Index++)
+		for (Index = Location + sizeof(dns_caa_record);Index < Location + sizeof(dns_caa_record) + pdns_caa_record->Length;++Index)
 			fwprintf_s(OutputFile, L"%c", Buffer[Index]);
 		fwprintf_s(OutputFile, L"\"");
 		fwprintf_s(OutputFile, L"\n         Value: \"");
-		for (Index = Location + sizeof(dns_caa_record) + pdns_caa_record->Length;Index < Location + Length;Index++)
+		for (Index = Location + sizeof(dns_caa_record) + pdns_caa_record->Length;Index < Location + Length;++Index)
 			fwprintf_s(OutputFile, L"%c", Buffer[Index]);
 		fwprintf_s(OutputFile, L"\"");
 	}

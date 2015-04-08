@@ -1,6 +1,6 @@
 ﻿// This code is part of DNSPing(Windows)
 // DNSPing, Ping with DNS requesting.
-// Copyright (C) 2014 Chengr28
+// Copyright (C) 2014-2015 Chengr28
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -17,7 +17,9 @@
 // Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 
-// Base Header
+//////////////////////////////////////////////////
+// Base header
+// 
 //C Standard Library Headers
 #include <ctime>                   //Date&Time
 
@@ -31,15 +33,18 @@
 #include <ws2tcpip.h>              //WinSock 2.0+ Extension for TCP/IP protocols
 //Minimum supported system of Windows Version Helpers is Windows Vista.
 #ifdef _WIN64
-	#include <windows.h>               //Master include file
+//	#include <windows.h>               //Master include file
 	#include <VersionHelpers.h>        //Windows Version Helpers
 #endif
 
-// Static librarys
+//Static libraries
 #pragma comment(lib, "ws2_32.lib")            //WinSock 2.0+
 //#pragma comment(lib, "iphlpapi.lib")        //IP Stack for MIB-II and related functionality
 
-// Base definitions
+
+//////////////////////////////////////////////////
+// Base defines
+// 
 #pragma pack(1)                                      //Memory alignment: 1 bytes/8 bits
 #define __LITTLE_ENDIAN           1U                 //Little Endian
 #define __BIG_ENDIAN              2U                 //Big Endian
@@ -64,21 +69,22 @@
 #define ASCII_UPPER_TO_LOWER      32U                  //Uppercase to lowercase
 #define ASCII_LOWER_TO_UPPER      32U                  //Lowercase to uppercase
 
-// Protocol Header structures
+
+//////////////////////////////////////////////////
+// Protocol header structures
+// 
 //Internet Protocol Numbers
 //About this list, see http://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml
-/*
-#define IPPROTO_HOPOPTS           0                    //IPv6 Hop-by-Hop Option
-#define IPPROTO_ICMP              1U                   //Internet Control Message
-#define IPPROTO_IGMP              2U                   //Internet Group Management
-#define IPPROTO_GGP               3U                   //Gateway-to-Gateway
-#define IPPROTO_IPV4              4U                   //IPv4 encapsulation
-#define IPPROTO_ST                5U                   //Stream
-#define IPPROTO_TCP               6U                   //Transmission Control
-#define IPPROTO_CBT               7U                   //CBT
-#define IPPROTO_EGP               8U                   //Exterior Gateway Protocol
-#define IPPROTO_IGP               9U                   //Any private interior gateway
-*/
+//#define IPPROTO_HOPOPTS           0                    //IPv6 Hop-by-Hop Option
+//#define IPPROTO_ICMP              1U                   //Internet Control Message
+//#define IPPROTO_IGMP              2U                   //Internet Group Management
+//#define IPPROTO_GGP               3U                   //Gateway-to-Gateway
+//#define IPPROTO_IPV4              4U                   //IPv4 encapsulation
+//#define IPPROTO_ST                5U                   //Stream
+//#define IPPROTO_TCP               6U                   //Transmission Control
+//#define IPPROTO_CBT               7U                   //CBT
+//#define IPPROTO_EGP               8U                   //Exterior Gateway Protocol
+//#define IPPROTO_IGP               9U                   //Any private interior gateway
 #define IPPROTO_BBN_RCC_MON       10U                  //BBN RCC Monitoring
 #define IPPROTO_NVP_II            11U                  //Network Voice Protocol
 //#define IPPROTO_PUP               12U                  //PUP
@@ -112,30 +118,24 @@
 #define IPPROTO_IL                40U                  //IL Transport Protocol
 //#define IPPROTO_IPv6              41U                  //IPv6 encapsulation
 #define IPPROTO_SDRP              42U                  //Source Demand Routing Protocol
-/*
-#define IPPROTO_ROUTING           43U                  //Route Routing Header for IPv6
-#define IPPROTO_FRAGMENT          44U                  //Frag Fragment Header for IPv6
-*/
+//#define IPPROTO_ROUTING           43U                  //Route Routing Header for IPv6
+//#define IPPROTO_FRAGMENT          44U                  //Frag Fragment Header for IPv6
 #define IPPROTO_IDRP              45U                  //Inter - Domain Routing Protocol
 #define IPPROTO_RSVP              46U                  //Reservation Protocol
 #define IPPROTO_GRE               47U                  //Generic Routing Encapsulation
 #define IPPROTO_DSR               48U                  //Dynamic Source Routing Protocol
 #define IPPROTO_BNA               49U                  //BNA
-/*
-#define IPPROTO_ESP               50U                  //Encap Security Payload
-#define IPPROTO_AH                51U                  //Authentication Header
-*/
+//#define IPPROTO_ESP               50U                  //Encap Security Payload
+//#define IPPROTO_AH                51U                  //Authentication Header
 #define IPPROTO_NLSP              52U                  //Integrated Net Layer Security TUBA
 #define IPPROTO_SWIPE             53U                  //IP with Encryption
 #define IPPROTO_NARP              54U                  //NBMA Address Resolution Protocol
 #define IPPROTO_MOBILE            55U                  //IP Mobility
 #define IPPROTO_TLSP              56U                  //Transport Layer Security Protocol using Kryptonet key management
 #define IPPROTO_SKIP              57U                  //SKIP
-/*
-#define IPPROTO_ICMPV6            58U                  //ICMP for IPv6
-#define IPPROTO_NONE              59U                  //No Next Header for IPv6
-#define IPPROTO_DSTOPTS           6OU                  //Destination Options for IPv6
-*/
+//#define IPPROTO_ICMPV6            58U                  //ICMP for IPv6
+//#define IPPROTO_NONE              59U                  //No Next Header for IPv6
+//#define IPPROTO_DSTOPTS           6OU                  //Destination Options for IPv6
 #define IPPROTO_AHI               61U                  //Any host internal protocol
 #define IPPROTO_CFTP              62U                  //CFTP
 #define IPPROTO_ALN               63U                  //Any local network
@@ -152,10 +152,8 @@
 #define IPPROTO_WSN               74U                  //Wang Span Network
 #define IPPROTO_PVP               75U                  //Packet Video Protocol
 #define IPPROTO_BR                76U                  //SAT - MON Backroom SATNET Monitoring
-/*
-#define IPPROTO_ND                77U                  //SUN ND PROTOCOL - Temporary
-#define IPPROTO_ICLFXBM           78U                  //WIDEBAND Monitoring
-*/
+//#define IPPROTO_ND                77U                  //SUN ND PROTOCOL - Temporary
+//#define IPPROTO_ICLFXBM           78U                  //WIDEBAND Monitoring
 #define IPPROTO_WBEXPAK           79U                  //WIDEBAND EXPAK
 #define IPPROTO_ISO               80U                  //IP ISO Internet Protocol
 #define IPPROTO_VMTP              81U                  //VMTP
@@ -352,9 +350,9 @@ RFC 6844(https://tools.ietf.org/html/rfc6844), DNS Certification Authority Autho
 RFC 6975(https://tools.ietf.org/html/rfc6975), Signaling Cryptographic Algorithm Understanding in DNS Security Extensions (DNSSEC)
 RFC 7043(https://tools.ietf.org/html/rfc7043), Resource Records for EUI-48 and EUI-64 Addresses in the DNS
 RFC 7314(https://tools.ietf.org/html/rfc7314), Extension Mechanisms for DNS (EDNS) EXPIRE Option
+*/
 
 //About this list, see https://www.iana.org/assignments/dns-parameters/dns-parameters.xhtml
-*/
 //Port and Flags definitions
 #define IPPORT_DNS              53U      //Standard DNS(TCP and UDP) Port
 #define IPPORT_MDNS             5353U    //Multicast Domain Name System/mDNS  Port
@@ -364,7 +362,7 @@ RFC 7314(https://tools.ietf.org/html/rfc7314), Extension Mechanisms for DNS (EDN
 #define DNS_SQR_NETC            0x8380   //Standard query response and no error, but Truncated.
 #define DNS_SQR_FE              0x8181   //Standard query response, Format Error
 #define DNS_SQR_SF              0x8182   //Standard query response, Server failure
-#define DNS_SQR_SNH             0x8183   //Standard query response, but no such name.
+#define DNS_SQR_SNH             0x8183   //Standard query response, but No Such Name.
 #define DNS_QUERY_PTR           0xC00C   //Pointer of first query
 
 //OPCode definitions
@@ -845,18 +843,19 @@ typedef struct _dns_caa_
 }dns_caa_record;
 
 
-//Base definitions
-#define MBSTOWCS_NULLTERMINATE       -1          //MultiByteToWideChar() find null-terminate.
-#define BYTES_TO_BITS                8U
-#define U4_MAXNUM                    0x000F      //Maximum value of half of uint8_t/4 bits
-#define U8_MAXNUM                    0x00FF      //Maximum value of uint8_t/8 bits
-#define U16_MAXNUM                   0xFFFF      //Maximum value of uint16_t/16 bits
-#define HIGHEST_BIT_U16              0x7FFF      //Get highest bit in uint16_t/16 bits data.
+//////////////////////////////////////////////////
+// Main header
+// 
+#define MBSTOWCS_NULLTERMINATE       (-1)        //MultiByteToWideChar() find null-terminate.
 #define HIGHEST_MOVE_BIT_U16         15U         //Move 15 bits to get highest bit in uint16_t/16 bits data.
-#define U16_NUM_1                    0x0001
+#define BYTES_TO_BITS                8U
+#define NUM_DECIMAL                  10
 #define NUM_HEX                      16
+#define UINT4_MAX                    0x000F
+#define HIGHEST_BIT_U16              0x7FFF      //Get highest bit in uint16_t/16 bits data
+#define U16_NUM_ONE                  0x0001
 #define PACKET_MINSIZE               64U         //Minimum size of packets in Ethernet network.
-#define PACKET_MAXSIZE               1512U       //Maximum size of packets(1500 bytes maximum payload length + 8 bytes Ethernet header + 4 bytes FCS), Standard MTU of Ethernet network
+#define PACKET_MAXSIZE               1500U       //Maximum size of packets, Standard MTU of Ethernet II network
 #define LARGE_PACKET_MAXSIZE         4096U       //Maximum size of packets(4KB/4096 bytes) of TCP protocol
 #define ADDR_STRING_MAXSIZE          64U         //Maximum size of addresses(IPv4/IPv6) words
 #define STANDARD_TIME_OUT            1000U       //Standard timeout, 1000 ms(1 second)
@@ -877,39 +876,39 @@ typedef struct _dns_caa_
 #else //x86
 bool __fastcall IsLowerThanWin8(void);
 #endif
-bool __fastcall CheckEmptyBuffer(const void *Buffer, const size_t Length);
-size_t __fastcall CaseConvert(bool LowerUpper, const PSTR Buffer, const size_t Length);
-size_t __fastcall AddressStringToBinary(const PSTR AddrString, void *pAddr, const uint16_t Protocol, SSIZE_T &ErrorCode);
+bool __fastcall CheckEmptyBuffer(const void *Buffer, const size_t &Length);
+size_t __fastcall CaseConvert(const bool &IsLowerUpper, const PSTR Buffer, const size_t &Length);
+size_t __fastcall AddressStringToBinary(const PSTR AddrString, void *pAddr, const uint16_t &Protocol, SSIZE_T &ErrorCode);
 uint16_t __fastcall InternetProtocolNameToPort(const LPWSTR Buffer);
 uint16_t __fastcall ServiceNameToPort(const LPWSTR Buffer);
 uint16_t __fastcall DNSClassesNameToHex(const LPWSTR Buffer);
 uint16_t __fastcall DNSTypeNameToHex(const LPWSTR Buffer);
 size_t __fastcall CharToDNSQuery(const PSTR FName, PSTR TName);
 size_t __fastcall DNSQueryToChar(const PSTR TName, PSTR FName, uint16_t &Truncated);
-bool __fastcall ValidatePacket(const PSTR Buffer, const size_t Length, const uint16_t DNS_ID);
-void __fastcall PrintSecondsInDateTime(const time_t Seconds);
-void __fastcall PrintSecondsInDateTime(const time_t Seconds, FILE *OutputFile);
-void __fastcall PrintDateTime(const time_t Time);
-void __fastcall PrintDateTime(const time_t Time, FILE *OutputFile);
+bool __fastcall ValidatePacket(const PSTR Buffer, const size_t &Length, const uint16_t &DNS_ID);
+void __fastcall PrintSecondsInDateTime(const time_t &Seconds);
+void __fastcall PrintSecondsInDateTime(const time_t &Seconds, FILE *OutputFile);
+void __fastcall PrintDateTime(const time_t &Time);
+void __fastcall PrintDateTime(const time_t &Time, FILE *OutputFile);
 
 //Process.cpp
-size_t __fastcall SendProcess(const sockaddr_storage Target);
-size_t __fastcall PrintProcess(const bool PacketStatistics, const bool TimeStatistics);
+size_t __fastcall SendProcess(const sockaddr_storage &Target);
+size_t __fastcall PrintProcess(const bool &IsPacketStatistics, const bool &IsTimeStatistics);
 void __fastcall PrintDescription(void);
 
 //Resolver.cpp
-void __fastcall PrintResponseHex(const PSTR Buffer, const size_t Length);
-void __fastcall PrintResponseHex(const PSTR Buffer, const size_t Length, FILE *OutputFile);
-void __fastcall PrintResponse(const PSTR Buffer, const size_t Length);
-void __fastcall PrintResponse(const PSTR Buffer, const size_t Length, FILE *OutputFile);
-void __fastcall PrintFlags(const uint16_t Flags);
-void __fastcall PrintFlags(const uint16_t Flags, FILE *OutputFile);
-void __fastcall PrintTypeClassesName(const uint16_t Type, const uint16_t Classes);
-void __fastcall PrintTypeClassesName(const uint16_t Type, const uint16_t Classes, FILE *OutputFile);
-size_t __fastcall PrintDomainName(const PSTR Buffer, const size_t Location);
-size_t __fastcall PrintDomainName(const PSTR Buffer, const size_t Location, FILE *OutputFile);
-void __fastcall PrintResourseData(const PSTR Buffer, const size_t Location, const uint16_t Length, const uint16_t Type, const uint16_t Classes);
-void __fastcall PrintResourseData(const PSTR Buffer, const size_t Location, const uint16_t Length, const uint16_t Type, const uint16_t Classes, FILE *OutputFile);
+void __fastcall PrintResponseHex(const PSTR Buffer, const size_t &Length);
+void __fastcall PrintResponseHex(const PSTR Buffer, const size_t &Length, FILE *OutputFile);
+void __fastcall PrintResponse(const PSTR Buffer, const size_t &Length);
+void __fastcall PrintResponse(const PSTR Buffer, const size_t &Length, FILE *OutputFile);
+void __fastcall PrintFlags(const uint16_t &Flags);
+void __fastcall PrintFlags(const uint16_t &Flags, FILE *OutputFile);
+void __fastcall PrintTypeClassesName(const uint16_t &Type, const uint16_t &Classes);
+void __fastcall PrintTypeClassesName(const uint16_t &Type, const uint16_t &Classes, FILE *OutputFile);
+size_t __fastcall PrintDomainName(const PSTR Buffer, const size_t &Location);
+size_t __fastcall PrintDomainName(const PSTR Buffer, const size_t &Location, FILE *OutputFile);
+void __fastcall PrintResourseData(const PSTR Buffer, const size_t &Location, const uint16_t &Length, const uint16_t &Type, const uint16_t &Classes);
+void __fastcall PrintResourseData(const PSTR Buffer, const size_t &Location, const uint16_t &Length, const uint16_t &Type, const uint16_t &Classes, FILE *OutputFile);
 
 //Console.cpp
-BOOL __fastcall CtrlHandler(const DWORD fdwCtrlType);
+BOOL __fastcall CtrlHandler(const DWORD &fdwCtrlType);

@@ -1,6 +1,6 @@
 ﻿// This code is part of DNSPing(Windows)
 // DNSPing, Ping with DNS requesting.
-// Copyright (C) 2014 Chengr28
+// Copyright (C) 2014-2015 Chengr28
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -22,8 +22,9 @@
 extern FILE *OutputFile;
 
 //Catch Control-C exception from keyboard.
-BOOL __fastcall CtrlHandler(const DWORD fdwCtrlType)
+BOOL __fastcall CtrlHandler(const DWORD &fdwCtrlType)
 {
+/* Old version(2015-02-24)
 	switch(fdwCtrlType)
 	{
 	//Handle the CTRL-C signal.
@@ -96,4 +97,21 @@ BOOL __fastcall CtrlHandler(const DWORD fdwCtrlType)
 			return FALSE;
 		}
 	}
+*/
+
+//Handle the CTRL-C signal.
+	if (fdwCtrlType == CTRL_C_EVENT)
+		wprintf_s(L"Get Control-C.\n");
+//Handle the CTRL-Break signal.
+	else if (fdwCtrlType == CTRL_BREAK_EVENT)
+		wprintf_s(L"Get Control-Break.\n");
+
+//Handle the Closing program/shutdown signal.
+	PrintProcess(true, true);
+//	if (OutputFile != nullptr)
+//		fclose(OutputFile);
+	_fcloseall();
+
+	WSACleanup();
+	return FALSE;
 }
