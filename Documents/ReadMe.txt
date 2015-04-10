@@ -1,18 +1,16 @@
-﻿### Usage
-       DNSPing [-h] [-t] [-a] [-n Count] [-f] [-i HopLimit/TTL] [-w Timeout]
-               [-id DNS_ID] [-qr] [-opcode OPCode] [-aa] [-tc]
-               [-rd] [-ra] [-ad] [-cd] [-rcode RCode] [-qn Count]
-               [-ann Count] [-aun Count] [-adn Count] [-ti Time] [-edns0]
-               [-payload Length] [-dnssec] [-qt Type] [-qc Classes]
-               [-p ServiceName] [-rawdata RAW_Data] [-raw ServiceName]
-               [-buf Size] [-dv] [-show Response] [-of FileName]
-               [-4] [-6] Test_DomainName Target
+﻿### Linux Usage
+* You should compile the sources before using.
+* Run terminal and enter to source directory.
+* Run "make".
+* After all processes finished, the binary is in Release directory.
+
+
+### Usage
+       DNSPing [Options] Test_DomainName Target
 
 
 ### Options
-   N/A               Description.
-   ?                 Description.
-   -h                Description.
+   ?/-h              Description.
    -t                Pings the specified host until stopped.
                      To see statistics and continue type Control-Break.
                      To stop type Control-C.
@@ -20,7 +18,8 @@
    -n Count          Set number of echo requests to send.
                      Count must between 1 - 0xFFFF/65535.
    -f                Set the "Don't Fragment" flag in outgoing packets(IPv4).
-   -i HopLimit/TTL   Specifie a Time To Live for outgoing packets.
+                     No available on Linux.
+   -i HopLimit/TTL   Specifie a Hop Limit or Time To Live for outgoing packets.
                      HopLimit/TTL must between 1 - 255.
    -w Timeout        Set a long wait periods (in milliseconds) for a response
                      Timeout must between 500 - 0xFFFF/65535.

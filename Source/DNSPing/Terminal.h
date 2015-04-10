@@ -1,5 +1,5 @@
-﻿// This code is part of DNSPing(Windows)
-// DNSPing, Ping with DNS requesting.
+﻿// This code is part of DNSPing
+// Ping with DNS requesting.
 // Copyright (C) 2014-2015 Chengr28
 //
 // This program is free software; you can redistribute it and/or
@@ -17,23 +17,8 @@
 // Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 
-//{{NO_DEPENDENCIES}}
-// Microsoft Visual C++ 生成的包含文件。
-// 供 DNSPing.rc 使用
-//
+#include "Base.h"
 
-// Next default values for new objects
-// 
-#ifdef APSTUDIO_INVOKED
-#ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        101
-#define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1001
-#define _APS_NEXT_SYMED_VALUE           101
+#if defined(PLATFORM_LINUX)
+	extern FILE *OutputFile;
 #endif
-#endif
-
-
-//Resource including and defining
-#define FULL_VERSION      L"0.1.0.0"
-#define DETACH_VERSION    0,1,0,0

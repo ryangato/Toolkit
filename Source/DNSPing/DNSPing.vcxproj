@@ -170,10 +170,17 @@
     <ClCompile Include="Process.cpp" />
     <ClCompile Include="Protocol.cpp" />
     <ClCompile Include="Resolver.cpp" />
+    <ClCompile Include="Terminal.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="DNSPing.h" />
+    <ClInclude Include="Console.h" />
+    <ClInclude Include="Base.h" />
+    <ClInclude Include="Main.h" />
+    <ClInclude Include="Process.h" />
+    <ClInclude Include="Protocol.h" />
+    <ClInclude Include="Resolver.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="Terminal.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DNSPing.rc" />

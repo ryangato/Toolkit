@@ -1,18 +1,16 @@
-﻿### 用法
-       DNSPing [-h] [-t] [-a] [-n Count] [-f] [-i HopLimit/TTL] [-w Timeout]
-               [-id DNS_ID] [-qr] [-opcode OPCode] [-aa] [-tc]
-               [-rd] [-ra] [-ad] [-cd] [-rcode RCode] [-qn Count]
-               [-ann Count] [-aun Count] [-adn Count] [-ti Time] [-edns0]
-               [-payload Length] [-dnssec] [-qt Type] [-qc Classes]
-               [-p ServiceName] [-rawdata RAW_Data] [-raw ServiceName]
-               [-buf Size] [-dv] [-show Response] [-of FileName]
-               [-4] [-6] Test_DomainName Target
+﻿### Linux 用法
+* 使用前建议先编译源代码，而非使用项目自带的二进制文件
+* 打开终端，并进入源代码目录
+* 运行 make
+* 所有编译完成后，Release 目录内将出现编译好的二进制文件
+
+
+### 用法
+       DNSPing [Options] Test_DomainName Target
 
 
 ### 选项
-   N/A               打印说明
-   ?                 打印说明
-   -h                打印说明
+   ?/-h              打印说明
    -t                直到按下 Control-Break 或 Control-C 才停止 Ping
                      想看从 Ping 开始到按下时的统计信息但不想停止请按 Control-Break
                      想停止 Ping 并查看统计信息请按 Control-C
@@ -20,7 +18,8 @@
    -n Count          发送 Ping 的数量
                      Count 必须介乎于 1 - 0xFFFF/65535
    -f                设定 Ping 数据包的不分片选项（只适用于IPv4）
-   -i HopLimit/TTL   设定 Ping 数据包的生存时间/跳数限制
+                     不适用于 Linux 平台
+   -i HopLimit/TTL   设定 Ping 数据包的跳数限制/生存时间
                      HopLimit/TTL 必须介乎于 1 - 255
    -w Timeout        设定超时时间（单位：毫秒）
                      Timeout 必须介乎于 500 - 0xFFFF/65535

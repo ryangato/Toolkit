@@ -1,5 +1,5 @@
-﻿// This code is part of DNSPing(Windows)
-// DNSPing, Ping with DNS requesting.
+﻿// This code is part of DNSPing
+// Ping with DNS requesting.
 // Copyright (C) 2014-2015 Chengr28
 //
 // This program is free software; you can redistribute it and/or
@@ -18,37 +18,237 @@
 
 
 //////////////////////////////////////////////////
+// Operating system
+// 
+/* This code is from Qt source, which is in qglobal.h header file.
+// See https://www.qt.io/developers
+
+	The operating system, must be one of: (PLATFORM_x)
+
+	MACX       - Mac OS X
+	MAC9       - Mac OS 9
+	DARWIN     - Darwin OS (Without Mac OS X)
+	MSDOS      - MS-DOS and Windows
+	OS2        - OS/2
+	OS2EMX     - XFree86 on OS/2 (not PM)
+	WIN32      - Win32 (Windows 95/98/ME and Windows NT/2000/XP or newer versions)
+	CYGWIN     - Cygwin
+	SOLARIS    - Sun Solaris
+	HPUX       - HP-UX
+	ULTRIX     - DEC Ultrix
+	LINUX      - Linux
+	FREEBSD    - FreeBSD
+	NETBSD     - NetBSD
+	OPENBSD    - OpenBSD
+	BSDI       - BSD/OS
+	IRIX       - SGI Irix
+	OSF        - HP Tru64 UNIX
+	SCO        - SCO OpenServer 5
+	UNIXWARE   - UnixWare 7, Open UNIX 8
+	AIX        - AIX
+	HURD       - GNU Hurd
+	DGUX       - DG/UX
+	RELIANT    - Reliant UNIX
+	DYNIX      - DYNIX/ptx
+	QNX        - QNX
+	QNX6       - QNX RTP 6.1
+	LYNX       - LynxOS
+	BSD4       - Any BSD 4.4 system
+	UNIX       - Any UNIX BSD/SYSV system
+*/
+
+#if defined(__DARWIN_X11__)
+#  define PLATFORM_DARWIN
+#elif defined(__APPLE__) && (defined(__GNUC__) || defined(__xlC__))
+#  define PLATFORM_MACX
+#elif defined(__MACOSX__)
+#  define PLATFORM_MACX
+#elif defined(macintosh)
+#  define PLATFORM_MAC9
+#elif defined(__CYGWIN__)
+#  define PLATFORM_CYGWIN
+#elif defined(MSDOS) || defined(_MSDOS)
+#  define PLATFORM_MSDOS
+#elif defined(__OS2__)
+#  if defined(__EMX__)
+#    define PLATFORM_OS2EMX
+#  else
+#    define PLATFORM_OS2
+#  endif
+#elif !defined(SAG_COM) && (defined(WIN64) || defined(_WIN64) || defined(__WIN64__))
+#  define PLATFORM_WIN32
+#  define PLATFORM_WIN64
+#elif !defined(SAG_COM) && (defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__))
+#  define PLATFORM_WIN32
+#elif defined(__MWERKS__) && defined(__INTEL__)
+#  define PLATFORM_WIN32
+#elif defined(__sun) || defined(sun)
+#  define PLATFORM_SOLARIS
+#elif defined(hpux) || defined(__hpux)
+#  define PLATFORM_HPUX
+#elif defined(__ultrix) || defined(ultrix)
+#  define PLATFORM_ULTRIX
+#elif defined(sinix)
+#  define PLATFORM_RELIANT
+#elif defined(__linux__) || defined(__linux)
+#  define PLATFORM_LINUX
+#elif defined(__FreeBSD__) || defined(__DragonFly__)
+#  define PLATFORM_FREEBSD
+#  define PLATFORM_BSD4
+#elif defined(__NetBSD__)
+#  define PLATFORM_NETBSD
+#  define PLATFORM_BSD4
+#elif defined(__OpenBSD__)
+#  define PLATFORM_OPENBSD
+#  define PLATFORM_BSD4
+#elif defined(__bsdi__)
+#  define PLATFORM_BSDI
+#  define PLATFORM_BSD4
+#elif defined(__sgi)
+#  define PLATFORM_IRIX
+#elif defined(__osf__)
+#  define PLATFORM_OSF
+#elif defined(_AIX)
+#  define PLATFORM_AIX
+#elif defined(__Lynx__)
+#  define PLATFORM_LYNX
+#elif defined(__GNU_HURD__)
+#  define PLATFORM_HURD
+#elif defined(__DGUX__)
+#  define PLATFORM_DGUX
+#elif defined(__QNXNTO__)
+#  define PLATFORM_QNX6
+#elif defined(__QNX__)
+#  define PLATFORM_QNX
+#elif defined(_SEQUENT_)
+#  define PLATFORM_DYNIX
+#elif defined(_SCO_DS)                   /* SCO OpenServer 5 + GCC */
+#  define PLATFORM_SCO
+#elif defined(__USLC__)                  /* all SCO platforms + UDK or OUDK */
+#  define PLATFORM_UNIXWARE
+#  define PLATFORM_UNIXWARE7
+#elif defined(__svr4__) && defined(i386) /* Open UNIX 8 + GCC */
+#  define PLATFORM_UNIXWARE
+#  define PLATFORM_UNIXWARE7
+#elif defined(__MAKEDEPEND__)
+#else
+#  error "Qt has not been ported to this OS - talk to qt-bugs@trolltech.com"
+#endif
+
+//System series defines
+#if defined(PLATFORM_WIN32) || defined(PLATFORM_WIN64)
+#  define PLATFORM_WIN
+#endif
+#if defined(PLATFORM_MAC9) || defined(PLATFORM_MACX)
+#  define PLATFORM_MAC
+#endif
+#if defined(PLATFORM_MAC9) || defined(PLATFORM_MSDOS) || defined(PLATFORM_OS2) || defined(PLATFORM_WIN)
+#  undef PLATFORM_UNIX
+#elif !defined(PLATFORM_UNIX)
+#  define PLATFORM_UNIX
+#endif
+#if defined(PLATFORM_MACX)
+#  ifdef MAC_OS_X_VERSION_MIN_REQUIRED
+#    undef MAC_OS_X_VERSION_MIN_REQUIRED
+#  endif
+#  define MAC_OS_X_VERSION_MIN_REQUIRED MAC_OS_X_VERSION_10_2
+#  include <AvailabilityMacros.h>
+#  if !defined(MAC_OS_X_VERSION_10_3)
+#     define MAC_OS_X_VERSION_10_3 MAC_OS_X_VERSION_10_2 + 1
+#  endif
+#  if !defined(MAC_OS_X_VERSION_10_4)
+#       define MAC_OS_X_VERSION_10_4 MAC_OS_X_VERSION_10_3 + 1
+#  endif
+#  if (MAC_OS_X_VERSION_MAX_ALLOWED > MAC_OS_X_VERSION_10_4)
+#    error "This version of Mac OS X is unsupported"
+#  endif
+#endif
+
+
+//////////////////////////////////////////////////
 // Base header
 // 
 //C Standard Library Headers
 #include <ctime>                   //Date&Time
+#if defined(PLATFORM_LINUX)
+	#include <cstring>                //C-Style string
+#endif
 
 //C++ Standard Template Library/STL Headers
 #include <memory>                  //Manage dynamic memory support
 #include <string>                  //String support
 
+#if defined(PLATFORM_WIN)
 //Windows API Headers
-#include <tchar.h>                 //Unicode(UTF-8/UTF-16)/Wide-Character Support
-#include <winsock2.h>              //WinSock 2.0+(MUST be including before windows.h)
-#include <ws2tcpip.h>              //WinSock 2.0+ Extension for TCP/IP protocols
+	#include <tchar.h>                 //Unicode(UTF-8/UTF-16)/Wide-Character Support
+	#include <winsock2.h>              //WinSock 2.0+(MUST be including before windows.h)
+	#include <ws2tcpip.h>              //WinSock 2.0+ Extension for TCP/IP protocols
 //Minimum supported system of Windows Version Helpers is Windows Vista.
-#ifdef _WIN64
-//	#include <windows.h>               //Master include file
-	#include <VersionHelpers.h>        //Windows Version Helpers
-#endif
+	#if defined(PLATFORM_WIN64)
+//		#include <windows.h>               //Master include file
+		#include <VersionHelpers.h>        //Windows Version Helpers
+	#endif
 
 //Static libraries
-#pragma comment(lib, "ws2_32.lib")            //WinSock 2.0+
-//#pragma comment(lib, "iphlpapi.lib")        //IP Stack for MIB-II and related functionality
+	#pragma comment(lib, "ws2_32.lib")            //WinSock 2.0+
+//	#pragma comment(lib, "iphlpapi.lib"))        //IP Stack for MIB-II and related functionality
+
+	#define __LITTLE_ENDIAN           1U                 //Little Endian
+//	#define __BIG_ENDIAN              2U                 //Big Endian
+	#define __BYTE_ORDER              __LITTLE_ENDIAN    //x86 and x86-64/x64
+#elif defined(PLATFORM_LINUX)
+//Portable Operating System Interface/POSIX and Unix system header
+	#include <limits.h>               //Limits
+	#include <pthread.h>              //Threads
+	#include <signal.h>               //Signals
+	#include <unistd.h>               //Standard library API
+	#include <netdb.h>                //Network database operations
+	#include <arpa/inet.h>            //Internet operations
+	#include <sys/time.h>             //Date and time
+
+//Windows compatible
+	#define FALSE                    0
+	#define SOCKET_ERROR             (-1)
+	#define INVALID_SOCKET           (-1)
+	#define MAX_PATH                 PATH_MAX
+	#define in_addr                  in_addr_Windows
+	typedef char                     *PSTR;
+	typedef unsigned char            UCHAR;
+	typedef unsigned int             UINT;
+	typedef unsigned long            ULONG, DWORD;
+	typedef ssize_t                  SSIZE_T;
+	typedef int                      SOCKET;
+	typedef sockaddr                 *PSOCKADDR;
+	typedef sockaddr_in              *PSOCKADDR_IN;
+	typedef sockaddr_in6             *PSOCKADDR_IN6;
+	typedef addrinfo                 ADDRINFOA;
+
+//Internet Protocol version 4/IPv4 Address(Linux, from Microsoft Windows)
+	typedef struct _in_addr_windows_
+	{
+		union {
+			struct {
+				uint8_t s_b1, s_b2, s_b3, s_b4;
+			}S_un_b;
+			struct {
+				uint16_t s_w1, s_w2;
+			}S_un_w;
+			uint32_t S_addr;
+		}S_un;
+	}in_addr_Windows;
+
+	#define s_host                                  S_un.S_un_b.s_b2
+	#define s_net                                   S_un.S_un_b.s_b1
+	#define s_imp                                   S_un.S_un_w.s_w2
+	#define s_impno                                 S_un.S_un_b.s_b4
+	#define s_lh                                    S_un.S_un_b.s_b3
+#endif
 
 
 //////////////////////////////////////////////////
 // Base defines
 // 
 #pragma pack(1)                                      //Memory alignment: 1 bytes/8 bits
-#define __LITTLE_ENDIAN           1U                 //Little Endian
-#define __BIG_ENDIAN              2U                 //Big Endian
-#define __BYTE_ORDER              __LITTLE_ENDIAN    //x86 and x86-64/x64
 
 //ASCII values definitions
 #define ASCII_SPACE               32                   //" "
@@ -78,13 +278,19 @@
 //#define IPPROTO_HOPOPTS           0                    //IPv6 Hop-by-Hop Option
 //#define IPPROTO_ICMP              1U                   //Internet Control Message
 //#define IPPROTO_IGMP              2U                   //Internet Group Management
-//#define IPPROTO_GGP               3U                   //Gateway-to-Gateway
-//#define IPPROTO_IPV4              4U                   //IPv4 encapsulation
-//#define IPPROTO_ST                5U                   //Stream
+#if defined(PLATFORM_LINUX)
+	#define IPPROTO_GGP               3U                   //Gateway-to-Gateway
+	#define IPPROTO_IPV4              4U                   //IPv4 encapsulation
+	#define IPPROTO_ST                5U                   //Stream
+#endif
 //#define IPPROTO_TCP               6U                   //Transmission Control
-//#define IPPROTO_CBT               7U                   //CBT
+#if defined(PLATFORM_LINUX)
+	#define IPPROTO_CBT             7U                     //Core Based Tree
+#endif
 //#define IPPROTO_EGP               8U                   //Exterior Gateway Protocol
-//#define IPPROTO_IGP               9U                   //Any private interior gateway
+#if defined(PLATFORM_LINUX)
+	#define IPPROTO_IGP               9U                   //Any private interior gateway
+#endif
 #define IPPROTO_BBN_RCC_MON       10U                  //BBN RCC Monitoring
 #define IPPROTO_NVP_II            11U                  //Network Voice Protocol
 //#define IPPROTO_PUP               12U                  //PUP
@@ -102,13 +308,17 @@
 #define IPPROTO_TRUNK_2           24U                  //Trunk-2
 #define IPPROTO_LEAF_1            25U                  //Leaf-1
 #define IPPROTO_LEAF_2            26U                  //Leaf-2
-//#define IPPROTO_RDP               27U                  //Reliable Data Protocol
+#if defined(PLATFORM_LINUX)
+	#define IPPROTO_RDP               27U                  //Reliable Data Protocol
+#endif
 #define IPPROTO_IRTP              28U                  //Internet Reliable Transaction
 #define IPPROTO_ISO_TP4           29U                  //ISO Transport Protocol Class 4
 #define IPPROTO_NETBLT            30U                  //Bulk Data Transfer Protocol
 #define IPPROTO_MFE               31U                  //MFE Network Services Protocol
 #define IPPROTO_MERIT             32U                  //MERIT Internodal Protocol
-#define IPPROTO_DCCP              33U                  //Datagram Congestion Control Protocol
+#if defined(PLATFORM_WIN)
+	#define IPPROTO_DCCP              33U                  //Datagram Congestion Control Protocol
+#endif
 #define IPPROTO_3PC               34U                  //Third Party Connect Protocol
 #define IPPROTO_IDPR              35U                  //Inter-Domain Policy Routing Protocol
 #define IPPROTO_XTP               36U                  //XTP
@@ -121,8 +331,10 @@
 //#define IPPROTO_ROUTING           43U                  //Route Routing Header for IPv6
 //#define IPPROTO_FRAGMENT          44U                  //Frag Fragment Header for IPv6
 #define IPPROTO_IDRP              45U                  //Inter - Domain Routing Protocol
-#define IPPROTO_RSVP              46U                  //Reservation Protocol
-#define IPPROTO_GRE               47U                  //Generic Routing Encapsulation
+#if defined(PLATFORM_WIN)
+	#define IPPROTO_RSVP              46U                  //Reservation Protocol
+	#define IPPROTO_GRE               47U                  //Generic Routing Encapsulation
+#endif
 #define IPPROTO_DSR               48U                  //Dynamic Source Routing Protocol
 #define IPPROTO_BNA               49U                  //BNA
 //#define IPPROTO_ESP               50U                  //Encap Security Payload
@@ -152,8 +364,10 @@
 #define IPPROTO_WSN               74U                  //Wang Span Network
 #define IPPROTO_PVP               75U                  //Packet Video Protocol
 #define IPPROTO_BR                76U                  //SAT - MON Backroom SATNET Monitoring
-//#define IPPROTO_ND                77U                  //SUN ND PROTOCOL - Temporary
-//#define IPPROTO_ICLFXBM           78U                  //WIDEBAND Monitoring
+#if defined(PLATFORM_LINUX)
+	#define IPPROTO_ND                77U                  //SUN ND PROTOCOL - Temporary
+	#define IPPROTO_ICLFXBM           78U                  //WIDEBAND Monitoring
+#endif
 #define IPPROTO_WBEXPAK           79U                  //WIDEBAND EXPAK
 #define IPPROTO_ISO               80U                  //IP ISO Internet Protocol
 #define IPPROTO_VMTP              81U                  //VMTP
@@ -167,13 +381,19 @@
 #define IPPROTO_EIGRP             89U                  //EIGRP
 #define IPPROTO_SPRITE            90U                  //RPC Sprite RPC Protocol
 #define IPPROTO_LARP              91U                  //Locus Address Resolution Protocol
-#define IPPROTO_MTP               92U                  //Multicast Transport Protocol
+#if defined(PLATFORM_WIN)
+	#define IPPROTO_MTP               92U                  //Multicast Transport Protocol
+#endif
 #define IPPROTO_AX25              93U                  //AX.25 Frames
-#define IPPROTO_IPIP              94U                  //IP - within - IP Encapsulation Protocol
+#if defined(PLATFORM_WIN)
+	#define IPPROTO_IPIP              94U                  //IP - within - IP Encapsulation Protocol
+#endif
 #define IPPROTO_MICP              95U                  //Mobile Internetworking Control Pro.
 #define IPPROTO_SCC               96U                  //Semaphore Communications Sec.Pro.
 #define IPPROTO_ETHERIP           97U                  //Ethernet - within - IP Encapsulation
-#define IPPROTO_ENCAP             98U                  //Encapsulation Header
+#if defined(PLATFORM_WIN)
+	#define IPPROTO_ENCAP             98U                  //Encapsulation Header
+#endif
 #define IPPROTO_APES              100U                 //Any private encryption scheme
 #define IPPROTO_GMTP              101U                 //GMTP
 #define IPPROTO_IFMP              102U                 //Ipsilon Flow Management Protocol
@@ -187,9 +407,13 @@
 #define IPPROTO_SNP               110U                 //Sitara Networks Protocol
 #define IPPROTO_COMPAQ            111U                 //Peer Compaq Peer Protocol
 #define IPPROTO_IPX               112U                 //IP IPX in IP
-//#define IPPROTO_PGM               113U                 //PGM Reliable Transport Protocol
+#if defined(PLATFORM_LINUX)
+	#define IPPROTO_PGM               113U                 //PGM Reliable Transport Protocol
+#endif
 #define IPPROTO_0HOP              114U                 //Any 0-hop protocol
-//#define IPPROTO_L2TP              115U                 //Layer Two Tunneling Protocol
+#if defined(PLATFORM_LINUX)
+	#define IPPROTO_L2TP              115U                 //Layer Two Tunneling Protocol
+#endif
 #define IPPROTO_DDX               116U                 //D - II Data Exchange(DDX)
 #define IPPROTO_IATP              117U                 //Interactive Agent Transfer Protocol
 #define IPPROTO_STP               118U                 //Schedule Transfer Protocol
@@ -210,7 +434,9 @@
 #define IPPROTO_FC                133U                 //Fibre Channel
 #define IPPROTO_RSVP_E2E          134U                 //RSVP-E2E-IGNORE
 #define IPPROTO_MOBILITY          135U                 //Mobility Header
-#define IPPROTO_UDPLITE           136U                 //UDP Lite
+#if defined(PLATFORM_WIN)
+	#define IPPROTO_UDPLITE           136U                 //UDP Lite
+#endif
 #define IPPROTO_MPLS              137U                 //MPLS in IP
 #define IPPROTO_MANET             138U                 //MANET Protocols
 #define IPPROTO_HIP               139U                 //Host Identity Protocol
@@ -223,6 +449,13 @@
 
 //Port definitions(1 - 1024, well-known ports)
 //About this list, see https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml
+#if defined(PLATFORM_LINUX)
+	#define IPPORT_TCPMUX               1U
+	#define IPPORT_QOTD                 17U
+	#define IPPORT_MSP                  18U
+	#define IPPORT_CHARGEN              19U
+	#define IPPORT_FTP_DATA             20U
+#endif
 #define IPPORT_SSH                  22U
 #define IPPORT_RAP                  38U
 #define IPPORT_RLP                  39U
@@ -232,16 +465,34 @@
 #define IPPORT_BOOTPC               68U
 #define IPPORT_HTTP                 80U
 #define IPPORT_HTTPBACKUP           81U
+#if defined(PLATFORM_LINUX)
+	#define IPPORT_POP3                 110U
+#endif
 #define IPPORT_SUNRPC               111U
 #define IPPORT_SQL                  118U
+#if defined(PLATFORM_LINUX)
+	#define IPPORT_NTP                  123U
+	#define IPPORT_EPMAP                135U
+	#define IPPORT_NETBIOS_NS           137U
+	#define IPPORT_NETBIOS_DGM          138U
+	#define IPPORT_NETBIOS_SSN          139U
+	#define IPPORT_IMAP                 143U
+#endif
 #define IPPORT_BFTP                 152U
 #define IPPORT_SGMP                 153U
 #define IPPORT_SQLSRV               156U
 #define IPPORT_DMSP                 158U
+#if defined(PLATFORM_LINUX)
+	#define IPPORT_SNMP                 161U
+	#define IPPORT_SNMP_TRAP            162U
+#endif
 #define IPPORT_ATRTMP               201U
 #define IPPORT_ATHBP                202U
 #define IPPORT_QMTP                 209U
 #define IPPORT_IPX                  213U
+#if defined(PLATFORM_LINUX)
+	#define IPPORT_IMAP3                220U
+#endif
 #define IPPORT_BGMP                 264U
 #define IPPORT_TSP                  318U
 #define IPPORT_IMMP                 323U
@@ -251,9 +502,18 @@
 #define IPPORT_HPALARMMGR           383U
 #define IPPORT_ARNS                 384U
 #define IPPORT_AURP                 387U
+#if defined(PLATFORM_LINUX)
+	#define IPPORT_LDAP                 389U
+#endif
 #define IPPORT_UPS                  401U
 #define IPPORT_SLP                  427U
+#if defined(PLATFORM_LINUX)
+	#define IPPORT_HTTPS                443U
+#endif
 #define IPPORT_SNPP                 444U
+#if defined(PLATFORM_LINUX)
+	#define IPPORT_MICROSOFT_DS         445U
+#endif
 #define IPPORT_KPASSWD              464U
 #define IPPORT_TCPNETHASPSRV        475U
 #define IPPORT_RETROSPECT           497U
@@ -844,9 +1104,32 @@ typedef struct _dns_caa_
 
 
 //////////////////////////////////////////////////
+// Function defines
+#if defined(PLATFORM_LINUX)
+	#define __fastcall
+	#define _T(String)                              String
+	#define wTargetString                           TargetString
+	#define wTestDomain                             TestDomain
+	#define wTargetDomainString                     TargetDomainString
+	#define strnlen_s                               strnlen
+	#define memcpy_s(Dst, DstSize, Src, Size)       memcpy(Dst, Src, Size)
+	#define wprintf_s                               printf
+	#define fwprintf_s                              fprintf
+	#define wcstol                                  strtol
+	#define GetLastError()                          errno
+	#define WSAGetLastError()                       GetLastError()
+	#define WSACleanup()
+	#define GetCurrentProcessId()                   pthread_self()
+	#define localtime_s(TimeStructure, TimeValue)   localtime_r(TimeValue, TimeStructure)
+#endif
+
+
+//////////////////////////////////////////////////
 // Main header
 // 
-#define MBSTOWCS_NULLTERMINATE       (-1)        //MultiByteToWideChar() find null-terminate.
+#if defined(PLATFORM_WIN)
+	#define MBSTOWCS_NULLTERMINATE       (-1)        //MultiByteToWideChar() find null-terminate.
+#endif
 #define HIGHEST_MOVE_BIT_U16         15U         //Move 15 bits to get highest bit in uint16_t/16 bits data.
 #define BYTES_TO_BITS                8U
 #define NUM_DECIMAL                  10
@@ -858,10 +1141,16 @@ typedef struct _dns_caa_
 #define PACKET_MAXSIZE               1500U       //Maximum size of packets, Standard MTU of Ethernet II network
 #define LARGE_PACKET_MAXSIZE         4096U       //Maximum size of packets(4KB/4096 bytes) of TCP protocol
 #define ADDR_STRING_MAXSIZE          64U         //Maximum size of addresses(IPv4/IPv6) words
-#define STANDARD_TIME_OUT            1000U       //Standard timeout, 1000 ms(1 second)
+#if defined(PLATFORM_WIN)
+	#define STANDARD_TIME_OUT            1000U       //Standard timeout, 1000 ms(1 second)
+	#define DEFAULT_TIME_OUT             2000U       //Default timeout, 2000 ms(2 seconds)
+#elif defined(PLATFORM_LINUX)
+	#define STANDARD_TIME_OUT            1000000U    //Standard timeout, 1000000 us(1000 ms or 1 second)
+	#define SECOND_TO_MILLISECOND        1000U       //1000 milliseconds(1 second)
+	#define DEFAULT_TIME_OUT             2U          //Default timeout, 2 seconds
+#endif
 #define MICROSECOND_TO_MILLISECOND   1000U       //1000 microseconds(1 millisecond)
 #define TIME_OUT_MIN                 500U        //Minimum timeout, 500 ms
-#define DEFAULT_TIME_OUT             2000U       //Default timeout, 2000 ms(2 seconds)
 #define DEFAULT_SEND_TIMES           4U          //Default send times
 #define SECONDS_IN_YEAR              31536000U   //31536000 seconds in a year(30 days in a month and 12 months in a year)
 #define SECONDS_IN_MONTH             2592000U    //2592000 seconds in a month(30 days in a month)
@@ -872,43 +1161,46 @@ typedef struct _dns_caa_
 
 //Protocol.cpp
 //Minimum supported system of Windows Version Helpers is Windows Vista.
-#ifdef _WIN64
-#else //x86
-bool __fastcall IsLowerThanWin8(void);
+#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64)) //x86
+	bool __fastcall IsLowerThanWin8(void);
 #endif
-bool __fastcall CheckEmptyBuffer(const void *Buffer, const size_t &Length);
-size_t __fastcall CaseConvert(const bool &IsLowerUpper, const PSTR Buffer, const size_t &Length);
-size_t __fastcall AddressStringToBinary(const PSTR AddrString, void *pAddr, const uint16_t &Protocol, SSIZE_T &ErrorCode);
-uint16_t __fastcall InternetProtocolNameToPort(const LPWSTR Buffer);
-uint16_t __fastcall ServiceNameToPort(const LPWSTR Buffer);
-uint16_t __fastcall DNSClassesNameToHex(const LPWSTR Buffer);
-uint16_t __fastcall DNSTypeNameToHex(const LPWSTR Buffer);
+
+bool __fastcall CheckEmptyBuffer(const void *Buffer, const size_t Length);
+size_t __fastcall CaseConvert(const bool IsLowerUpper, const PSTR Buffer, const size_t Length);
+size_t __fastcall AddressStringToBinary(const PSTR AddrString, void *pAddr, const uint16_t Protocol, SSIZE_T &ErrCode);
+#if defined(PLATFORM_WIN)
+	uint16_t __fastcall InternetProtocolNameToPort(const std::wstring &Buffer);
+	uint16_t __fastcall ServiceNameToPort(const std::wstring &Buffer);
+	uint16_t __fastcall DNSClassesNameToHex(const std::wstring &Buffer);
+	uint16_t __fastcall DNSTypeNameToHex(const std::wstring &Buffer);
+#elif defined(PLATFORM_LINUX)
+	uint16_t __fastcall InternetProtocolNameToPort(const std::string &Buffer);
+	uint16_t __fastcall ServiceNameToPort(const std::string &Buffer);
+	uint16_t __fastcall DNSClassesNameToHex(const std::string &Buffer);
+	uint16_t __fastcall DNSTypeNameToHex(const std::string &Buffer);
+#endif
 size_t __fastcall CharToDNSQuery(const PSTR FName, PSTR TName);
 size_t __fastcall DNSQueryToChar(const PSTR TName, PSTR FName, uint16_t &Truncated);
-bool __fastcall ValidatePacket(const PSTR Buffer, const size_t &Length, const uint16_t &DNS_ID);
-void __fastcall PrintSecondsInDateTime(const time_t &Seconds);
-void __fastcall PrintSecondsInDateTime(const time_t &Seconds, FILE *OutputFile);
-void __fastcall PrintDateTime(const time_t &Time);
-void __fastcall PrintDateTime(const time_t &Time, FILE *OutputFile);
+bool __fastcall ValidatePacket(const PSTR Buffer, const size_t Length, const uint16_t DNS_ID);
+void __fastcall PrintSecondsInDateTime(const time_t Seconds);
+void __fastcall PrintSecondsInDateTime(const time_t Seconds, FILE *OutputFile);
+void __fastcall PrintDateTime(const time_t Time);
+void __fastcall PrintDateTime(const time_t Time, FILE *OutputFile);
 
 //Process.cpp
-size_t __fastcall SendProcess(const sockaddr_storage &Target);
-size_t __fastcall PrintProcess(const bool &IsPacketStatistics, const bool &IsTimeStatistics);
+size_t __fastcall SendProcess(const sockaddr_storage &Target, const bool LastSend);
+size_t __fastcall PrintProcess(const bool IsPacketStatistics, const bool IsTimeStatistics);
 void __fastcall PrintDescription(void);
 
 //Resolver.cpp
-void __fastcall PrintResponseHex(const PSTR Buffer, const size_t &Length);
-void __fastcall PrintResponseHex(const PSTR Buffer, const size_t &Length, FILE *OutputFile);
-void __fastcall PrintResponse(const PSTR Buffer, const size_t &Length);
-void __fastcall PrintResponse(const PSTR Buffer, const size_t &Length, FILE *OutputFile);
-void __fastcall PrintFlags(const uint16_t &Flags);
-void __fastcall PrintFlags(const uint16_t &Flags, FILE *OutputFile);
-void __fastcall PrintTypeClassesName(const uint16_t &Type, const uint16_t &Classes);
-void __fastcall PrintTypeClassesName(const uint16_t &Type, const uint16_t &Classes, FILE *OutputFile);
-size_t __fastcall PrintDomainName(const PSTR Buffer, const size_t &Location);
-size_t __fastcall PrintDomainName(const PSTR Buffer, const size_t &Location, FILE *OutputFile);
-void __fastcall PrintResourseData(const PSTR Buffer, const size_t &Location, const uint16_t &Length, const uint16_t &Type, const uint16_t &Classes);
-void __fastcall PrintResourseData(const PSTR Buffer, const size_t &Location, const uint16_t &Length, const uint16_t &Type, const uint16_t &Classes, FILE *OutputFile);
+void __fastcall PrintResponseHex(const PSTR Buffer, const size_t Length);
+void __fastcall PrintResponseHex(const PSTR Buffer, const size_t Length, FILE *OutputFile);
+void __fastcall PrintResponse(const PSTR Buffer, const size_t Length);
+void __fastcall PrintResponse(const PSTR Buffer, const size_t Length, FILE *OutputFile);
 
 //Console.cpp
-BOOL __fastcall CtrlHandler(const DWORD &fdwCtrlType);
+#if defined(PLATFORM_WIN)
+	BOOL __fastcall CtrlHandler(const DWORD &fdwCtrlType);
+#elif defined(PLATFORM_LINUX)
+	void SIG_Handler(const int Signal);
+#endif

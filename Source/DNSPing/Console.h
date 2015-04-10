@@ -1,6 +1,6 @@
-// This code is part of DNSPing(Linux)
-// DNSPing, Ping with DNS requesting.
-// Copyright (C) 2014 Chengr28
+﻿// This code is part of DNSPing
+// Ping with DNS requesting.
+// Copyright (C) 2014-2015 Chengr28
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -17,18 +17,8 @@
 // Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 
-#include "DNSPing.h"
+#include "Base.h"
 
+#if defined(PLATFORM_WIN)
 extern FILE *OutputFile;
-
-//Handle the system signal.
-void SIG_Handler(int Signal)
-{
-	PrintProcess(true, true);
-//Close file handle.
-	if (OutputFile != nullptr)
-		fclose(OutputFile);
-	
-	exit(EXIT_SUCCESS);
-	return;
-}
+#endif

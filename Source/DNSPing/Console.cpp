@@ -1,5 +1,5 @@
-﻿// This code is part of DNSPing(Windows)
-// DNSPing, Ping with DNS requesting.
+﻿// This code is part of DNSPing
+// Ping with DNS requesting.
 // Copyright (C) 2014-2015 Chengr28
 //
 // This program is free software; you can redistribute it and/or
@@ -17,10 +17,9 @@
 // Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 
-#include "DNSPing.h"
+#include "Console.h"
 
-extern FILE *OutputFile;
-
+#if defined(PLATFORM_WIN)
 //Catch Control-C exception from keyboard.
 BOOL __fastcall CtrlHandler(const DWORD &fdwCtrlType)
 {
@@ -115,3 +114,4 @@ BOOL __fastcall CtrlHandler(const DWORD &fdwCtrlType)
 	WSACleanup();
 	return FALSE;
 }
+#endif
