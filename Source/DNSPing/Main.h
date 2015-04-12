@@ -1,7 +1,7 @@
 ﻿// This code is part of DNSPing
 // Ping with DNS requesting.
 // Copyright (C) 2014-2015 Chengr28
-//
+// 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either
@@ -19,24 +19,23 @@
 
 #include "Base.h"
 
-#if defined(PLATFORM_WIN)
-	std::string TargetString, TestDomain, TargetDomainString;
-	std::wstring wTargetString, OutputFileName;
-#elif defined(PLATFORM_LINUX)
-	std::string TargetString, TestDomain, TargetDomainString, OutputFileName;
+std::string TargetString, TestDomain, TargetDomainString;
+std::wstring wTargetString, wOutputFileName;
+#if defined(PLATFORM_LINUX)
+	std::string OutputFileName;
 #endif
 long double TotalTime = 0, MaxTime = 0, MinTime = 0;
 size_t SendNum = DEFAULT_SEND_TIMES, RealSendNum = 0, RecvNum = 0, TransmissionInterval = 0, BufferSize = PACKET_MAXSIZE, RawDataLen = 0, EDNS0PayloadSize = 0;
 sockaddr_storage SockAddr = {0};
-uint16_t Protocol = 0, ServiceName = 0;
+uint16_t Protocol = 0, ServiceType = 0;
 std::shared_ptr<char> RawData;
+auto RawSocket = false, EDNS0 = false, DNSSEC = false, Validate = true, ShowResponse = false, ShowResponseHex = false;
 int IP_HopLimits = 0;
 #if defined(PLATFORM_WIN)
 	int SocketTimeout = DEFAULT_TIME_OUT;
-	auto RawSocket = false, IPv4_DF = false, EDNS0 = false, DNSSEC = false, Validate = true, ShowResponse = false, ShowResponseHex = false;
+	auto IPv4_DF = false;
 #elif defined(PLATFORM_LINUX)
 	timeval SocketTimeout = {DEFAULT_TIME_OUT, 0};
-	auto RawSocket = false, /* IPv4_DF = false, */ EDNS0 = false, DNSSEC = false, Validate = true, ShowResponse = false, ShowResponseHex = false;
 #endif
 dns_hdr HeaderParameter = {0};
 dns_qry QueryParameter = {0};

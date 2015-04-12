@@ -1,7 +1,7 @@
 ﻿// This code is part of DNSPing
 // Ping with DNS requesting.
 // Copyright (C) 2014-2015 Chengr28
-//
+// 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either
@@ -21,97 +21,31 @@
 
 #if defined(PLATFORM_WIN)
 //Catch Control-C exception from keyboard.
-BOOL __fastcall CtrlHandler(const DWORD &fdwCtrlType)
-{
-/* Old version(2015-02-24)
-	switch(fdwCtrlType)
+	BOOL __fastcall CtrlHandler(const DWORD fdwCtrlType)
 	{
 	//Handle the CTRL-C signal.
-		case CTRL_C_EVENT:
+		if (fdwCtrlType == CTRL_C_EVENT)
 		{
 			wprintf_s(L"Get Control-C.\n");
-			PrintProcess(true, true);
-
-		//Close file handle.
-			if (OutputFile != nullptr)
-				fclose(OutputFile);
-
-			WSACleanup();
-			return FALSE;
 		}
 	//Handle the CTRL-Break signal.
-		case CTRL_BREAK_EVENT:
+		else if (fdwCtrlType == CTRL_BREAK_EVENT)
 		{
 			wprintf_s(L"Get Control-Break.\n");
 			PrintProcess(true, true);
 
-			WSACleanup();
 			return TRUE;
 		}
-	//Handle the Closing program signal.
-		case CTRL_CLOSE_EVENT:
-		{
-			PrintProcess(true, true);
-
-		//Close file handle.
-			if (OutputFile != nullptr)
-				fclose(OutputFile);
-
-			WSACleanup();
-			return FALSE;
+	//Handle other signals.
+		else {
+			wprintf_s(L"Get closing signal.\n");
 		}
-	//Handle the Closing program signal.
-		case CTRL_LOGOFF_EVENT:
-		{
-			PrintProcess(true, true);
 
-		//Close file handle.
-			if (OutputFile != nullptr)
-				fclose(OutputFile);
+	//Print statistics and close all file handles.
+		PrintProcess(true, true);
+		_fcloseall();
 
-			WSACleanup();
-			return FALSE;
-		}
-	//Handle the shutdown signal.
-		case CTRL_SHUTDOWN_EVENT:
-		{
-			PrintProcess(true, true);
-
-		//Close file handle.
-			if (OutputFile != nullptr)
-				fclose(OutputFile);
-
-			WSACleanup();
-			return FALSE;
-		}
-		default:
-		{
-			PrintProcess(true, true);
-
-		//Close file handle.
-			if (OutputFile != nullptr)
-				fclose(OutputFile);
-
-			WSACleanup();
-			return FALSE;
-		}
+		WSACleanup();
+		return FALSE;
 	}
-*/
-
-//Handle the CTRL-C signal.
-	if (fdwCtrlType == CTRL_C_EVENT)
-		wprintf_s(L"Get Control-C.\n");
-//Handle the CTRL-Break signal.
-	else if (fdwCtrlType == CTRL_BREAK_EVENT)
-		wprintf_s(L"Get Control-Break.\n");
-
-//Handle the Closing program/shutdown signal.
-	PrintProcess(true, true);
-//	if (OutputFile != nullptr)
-//		fclose(OutputFile);
-	_fcloseall();
-
-	WSACleanup();
-	return FALSE;
-}
 #endif

@@ -1,7 +1,7 @@
 ﻿// This code is part of DNSPing
 // Ping with DNS requesting.
 // Copyright (C) 2014-2015 Chengr28
-//
+// 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either
@@ -50,6 +50,19 @@ bool __fastcall CheckEmptyBuffer(const void *Buffer, const size_t Length)
 
 	return true;
 }
+
+#if defined(PLATFORM_LINUX)
+//Convert multiple bytes to wide char string
+void MBSToWCSString(std::wstring &Target, const char *Buffer)
+{
+	std::shared_ptr<wchar_t> TargetPTR(new wchar_t[strnlen(Buffer, LARGE_PACKET_MAXSIZE) + 1U]());
+	wmemset(TargetPTR.get(), 0, strnlen(Buffer, LARGE_PACKET_MAXSIZE) + 1U);
+	mbstowcs(TargetPTR.get(), Buffer, strnlen(Buffer, LARGE_PACKET_MAXSIZE));
+	Target = TargetPTR.get();
+
+	return;
+}
+#endif
 
 //Convert lowercase/uppercase word(s) to uppercase/lowercase word(s).
 size_t __fastcall CaseConvert(const bool IsLowerUpper, const PSTR Buffer, const size_t Length)
@@ -183,304 +196,300 @@ size_t __fastcall AddressStringToBinary(const PSTR AddrString, void *pAddr, cons
 }
 
 //Convert protocol name to hex
-#if defined(PLATFORM_WIN)
 uint16_t __fastcall InternetProtocolNameToPort(const std::wstring &Buffer)
-#elif defined(PLATFORM_LINUX)
-uint16_t __fastcall InternetProtocolNameToPort(const std::string &Buffer)
-#endif
 {
 //Internet Protocol Number(Part 1)
-	if (Buffer == _T("HOPOPTS") || Buffer == _T("hopopts"))
+	if (Buffer == L"HOPOPTS" || Buffer == L"hopopts")
 		return IPPROTO_HOPOPTS;
-	else if (Buffer == _T("ICMP") || Buffer == _T("icmp"))
+	else if (Buffer == L"ICMP" || Buffer == L"icmp")
 		return IPPROTO_ICMP;
-	else if (Buffer == _T("IGMP") || Buffer == _T("igmp"))
+	else if (Buffer == L"IGMP" || Buffer == L"igmp")
 		return IPPROTO_IGMP;
-	else if (Buffer == _T("GGP") || Buffer == _T("ggp"))
+	else if (Buffer == L"GGP" || Buffer == L"ggp")
 		return IPPROTO_GGP;
-	else if (Buffer == _T("IPV4") || Buffer == _T("ipv4"))
+	else if (Buffer == L"IPV4" || Buffer == L"ipv4")
 		return IPPROTO_IPV4;
-	else if (Buffer == _T("ST") || Buffer == _T("st"))
+	else if (Buffer == L"ST" || Buffer == L"st")
 		return IPPROTO_ST;
-	else if (Buffer == _T("TCP") || Buffer == _T("tcp"))
+	else if (Buffer == L"TCP" || Buffer == L"tcp")
 		return IPPROTO_TCP;
-	else if (Buffer == _T("CBT") || Buffer == _T("cbt"))
+	else if (Buffer == L"CBT" || Buffer == L"cbt")
 		return IPPROTO_CBT;
-	else if (Buffer == _T("EGP") || Buffer == _T("egp"))
+	else if (Buffer == L"EGP" || Buffer == L"egp")
 		return IPPROTO_EGP;
-	else if (Buffer == _T("IGP") || Buffer == _T("igp"))
+	else if (Buffer == L"IGP" || Buffer == L"igp")
 		return IPPROTO_IGP;
-	else if (Buffer == _T("BBNRCCMON") || Buffer == _T("bbnrccmon"))
+	else if (Buffer == L"BBNRCCMON" || Buffer == L"bbnrccmon")
 		return IPPROTO_BBN_RCC_MON;
-	else if (Buffer == _T("NVPII") || Buffer == _T("nvpii"))
+	else if (Buffer == L"NVPII" || Buffer == L"nvpii")
 		return IPPROTO_NVP_II;
-	else if (Buffer == _T("PUP") || Buffer == _T("pup"))
+	else if (Buffer == L"PUP" || Buffer == L"pup")
 		return IPPROTO_PUP;
-	else if (Buffer == _T("ARGUS") || Buffer == _T("argus"))
+	else if (Buffer == L"ARGUS" || Buffer == L"argus")
 		return IPPROTO_ARGUS;
-	else if (Buffer == _T("EMCON") || Buffer == _T("emcon"))
+	else if (Buffer == L"EMCON" || Buffer == L"emcon")
 		return IPPROTO_EMCON;
-	else if (Buffer == _T("XNET") || Buffer == _T("xnet"))
+	else if (Buffer == L"XNET" || Buffer == L"xnet")
 		return IPPROTO_XNET;
-	else if (Buffer == _T("CHAOS") || Buffer == _T("chaos"))
+	else if (Buffer == L"CHAOS" || Buffer == L"chaos")
 		return IPPROTO_CHAOS;
-	else if (Buffer == _T("UDP") || Buffer == _T("udp"))
+	else if (Buffer == L"UDP" || Buffer == L"udp")
 		return IPPROTO_UDP;
-	else if (Buffer == _T("MUX") || Buffer == _T("mux"))
+	else if (Buffer == L"MUX" || Buffer == L"mux")
 		return IPPROTO_MUX;
-	else if (Buffer == _T("DCN") || Buffer == _T("dcn"))
+	else if (Buffer == L"DCN" || Buffer == L"dcn")
 		return IPPROTO_DCN;
-	else if (Buffer == _T("HMP") || Buffer == _T("hmp"))
+	else if (Buffer == L"HMP" || Buffer == L"hmp")
 		return IPPROTO_HMP;
-	else if (Buffer == _T("PRM") || Buffer == _T("prm"))
+	else if (Buffer == L"PRM" || Buffer == L"prm")
 		return IPPROTO_PRM;
-	else if (Buffer == _T("IDP") || Buffer == _T("idp"))
+	else if (Buffer == L"IDP" || Buffer == L"idp")
 		return IPPROTO_IDP;
-	else if (Buffer == _T("TRUNK-1") || Buffer == _T("trunk-1"))
+	else if (Buffer == L"TRUNK-1" || Buffer == L"trunk-1")
 		return IPPROTO_TRUNK_1;
-	else if (Buffer == _T("TRUNK-2") || Buffer == _T("trunk-2"))
+	else if (Buffer == L"TRUNK-2" || Buffer == L"trunk-2")
 		return IPPROTO_TRUNK_2;
-	else if (Buffer == _T("LEAF-1") || Buffer == _T("leaf-1"))
+	else if (Buffer == L"LEAF-1" || Buffer == L"leaf-1")
 		return IPPROTO_LEAF_1;
-	else if (Buffer == _T("LEAF") || Buffer == _T("leaf-2"))
+	else if (Buffer == L"LEAF" || Buffer == L"leaf-2")
 		return IPPROTO_LEAF_2;
-	else if (Buffer == _T("RDP") || Buffer == _T("rdp"))
+	else if (Buffer == L"RDP" || Buffer == L"rdp")
 		return IPPROTO_RDP;
-	else if (Buffer == _T("IRTP") || Buffer == _T("irtp"))
+	else if (Buffer == L"IRTP" || Buffer == L"irtp")
 		return IPPROTO_IRTP;
-	else if (Buffer == _T("ISOTP4") || Buffer == _T("isotp4"))
+	else if (Buffer == L"ISOTP4" || Buffer == L"isotp4")
 		return IPPROTO_ISO_TP4;
-	else if (Buffer == _T("NETBLT") || Buffer == _T("netblt"))
+	else if (Buffer == L"NETBLT" || Buffer == L"netblt")
 		return IPPROTO_NETBLT;
-	else if (Buffer == _T("MFE") || Buffer == _T("mfe"))
+	else if (Buffer == L"MFE" || Buffer == L"mfe")
 		return IPPROTO_MFE;
-	else if (Buffer == _T("MERIT") || Buffer == _T("merit"))
+	else if (Buffer == L"MERIT" || Buffer == L"merit")
 		return IPPROTO_MERIT;
-	else if (Buffer == _T("DCCP") || Buffer == _T("dccp"))
+	else if (Buffer == L"DCCP" || Buffer == L"dccp")
 		return IPPROTO_DCCP;
-	else if (Buffer == _T("3PC") || Buffer == _T("3pc"))
+	else if (Buffer == L"3PC" || Buffer == L"3pc")
 		return IPPROTO_3PC;
-	else if (Buffer == _T("IDPR") || Buffer == _T("idpr"))
+	else if (Buffer == L"IDPR" || Buffer == L"idpr")
 		return IPPROTO_IDPR;
-	else if (Buffer == _T("XTP") || Buffer == _T("xtp"))
+	else if (Buffer == L"XTP" || Buffer == L"xtp")
 		return IPPROTO_XTP;
-	else if (Buffer == _T("DDP") || Buffer == _T("ddp"))
+	else if (Buffer == L"DDP" || Buffer == L"ddp")
 		return IPPROTO_DDP;
-	else if (Buffer == _T("IDPRCMTP") || Buffer == _T("idrpcmtp"))
+	else if (Buffer == L"IDPRCMTP" || Buffer == L"idrpcmtp")
 		return IPPROTO_IDPR_CMTP;
-	else if (Buffer == _T("TP++") || Buffer == _T("tp++"))
+	else if (Buffer == L"TP++" || Buffer == L"tp++")
 		return IPPROTO_TPPLUS;
-	else if (Buffer == _T("I_T(") || Buffer == _T("il"))
+	else if (Buffer == L"IL" || Buffer == L"il")
 		return IPPROTO_IL;
-	else if (Buffer == _T("IPV6") || Buffer == _T("ipv6"))
+	else if (Buffer == L"IPV6" || Buffer == L"ipv6")
 		return IPPROTO_IPV6;
-	else if (Buffer == _T("SDRP") || Buffer == _T("sdrp"))
+	else if (Buffer == L"SDRP" || Buffer == L"sdrp")
 		return IPPROTO_SDRP;
-	else if (Buffer == _T("ROUTING") || Buffer == _T("routing"))
+	else if (Buffer == L"ROUTING" || Buffer == L"routing")
 		return IPPROTO_ROUTING;
-	else if (Buffer == _T("FRAGMENT") || Buffer == _T("fragment"))
+	else if (Buffer == L"FRAGMENT" || Buffer == L"fragment")
 		return IPPROTO_FRAGMENT;
-	else if (Buffer == _T("IDRP") || Buffer == _T("idrp"))
+	else if (Buffer == L"IDRP" || Buffer == L"idrp")
 		return IPPROTO_IDRP;
-	else if (Buffer == _T("RSVP") || Buffer == _T("rsvp"))
+	else if (Buffer == L"RSVP" || Buffer == L"rsvp")
 		return IPPROTO_RSVP;
-	else if (Buffer == _T("GRE") || Buffer == _T("gre"))
+	else if (Buffer == L"GRE" || Buffer == L"gre")
 		return IPPROTO_GRE;
-	else if (Buffer == _T("DSR") || Buffer == _T("dsr"))
+	else if (Buffer == L"DSR" || Buffer == L"dsr")
 		return IPPROTO_DSR;
-	else if (Buffer == _T("BNA") || Buffer == _T("bna"))
+	else if (Buffer == L"BNA" || Buffer == L"bna")
 		return IPPROTO_BNA;
-	else if (Buffer == _T("ESP") || Buffer == _T("esp"))
+	else if (Buffer == L"ESP" || Buffer == L"esp")
 		return IPPROTO_ESP;
-	else if (Buffer == _T("AH") || Buffer == _T("ah"))
+	else if (Buffer == L"AH" || Buffer == L"ah")
 		return IPPROTO_AH;
-	else if (Buffer == _T("NLSP") || Buffer == _T("nlsp"))
+	else if (Buffer == L"NLSP" || Buffer == L"nlsp")
 		return IPPROTO_NLSP;
-	else if (Buffer == _T("SWIPE") || Buffer == _T("swipe"))
+	else if (Buffer == L"SWIPE" || Buffer == L"swipe")
 		return IPPROTO_SWIPE;
-	else if (Buffer == _T("NARP") || Buffer == _T("narp"))
+	else if (Buffer == L"NARP" || Buffer == L"narp")
 		return IPPROTO_NARP;
-	else if (Buffer == _T("MOBILE") || Buffer == _T("mobile"))
+	else if (Buffer == L"MOBILE" || Buffer == L"mobile")
 		return IPPROTO_MOBILE;
-	else if (Buffer == _T("TLSP") || Buffer == _T("tlsp"))
+	else if (Buffer == L"TLSP" || Buffer == L"tlsp")
 		return IPPROTO_TLSP;
-	else if (Buffer == _T("SKIP") || Buffer == _T("skip"))
+	else if (Buffer == L"SKIP" || Buffer == L"skip")
 		return IPPROTO_SKIP;
-	else if (Buffer == _T("ICMPV6") || Buffer == _T("icmpv6"))
+	else if (Buffer == L"ICMPV6" || Buffer == L"icmpv6")
 		return IPPROTO_ICMPV6;
-	else if (Buffer == _T("NONE") || Buffer == _T("none"))
+	else if (Buffer == L"NONE" || Buffer == L"none")
 		return IPPROTO_NONE;
-	else if (Buffer == _T("DSTOPTS") || Buffer == _T("dstopts"))
+	else if (Buffer == L"DSTOPTS" || Buffer == L"dstopts")
 		return IPPROTO_DSTOPTS;
-	else if (Buffer == _T("AHI") || Buffer == _T("ahi"))
+	else if (Buffer == L"AHI" || Buffer == L"ahi")
 		return IPPROTO_AHI;
-	else if (Buffer == _T("CFTP") || Buffer == _T("cftp"))
+	else if (Buffer == L"CFTP" || Buffer == L"cftp")
 		return IPPROTO_CFTP;
-	else if (Buffer == _T("ALN") || Buffer == _T("aln"))
+	else if (Buffer == L"ALN" || Buffer == L"aln")
 		return IPPROTO_ALN;
-	else if (Buffer == _T("SAT") || Buffer == _T("sat"))
+	else if (Buffer == L"SAT" || Buffer == L"sat")
 		return IPPROTO_SAT;
-	else if (Buffer == _T("KRYPTOLAN") || Buffer == _T("kryptolan"))
+	else if (Buffer == L"KRYPTOLAN" || Buffer == L"kryptolan")
 		return IPPROTO_KRYPTOLAN;
-	else if (Buffer == _T("RVD") || Buffer == _T("rvd"))
+	else if (Buffer == L"RVD" || Buffer == L"rvd")
 		return IPPROTO_RVD;
-	else if (Buffer == _T("IPPC") || Buffer == _T("ippc"))
+	else if (Buffer == L"IPPC" || Buffer == L"ippc")
 		return IPPROTO_IPPC;
-	else if (Buffer == _T("ADF") || Buffer == _T("adf"))
+	else if (Buffer == L"ADF" || Buffer == L"adf")
 		return IPPROTO_ADF;
-	else if (Buffer == _T("SATMON") || Buffer == _T("satmon"))
+	else if (Buffer == L"SATMON" || Buffer == L"satmon")
 		return IPPROTO_SAT_MON;
-	else if (Buffer == _T("VISA") || Buffer == _T("visa"))
+	else if (Buffer == L"VISA" || Buffer == L"visa")
 		return IPPROTO_VISA;
-	else if (Buffer == _T("IPCV") || Buffer == _T("ipcv"))
+	else if (Buffer == L"IPCV" || Buffer == L"ipcv")
 		return IPPROTO_IPCV;
-	else if (Buffer == _T("CPNX") || Buffer == _T("cpnx"))
+	else if (Buffer == L"CPNX" || Buffer == L"cpnx")
 		return IPPROTO_CPNX;
-	else if (Buffer == _T("CPHB") || Buffer == _T("cphb"))
+	else if (Buffer == L"CPHB" || Buffer == L"cphb")
 		return IPPROTO_CPHB;
-	else if (Buffer == _T("WSN") || Buffer == _T("wsn"))
+	else if (Buffer == L"WSN" || Buffer == L"wsn")
 		return IPPROTO_WSN;
-	else if (Buffer == _T("PVP") || Buffer == _T("pvp"))
+	else if (Buffer == L"PVP" || Buffer == L"pvp")
 		return IPPROTO_PVP;
-	else if (Buffer == _T("BR") || Buffer == _T("br"))
+	else if (Buffer == L"BR" || Buffer == L"br")
 		return IPPROTO_BR;
-	else if (Buffer == _T("ND") || Buffer == _T("nd"))
+	else if (Buffer == L"ND" || Buffer == L"nd")
 		return IPPROTO_ND;
-	else if (Buffer == _T("ICLFXBM") || Buffer == _T("iclfxbm"))
+	else if (Buffer == L"ICLFXBM" || Buffer == L"iclfxbm")
 		return IPPROTO_ICLFXBM;
-	else if (Buffer == _T("WBEXPAK") || Buffer == _T("wbexpak"))
+	else if (Buffer == L"WBEXPAK" || Buffer == L"wbexpak")
 		return IPPROTO_WBEXPAK;
-	else if (Buffer == _T("ISO") || Buffer == _T("iso"))
+	else if (Buffer == L"ISO" || Buffer == L"iso")
 		return IPPROTO_ISO;
-	else if (Buffer == _T("VMTP") || Buffer == _T("vmtp"))
+	else if (Buffer == L"VMTP" || Buffer == L"vmtp")
 		return IPPROTO_VMTP;
-	else if (Buffer == _T("SVMTP") || Buffer == _T("svmtp"))
+	else if (Buffer == L"SVMTP" || Buffer == L"svmtp")
 		return IPPROTO_SVMTP;
-	else if (Buffer == _T("VINES") || Buffer == _T("vines"))
+	else if (Buffer == L"VINES" || Buffer == L"vines")
 		return IPPROTO_VINES;
-	else if (Buffer == _T("TTP") || Buffer == _T("ttp"))
+	else if (Buffer == L"TTP" || Buffer == L"ttp")
 		return IPPROTO_TTP;
-	else if (Buffer == _T("IPTM") || Buffer == _T("iptm"))
+	else if (Buffer == L"IPTM" || Buffer == L"iptm")
 		return IPPROTO_IPTM;
-	else if (Buffer == _T("NSFNET") || Buffer == _T("nsfnet"))
+	else if (Buffer == L"NSFNET" || Buffer == L"nsfnet")
 		return IPPROTO_NSFNET;
-	else if (Buffer == _T("DGP") || Buffer == _T("dgp"))
+	else if (Buffer == L"DGP" || Buffer == L"dgp")
 		return IPPROTO_DGP;
-	else if (Buffer == _T("TCF") || Buffer == _T("tcf"))
+	else if (Buffer == L"TCF" || Buffer == L"tcf")
 		return IPPROTO_TCF;
-	else if (Buffer == _T("EIGRP") || Buffer == _T("eigrp"))
+	else if (Buffer == L"EIGRP" || Buffer == L"eigrp")
 		return IPPROTO_EIGRP;
-	else if (Buffer == _T("SPRITE") || Buffer == _T("sprite"))
+	else if (Buffer == L"SPRITE" || Buffer == L"sprite")
 		return IPPROTO_SPRITE;
-	else if (Buffer == _T("LARP") || Buffer == _T("larp"))
+	else if (Buffer == L"LARP" || Buffer == L"larp")
 		return IPPROTO_LARP;
-	else if (Buffer == _T("MTP") || Buffer == _T("mtp"))
+	else if (Buffer == L"MTP" || Buffer == L"mtp")
 		return IPPROTO_MTP;
-	else if (Buffer == _T("AX25") || Buffer == _T("ax25"))
+	else if (Buffer == L"AX25" || Buffer == L"ax25")
 		return IPPROTO_AX25;
-	else if (Buffer == _T("IPIP") || Buffer == _T("ipip"))
+	else if (Buffer == L"IPIP" || Buffer == L"ipip")
 		return IPPROTO_IPIP;
-	else if (Buffer == _T("MICP") || Buffer == _T("micp"))
+	else if (Buffer == L"MICP" || Buffer == L"micp")
 		return IPPROTO_MICP;
-	else if (Buffer == _T("SCC") || Buffer == _T("scc"))
+	else if (Buffer == L"SCC" || Buffer == L"scc")
 		return IPPROTO_SCC;
-	else if (Buffer == _T("ETHERIP") || Buffer == _T("etherip"))
+	else if (Buffer == L"ETHERIP" || Buffer == L"etherip")
 		return IPPROTO_ETHERIP;
-	else if (Buffer == _T("ENCAP") || Buffer == _T("encap"))
+	else if (Buffer == L"ENCAP" || Buffer == L"encap")
 		return IPPROTO_ENCAP;
-	else if (Buffer == _T("APES") || Buffer == _T("apes"))
+	else if (Buffer == L"APES" || Buffer == L"apes")
 		return IPPROTO_APES;
-	else if (Buffer == _T("GMTP") || Buffer == _T("gmtp"))
+	else if (Buffer == L"GMTP" || Buffer == L"gmtp")
 		return IPPROTO_GMTP;
-	else if (Buffer == _T("IFMP") || Buffer == _T("ifmp"))
+	else if (Buffer == L"IFMP" || Buffer == L"ifmp")
 		return IPPROTO_IFMP;
-	else if (Buffer == _T("PIM") || Buffer == _T("pim"))
+	else if (Buffer == L"PIM" || Buffer == L"pim")
 		return IPPROTO_PIM;
-	else if (Buffer == _T("PNNI") || Buffer == _T("pnni"))
+	else if (Buffer == L"PNNI" || Buffer == L"pnni")
 		return IPPROTO_PNNI;
-	else if (Buffer == _T("ARIS") || Buffer == _T("aris"))
+	else if (Buffer == L"ARIS" || Buffer == L"aris")
 		return IPPROTO_ARIS;
-	else if (Buffer == _T("SCPS") || Buffer == _T("scps"))
+	else if (Buffer == L"SCPS" || Buffer == L"scps")
 		return IPPROTO_SCPS;
-	else if (Buffer == _T("QNX") || Buffer == _T("qnx"))
+	else if (Buffer == L"QNX" || Buffer == L"qnx")
 		return IPPROTO_QNX;
-	else if (Buffer == _T("AN") || Buffer == _T("an"))
+	else if (Buffer == L"AN" || Buffer == L"an")
 		return IPPROTO_AN;
-	else if (Buffer == _T("IPCOMP") || Buffer == _T("ipcomp"))
+	else if (Buffer == L"IPCOMP" || Buffer == L"ipcomp")
 		return IPPROTO_IPCOMP;
-	else if (Buffer == _T("SNP") || Buffer == _T("snp"))
+	else if (Buffer == L"SNP" || Buffer == L"snp")
 		return IPPROTO_SNP;
-	else if (Buffer == _T("COMPAQ") || Buffer == _T("compaq"))
+	else if (Buffer == L"COMPAQ" || Buffer == L"compaq")
 		return IPPROTO_COMPAQ;
-	else if (Buffer == _T("IPX") || Buffer == _T("ipx"))
+	else if (Buffer == L"IPX" || Buffer == L"ipx")
 		return IPPROTO_IPX;
-	else if (Buffer == _T("PGM") || Buffer == _T("pgm"))
+	else if (Buffer == L"PGM" || Buffer == L"pgm")
 		return IPPROTO_PGM;
-	else if (Buffer == _T("0HOP") || Buffer == _T("0hop"))
+	else if (Buffer == L"0HOP" || Buffer == L"0hop")
 		return IPPROTO_0HOP;
-	else if (Buffer == _T("L2TP") || Buffer == _T("l2tp"))
+	else if (Buffer == L"L2TP" || Buffer == L"l2tp")
 		return IPPROTO_L2TP;
-	else if (Buffer == _T("DDX") || Buffer == _T("ddx"))
+	else if (Buffer == L"DDX" || Buffer == L"ddx")
 		return IPPROTO_DDX;
-	else if (Buffer == _T("IATP") || Buffer == _T("iatp"))
+	else if (Buffer == L"IATP" || Buffer == L"iatp")
 		return IPPROTO_IATP;
-	else if (Buffer == _T("STP") || Buffer == _T("stp"))
+	else if (Buffer == L"STP" || Buffer == L"stp")
 		return IPPROTO_STP;
-	else if (Buffer == _T("SRP") || Buffer == _T("srp"))
+	else if (Buffer == L"SRP" || Buffer == L"srp")
 		return IPPROTO_SRP;
-	else if (Buffer == _T("UTI") || Buffer == _T("uti"))
+	else if (Buffer == L"UTI" || Buffer == L"uti")
 		return IPPROTO_UTI;
-	else if (Buffer == _T("SMP") || Buffer == _T("smp"))
+	else if (Buffer == L"SMP" || Buffer == L"smp")
 		return IPPROTO_SMP;
-	else if (Buffer == _T("SM") || Buffer == _T("sm"))
+	else if (Buffer == L"SM" || Buffer == L"sm")
 		return IPPROTO_SM;
-	else if (Buffer == _T("PTP") || Buffer == _T("ptp"))
+	else if (Buffer == L"PTP" || Buffer == L"ptp")
 		return IPPROTO_PTP;
 
 //Internet Protocol Number(Part 2)
-	if (Buffer == _T("ISIS") || Buffer == _T("isis"))
+	if (Buffer == L"ISIS" || Buffer == L"isis")
 		return IPPROTO_ISIS;
-	else if (Buffer == _T("FIRE") || Buffer == _T("fire"))
+	else if (Buffer == L"FIRE" || Buffer == L"fire")
 		return IPPROTO_FIRE;
-	else if (Buffer == _T("CRTP") || Buffer == _T("crtp"))
+	else if (Buffer == L"CRTP" || Buffer == L"crtp")
 		return IPPROTO_CRTP;
-	else if (Buffer == _T("CRUDP") || Buffer == _T("crudp"))
+	else if (Buffer == L"CRUDP" || Buffer == L"crudp")
 		return IPPROTO_CRUDP;
-	else if (Buffer == _T("SSCOPMCE") || Buffer == _T("sscopmce"))
+	else if (Buffer == L"SSCOPMCE" || Buffer == L"sscopmce")
 		return IPPROTO_SSCOPMCE;
-	else if (Buffer == _T("IPLT") || Buffer == _T("iplt"))
+	else if (Buffer == L"IPLT" || Buffer == L"iplt")
 		return IPPROTO_IPLT;
-	else if (Buffer == _T("SPS") || Buffer == _T("sps"))
+	else if (Buffer == L"SPS" || Buffer == L"sps")
 		return IPPROTO_SPS;
-	else if (Buffer == _T("PIPE") || Buffer == _T("pipe"))
+	else if (Buffer == L"PIPE" || Buffer == L"pipe")
 		return IPPROTO_PIPE;
-	else if (Buffer == _T("SCTP") || Buffer == _T("sctp"))
+	else if (Buffer == L"SCTP" || Buffer == L"sctp")
 		return IPPROTO_SCTP;
-	else if (Buffer == _T("FC") || Buffer == _T("fc"))
+	else if (Buffer == L"FC" || Buffer == L"fc")
 		return IPPROTO_FC;
-	else if (Buffer == _T("RSVPE2E") || Buffer == _T("rsvpe2e"))
+	else if (Buffer == L"RSVPE2E" || Buffer == L"rsvpe2e")
 		return IPPROTO_RSVP_E2E;
-	else if (Buffer == _T("MOBILITY") || Buffer == _T("mobility"))
+	else if (Buffer == L"MOBILITY" || Buffer == L"mobility")
 		return IPPROTO_MOBILITY;
-	else if (Buffer == _T("UDPLITE") || Buffer == _T("udplite"))
+	else if (Buffer == L"UDPLITE" || Buffer == L"udplite")
 		return IPPROTO_UDPLITE;
-	else if (Buffer == _T("MPLS") || Buffer == _T("mpls"))
+	else if (Buffer == L"MPLS" || Buffer == L"mpls")
 		return IPPROTO_MPLS;
-	else if (Buffer == _T("MANET") || Buffer == _T("manet"))
+	else if (Buffer == L"MANET" || Buffer == L"manet")
 		return IPPROTO_MANET;
-	else if (Buffer == _T("HIP") || Buffer == _T("hip"))
+	else if (Buffer == L"HIP" || Buffer == L"hip")
 		return IPPROTO_HIP;
-	else if (Buffer == _T("SHIM6") || Buffer == _T("shim6"))
+	else if (Buffer == L"SHIM6" || Buffer == L"shim6")
 		return IPPROTO_SHIM6;
-	else if (Buffer == _T("WESP") || Buffer == _T("wesp"))
+	else if (Buffer == L"WESP" || Buffer == L"wesp")
 		return IPPROTO_WESP;
-	else if (Buffer == _T("ROHC") || Buffer == _T("rohc"))
+	else if (Buffer == L"ROHC" || Buffer == L"rohc")
 		return IPPROTO_ROHC;
-	else if (Buffer == _T("TEST-1") || Buffer == _T("test-1"))
+	else if (Buffer == L"TEST-1" || Buffer == L"test-1")
 		return IPPROTO_TEST_1;
-	else if (Buffer == _T("TEST-2") || Buffer == _T("test-2"))
+	else if (Buffer == L"TEST-2" || Buffer == L"test-2")
 		return IPPROTO_TEST_2;
-	else if (Buffer == _T("RAW") || Buffer == _T("raw"))
+	else if (Buffer == L"RAW" || Buffer == L"raw")
 		return IPPROTO_RAW;
 
 //No match.
@@ -488,394 +497,382 @@ uint16_t __fastcall InternetProtocolNameToPort(const std::string &Buffer)
 }
 
 //Convert service name to port
-#if defined(PLATFORM_WIN)
 uint16_t __fastcall ServiceNameToPort(const std::wstring &Buffer)
-#elif defined(PLATFORM_LINUX)
-uint16_t __fastcall ServiceNameToPort(const std::string &Buffer)
-#endif
 {
 //Server name
-	if (Buffer == _T("TCPMUX") || Buffer == _T("tcpmux"))
+	if (Buffer == L"TCPMUX" || Buffer == L"tcpmux")
 		return htons(IPPORT_TCPMUX);
-	else if (Buffer == _T("ECHO") || Buffer == _T("echo"))
+	else if (Buffer == L"ECHO" || Buffer == L"echo")
 		return htons(IPPORT_ECHO);
-	else if (Buffer == _T("DISCARD") || Buffer == _T("discard"))
+	else if (Buffer == L"DISCARD" || Buffer == L"discard")
 		return htons(IPPORT_DISCARD);
-	else if (Buffer == _T("SYSTAT") || Buffer == _T("systat"))
+	else if (Buffer == L"SYSTAT" || Buffer == L"systat")
 		return htons(IPPORT_SYSTAT);
-	else if (Buffer == _T("DAYTIME") || Buffer == _T("daytime"))
+	else if (Buffer == L"DAYTIME" || Buffer == L"daytime")
 		return htons(IPPORT_DAYTIME);
-	else if (Buffer == _T("NETSTAT") || Buffer == _T("netstat"))
+	else if (Buffer == L"NETSTAT" || Buffer == L"netstat")
 		return htons(IPPORT_NETSTAT);
-	else if (Buffer == _T("QOTD") || Buffer == _T("qotd"))
+	else if (Buffer == L"QOTD" || Buffer == L"qotd")
 		return htons(IPPORT_QOTD);
-	else if (Buffer == _T("MSP") || Buffer == _T("msp"))
+	else if (Buffer == L"MSP" || Buffer == L"msp")
 		return htons(IPPORT_MSP);
-	else if (Buffer == _T("CHARGEN") || Buffer == _T("chargen"))
+	else if (Buffer == L"CHARGEN" || Buffer == L"chargen")
 		return htons(IPPORT_CHARGEN);
-	else if (Buffer == _T("FTPDATA") || Buffer == _T("ftpdata"))
+	else if (Buffer == L"FTPDATA" || Buffer == L"ftpdata")
 		return htons(IPPORT_FTP_DATA);
-	else if (Buffer == _T("FTP") || Buffer == _T("ftp"))
+	else if (Buffer == L"FTP" || Buffer == L"ftp")
 		return htons(IPPORT_FTP);
-	else if (Buffer == _T("SSH") || Buffer == _T("ssh"))
+	else if (Buffer == L"SSH" || Buffer == L"ssh")
 		return htons(IPPORT_SSH);
-	else if (Buffer == _T("TELNET") || Buffer == _T("telnet"))
+	else if (Buffer == L"TELNET" || Buffer == L"telnet")
 		return htons(IPPORT_TELNET);
-	else if (Buffer == _T("SMTP") || Buffer == _T("smtp"))
+	else if (Buffer == L"SMTP" || Buffer == L"smtp")
 		return htons(IPPORT_SMTP);
-	else if (Buffer == _T("TIME") || Buffer == _T("time"))
+	else if (Buffer == L"TIME" || Buffer == L"time")
 		return htons(IPPORT_TIMESERVER);
-	else if (Buffer == _T("RAP") || Buffer == _T("rap"))
+	else if (Buffer == L"RAP" || Buffer == L"rap")
 		return htons(IPPORT_RAP);
-	else if (Buffer == _T("RLP") || Buffer == _T("rlp"))
+	else if (Buffer == L"RLP" || Buffer == L"rlp")
 		return htons(IPPORT_RLP);
-	else if (Buffer == _T("NAME") || Buffer == _T("name"))
+	else if (Buffer == L"NAME" || Buffer == L"name")
 		return htons(IPPORT_NAMESERVER);
-	else if (Buffer == _T("WHOIS") || Buffer == _T("whois"))
+	else if (Buffer == L"WHOIS" || Buffer == L"whois")
 		return htons(IPPORT_WHOIS);
-	else if (Buffer == _T("TACACS") || Buffer == _T("tacacs"))
+	else if (Buffer == L"TACACS" || Buffer == L"tacacs")
 		return htons(IPPORT_TACACS);
-	else if (Buffer == _T("DNS") || Buffer == _T("dns"))
+	else if (Buffer == L"DNS" || Buffer == L"dns")
 		return htons(IPPORT_DNS);
-	else if (Buffer == _T("XNSAUTH") || Buffer == _T("xnsauth"))
+	else if (Buffer == L"XNSAUTH" || Buffer == L"xnsauth")
 		return htons(IPPORT_XNSAUTH);
-	else if (Buffer == _T("MTP") || Buffer == _T("mtp"))
+	else if (Buffer == L"MTP" || Buffer == L"mtp")
 		return htons(IPPORT_MTP);
-	else if (Buffer == _T("BOOTPS") || Buffer == _T("bootps"))
+	else if (Buffer == L"BOOTPS" || Buffer == L"bootps")
 		return htons(IPPORT_BOOTPS);
-	else if (Buffer == _T("BOOTPC") || Buffer == _T("bootpc"))
+	else if (Buffer == L"BOOTPC" || Buffer == L"bootpc")
 		return htons(IPPORT_BOOTPC);
-	else if (Buffer == _T("TFTP") || Buffer == _T("tftp"))
+	else if (Buffer == L"TFTP" || Buffer == L"tftp")
 		return htons(IPPORT_TFTP);
-	else if (Buffer == _T("RJE") || Buffer == _T("rje"))
+	else if (Buffer == L"RJE" || Buffer == L"rje")
 		return htons(IPPORT_RJE);
-	else if (Buffer == _T("FINGER") || Buffer == _T("finger"))
+	else if (Buffer == L"FINGER" || Buffer == L"finger")
 		return htons(IPPORT_FINGER);
-	else if (Buffer == _T("HTTP") || Buffer == _T("http"))
+	else if (Buffer == L"HTTP" || Buffer == L"http")
 		return htons(IPPORT_HTTP);
-	else if (Buffer == _T("HTTPBACKUP") || Buffer == _T("httpbackup"))
+	else if (Buffer == L"HTTPBACKUP" || Buffer == L"httpbackup")
 		return htons(IPPORT_HTTPBACKUP);
-	else if (Buffer == _T("TTYLINK") || Buffer == _T("ttylink"))
+	else if (Buffer == L"TTYLINK" || Buffer == L"ttylink")
 		return htons(IPPORT_TTYLINK);
-	else if (Buffer == _T("SUPDUP") || Buffer == _T("supdup"))
+	else if (Buffer == L"SUPDUP" || Buffer == L"supdup")
 		return htons(IPPORT_SUPDUP);
-	else if (Buffer == _T("POP3") || Buffer == _T("pop3"))
+	else if (Buffer == L"POP3" || Buffer == L"pop3")
 		return htons(IPPORT_POP3);
-	else if (Buffer == _T("SUNRPC") || Buffer == _T("sunrpc"))
+	else if (Buffer == L"SUNRPC" || Buffer == L"sunrpc")
 		return htons(IPPORT_SUNRPC);
-	else if (Buffer == _T("SQ_T(") || Buffer == _T("sql"))
+	else if (Buffer == L"SQL" || Buffer == L"sql")
 		return htons(IPPORT_SQL);
-	else if (Buffer == _T("NTP") || Buffer == _T("ntp"))
+	else if (Buffer == L"NTP" || Buffer == L"ntp")
 		return htons(IPPORT_NTP);
-	else if (Buffer == _T("EPMAP") || Buffer == _T("epmap"))
+	else if (Buffer == L"EPMAP" || Buffer == L"epmap")
 		return htons(IPPORT_EPMAP);
-	else if (Buffer == _T("NETBIOSNS") || Buffer == _T("netbiosns"))
+	else if (Buffer == L"NETBIOSNS" || Buffer == L"netbiosns")
 		return htons(IPPORT_NETBIOS_NS);
-	else if (Buffer == _T("NETBIOSDGM") || Buffer == _T("netbiosdgm"))
+	else if (Buffer == L"NETBIOSDGM" || Buffer == L"netbiosdgm")
 		return htons(IPPORT_NETBIOS_DGM);
-	else if (Buffer == _T("NETBIOSSSN") || Buffer == _T("netbiosssn"))
+	else if (Buffer == L"NETBIOSSSN" || Buffer == L"netbiosssn")
 		return htons(IPPORT_NETBIOS_SSN);
-	else if (Buffer == _T("IMAP") || Buffer == _T("imap"))
+	else if (Buffer == L"IMAP" || Buffer == L"imap")
 		return htons(IPPORT_IMAP);
-	else if (Buffer == _T("BFTP") || Buffer == _T("bftp"))
+	else if (Buffer == L"BFTP" || Buffer == L"bftp")
 		return htons(IPPORT_BFTP);
-	else if (Buffer == _T("SGMP") || Buffer == _T("sgmp"))
+	else if (Buffer == L"SGMP" || Buffer == L"sgmp")
 		return htons(IPPORT_SGMP);
-	else if (Buffer == _T("SQLSRV") || Buffer == _T("sqlsrv"))
+	else if (Buffer == L"SQLSRV" || Buffer == L"sqlsrv")
 		return htons(IPPORT_SQLSRV);
-	else if (Buffer == _T("DMSP") || Buffer == _T("dmsp"))
+	else if (Buffer == L"DMSP" || Buffer == L"dmsp")
 		return htons(IPPORT_DMSP);
-	else if (Buffer == _T("SNMP") || Buffer == _T("snmp"))
+	else if (Buffer == L"SNMP" || Buffer == L"snmp")
 		return htons(IPPORT_SNMP);
-	else if (Buffer == _T("SNMPTRAP") || Buffer == _T("snmptrap"))
+	else if (Buffer == L"SNMPTRAP" || Buffer == L"snmptrap")
 		return htons(IPPORT_SNMP_TRAP);
-	else if (Buffer == _T("ATRTMP") || Buffer == _T("atrtmp"))
+	else if (Buffer == L"ATRTMP" || Buffer == L"atrtmp")
 		return htons(IPPORT_ATRTMP);
-	else if (Buffer == _T("ATHBP") || Buffer == _T("athbp"))
+	else if (Buffer == L"ATHBP" || Buffer == L"athbp")
 		return htons(IPPORT_ATHBP);
-	else if (Buffer == _T("QMTP") || Buffer == _T("qmtp"))
+	else if (Buffer == L"QMTP" || Buffer == L"qmtp")
 		return htons(IPPORT_QMTP);
-	else if (Buffer == _T("IPX") || Buffer == _T("ipx"))
+	else if (Buffer == L"IPX" || Buffer == L"ipx")
 		return htons(IPPORT_IPX);
-	else if (Buffer == _T("IMAP3") || Buffer == _T("imap3"))
+	else if (Buffer == L"IMAP3" || Buffer == L"imap3")
 		return htons(IPPORT_IMAP3);
-	else if (Buffer == _T("BGMP") || Buffer == _T("bgmp"))
+	else if (Buffer == L"BGMP" || Buffer == L"bgmp")
 		return htons(IPPORT_BGMP);
-	else if (Buffer == _T("TSP") || Buffer == _T("tsp"))
+	else if (Buffer == L"TSP" || Buffer == L"tsp")
 		return htons(IPPORT_TSP);
-	else if (Buffer == _T("IMMP") || Buffer == _T("immp"))
+	else if (Buffer == L"IMMP" || Buffer == L"immp")
 		return htons(IPPORT_IMMP);
-	else if (Buffer == _T("ODMR") || Buffer == _T("odmr"))
+	else if (Buffer == L"ODMR" || Buffer == L"odmr")
 		return htons(IPPORT_ODMR);
-	else if (Buffer == _T("RPC2PORTMAP") || Buffer == _T("rpc2portmap"))
+	else if (Buffer == L"RPC2PORTMAP" || Buffer == L"rpc2portmap")
 		return htons(IPPORT_RPC2PORTMAP);
-	else if (Buffer == _T("CLEARCASE") || Buffer == _T("clearcase"))
+	else if (Buffer == L"CLEARCASE" || Buffer == L"clearcase")
 		return htons(IPPORT_CLEARCASE);
-	else if (Buffer == _T("HPALARMMGR") || Buffer == _T("hpalarmmgr"))
+	else if (Buffer == L"HPALARMMGR" || Buffer == L"hpalarmmgr")
 		return htons(IPPORT_HPALARMMGR);
-	else if (Buffer == _T("ARNS") || Buffer == _T("arns"))
+	else if (Buffer == L"ARNS" || Buffer == L"arns")
 		return htons(IPPORT_ARNS);
-	else if (Buffer == _T("AURP") || Buffer == _T("aurp"))
+	else if (Buffer == L"AURP" || Buffer == L"aurp")
 		return htons(IPPORT_AURP);
-	else if (Buffer == _T("LDAP") || Buffer == _T("ldap"))
+	else if (Buffer == L"LDAP" || Buffer == L"ldap")
 		return htons(IPPORT_LDAP);
-	else if (Buffer == _T("UPS") || Buffer == _T("ups"))
+	else if (Buffer == L"UPS" || Buffer == L"ups")
 		return htons(IPPORT_UPS);
-	else if (Buffer == _T("SLP") || Buffer == _T("slp"))
+	else if (Buffer == L"SLP" || Buffer == L"slp")
 		return htons(IPPORT_SLP);
-	else if (Buffer == _T("HTTPS") || Buffer == _T("https"))
+	else if (Buffer == L"HTTPS" || Buffer == L"https")
 		return htons(IPPORT_HTTPS);
-	else if (Buffer == _T("SNPP") || Buffer == _T("snpp"))
+	else if (Buffer == L"SNPP" || Buffer == L"snpp")
 		return htons(IPPORT_SNPP);
-	else if (Buffer == _T("MICROSOFTDS") || Buffer == _T("microsoftds"))
+	else if (Buffer == L"MICROSOFTDS" || Buffer == L"microsoftds")
 		return htons(IPPORT_MICROSOFT_DS);
-	else if (Buffer == _T("KPASSWD") || Buffer == _T("kpasswd"))
+	else if (Buffer == L"KPASSWD" || Buffer == L"kpasswd")
 		return htons(IPPORT_KPASSWD);
-	else if (Buffer == _T("TCPNETHASPSRV") || Buffer == _T("tcpnethaspsrv"))
+	else if (Buffer == L"TCPNETHASPSRV" || Buffer == L"tcpnethaspsrv")
 		return htons(IPPORT_TCPNETHASPSRV);
-	else if (Buffer == _T("RETROSPECT") || Buffer == _T("retrospect"))
+	else if (Buffer == L"RETROSPECT" || Buffer == L"retrospect")
 		return htons(IPPORT_RETROSPECT);
-	else if (Buffer == _T("ISAKMP") || Buffer == _T("isakmp"))
+	else if (Buffer == L"ISAKMP" || Buffer == L"isakmp")
 		return htons(IPPORT_ISAKMP);
-	else if (Buffer == _T("BIFFUDP") || Buffer == _T("biffudp"))
+	else if (Buffer == L"BIFFUDP" || Buffer == L"biffudp")
 		return htons(IPPORT_BIFFUDP);
-	else if (Buffer == _T("WHOSERVER") || Buffer == _T("whoserver"))
+	else if (Buffer == L"WHOSERVER" || Buffer == L"whoserver")
 		return htons(IPPORT_WHOSERVER);
-	else if (Buffer == _T("SYSLOG") || Buffer == _T("syslog"))
+	else if (Buffer == L"SYSLOG" || Buffer == L"syslog")
 		return htons(IPPORT_SYSLOG);
-	else if (Buffer == _T("ROUTERSERVER") || Buffer == _T("routerserver"))
+	else if (Buffer == L"ROUTERSERVER" || Buffer == L"routerserver")
 		return htons(IPPORT_ROUTESERVER);
-	else if (Buffer == _T("NCP") || Buffer == _T("ncp"))
+	else if (Buffer == L"NCP" || Buffer == L"ncp")
 		return htons(IPPORT_NCP);
-	else if (Buffer == _T("COURIER") || Buffer == _T("courier"))
+	else if (Buffer == L"COURIER" || Buffer == L"courier")
 		return htons(IPPORT_COURIER);
-	else if (Buffer == _T("COMMERCE") || Buffer == _T("commerce"))
+	else if (Buffer == L"COMMERCE" || Buffer == L"commerce")
 		return htons(IPPORT_COMMERCE);
-	else if (Buffer == _T("RTSP") || Buffer == _T("rtsp"))
+	else if (Buffer == L"RTSP" || Buffer == L"rtsp")
 		return htons(IPPORT_RTSP);
-	else if (Buffer == _T("NNTP") || Buffer == _T("nntp"))
+	else if (Buffer == L"NNTP" || Buffer == L"nntp")
 		return htons(IPPORT_NNTP);
-	else if (Buffer == _T("HTTPRPCEPMAP") || Buffer == _T("httprpcepmap"))
+	else if (Buffer == L"HTTPRPCEPMAP" || Buffer == L"httprpcepmap")
 		return htons(IPPORT_HTTPRPCEPMAP);
-	else if (Buffer == _T("IPP") || Buffer == _T("ipp"))
+	else if (Buffer == L"IPP" || Buffer == L"ipp")
 		return htons(IPPORT_IPP);
-	else if (Buffer == _T("LDAPS") || Buffer == _T("ldaps"))
+	else if (Buffer == L"LDAPS" || Buffer == L"ldaps")
 		return htons(IPPORT_LDAPS);
-	else if (Buffer == _T("MSDP") || Buffer == _T("msdp"))
+	else if (Buffer == L"MSDP" || Buffer == L"msdp")
 		return htons(IPPORT_MSDP);
-	else if (Buffer == _T("AODV") || Buffer == _T("aodv"))
+	else if (Buffer == L"AODV" || Buffer == L"aodv")
 		return htons(IPPORT_AODV);
-	else if (Buffer == _T("FTPSDATA") || Buffer == _T("ftpsdata"))
+	else if (Buffer == L"FTPSDATA" || Buffer == L"ftpsdata")
 		return htons(IPPORT_FTPSDATA);
-	else if (Buffer == _T("FTPS") || Buffer == _T("ftps"))
+	else if (Buffer == L"FTPS" || Buffer == L"ftps")
 		return htons(IPPORT_FTPS);
-	else if (Buffer == _T("NAS") || Buffer == _T("nas"))
+	else if (Buffer == L"NAS" || Buffer == L"nas")
 		return htons(IPPORT_NAS);
-	else if (Buffer == _T("TELNETS") || Buffer == _T("telnets"))
+	else if (Buffer == L"TELNETS" || Buffer == L"telnets")
 		return htons(IPPORT_TELNETS);
 //No match.
 	return 0;
 }
 
 //Convert DNS classes name to hex
-#if defined(PLATFORM_WIN)
 uint16_t __fastcall DNSClassesNameToHex(const std::wstring &Buffer)
-#elif defined(PLATFORM_LINUX)
-uint16_t __fastcall DNSClassesNameToHex(const std::string &Buffer)
-#endif
 {
 //DNS classes name
-	if (Buffer == _T("INTERNET") || Buffer == _T("internet") || Buffer == _T("IN") || Buffer == _T("in"))
+	if (Buffer == L"INTERNET" || Buffer == L"internet" || Buffer == L"IN" || Buffer == L"in")
 		return htons(DNS_CLASS_IN);
-	else if (Buffer == _T("CSNET") || Buffer == _T("csnet"))
+	else if (Buffer == L"CSNET" || Buffer == L"csnet")
 		return htons(DNS_CLASS_CSNET);
-	else if (Buffer == _T("CHAOS") || Buffer == _T("chaos"))
+	else if (Buffer == L"CHAOS" || Buffer == L"chaos")
 		return htons(DNS_CLASS_CHAOS);
-	else if (Buffer == _T("HESIOD") || Buffer == _T("hesiod"))
+	else if (Buffer == L"HESIOD" || Buffer == L"hesiod")
 		return htons(DNS_CLASS_HESIOD);
-	else if (Buffer == _T("NONE") || Buffer == _T("none"))
+	else if (Buffer == L"NONE" || Buffer == L"none")
 		return htons(DNS_CLASS_NONE);
-	else if (Buffer == _T("AL_T(") || Buffer == _T("all"))
+	else if (Buffer == L"ALL" || Buffer == L"all")
 		return htons(DNS_CLASS_ALL);
-	else if (Buffer == _T("ANY") || Buffer == _T("any"))
+	else if (Buffer == L"ANY" || Buffer == L"any")
 		return htons(DNS_CLASS_ANY);
 //No match.
 	return 0;
 }
 
 //Convert DNS type name to hex
-#if defined(PLATFORM_WIN)
 uint16_t __fastcall DNSTypeNameToHex(const std::wstring &Buffer)
-#elif defined(PLATFORM_LINUX)
-uint16_t __fastcall DNSTypeNameToHex(const std::string &Buffer)
-#endif
 {
 //DNS type name
-	if (Buffer == _T("A") || Buffer == _T("a"))
+	if (Buffer == L"A" || Buffer == L"a")
 		return htons(DNS_RECORD_A);
-	else if (Buffer == _T("NS") || Buffer == _T("ns"))
+	else if (Buffer == L"NS" || Buffer == L"ns")
 		return htons(DNS_RECORD_NS);
-	else if (Buffer == _T("MD") || Buffer == _T("md"))
+	else if (Buffer == L"MD" || Buffer == L"md")
 		return htons(DNS_RECORD_MD);
-	else if (Buffer == _T("MF") || Buffer == _T("mf"))
+	else if (Buffer == L"MF" || Buffer == L"mf")
 		return htons(DNS_RECORD_MF);
-	else if (Buffer == _T("CNAME") || Buffer == _T("cname"))
+	else if (Buffer == L"CNAME" || Buffer == L"cname")
 		return htons(DNS_RECORD_CNAME);
-	else if (Buffer == _T("SOA") || Buffer == _T("soa"))
+	else if (Buffer == L"SOA" || Buffer == L"soa")
 		return htons(DNS_RECORD_SOA);
-	else if (Buffer == _T("MB") || Buffer == _T("mb"))
+	else if (Buffer == L"MB" || Buffer == L"mb")
 		return htons(DNS_RECORD_MB);
-	else if (Buffer == _T("MG") || Buffer == _T("mg"))
+	else if (Buffer == L"MG" || Buffer == L"mg")
 		return htons(DNS_RECORD_MG);
-	else if (Buffer == _T("MR") || Buffer == _T("mr"))
+	else if (Buffer == L"MR" || Buffer == L"mr")
 		return htons(DNS_RECORD_MR);
-	else if (Buffer == _T("PTR") || Buffer == _T("ptr"))
+	else if (Buffer == L"PTR" || Buffer == L"ptr")
 		return htons(DNS_RECORD_PTR);
-	else if (Buffer == _T("NUL_T(") || Buffer == _T("null"))
+	else if (Buffer == L"NULL" || Buffer == L"null")
 		return htons(DNS_RECORD_NULL);
-	else if (Buffer == _T("WKS") || Buffer == _T("wks"))
+	else if (Buffer == L"WKS" || Buffer == L"wks")
 		return htons(DNS_RECORD_WKS);
-	else if (Buffer == _T("HINFO") || Buffer == _T("hinfo"))
+	else if (Buffer == L"HINFO" || Buffer == L"hinfo")
 		return htons(DNS_RECORD_HINFO);
-	else if (Buffer == _T("MINFO") || Buffer == _T("minfo"))
+	else if (Buffer == L"MINFO" || Buffer == L"minfo")
 		return htons(DNS_RECORD_MINFO);
-	else if (Buffer == _T("MX") || Buffer == _T("mx"))
+	else if (Buffer == L"MX" || Buffer == L"mx")
 		return htons(DNS_RECORD_MX);
-	else if (Buffer == _T("TXT") || Buffer == _T("txt"))
+	else if (Buffer == L"TXT" || Buffer == L"txt")
 		return htons(DNS_RECORD_TXT);
-	else if (Buffer == _T("RP") || Buffer == _T("rp"))
+	else if (Buffer == L"RP" || Buffer == L"rp")
 		return htons(DNS_RECORD_RP);
-	else if (Buffer == _T("SIG") || Buffer == _T("sig"))
+	else if (Buffer == L"SIG" || Buffer == L"sig")
 		return htons(DNS_RECORD_SIG);
-	else if (Buffer == _T("AFSDB") || Buffer == _T("afsdb"))
+	else if (Buffer == L"AFSDB" || Buffer == L"afsdb")
 		return htons(DNS_RECORD_AFSDB);
-	else if (Buffer == _T("X25") || Buffer == _T("x25"))
+	else if (Buffer == L"X25" || Buffer == L"x25")
 		return htons(DNS_RECORD_X25);
-	else if (Buffer == _T("ISDN") || Buffer == _T("isdn"))
+	else if (Buffer == L"ISDN" || Buffer == L"isdn")
 		return htons(DNS_RECORD_ISDN);
-	else if (Buffer == _T("RT") || Buffer == _T("rt"))
+	else if (Buffer == L"RT" || Buffer == L"rt")
 		return htons(DNS_RECORD_RT);
-	else if (Buffer == _T("NSAP") || Buffer == _T("nsap"))
+	else if (Buffer == L"NSAP" || Buffer == L"nsap")
 		return htons(DNS_RECORD_NSAP);
-	else if (Buffer == _T("NSAPPTR") || Buffer == _T("nsapptr"))
+	else if (Buffer == L"NSAPPTR" || Buffer == L"nsapptr")
 		return htons(DNS_RECORD_NSAP_PTR);
-	else if (Buffer == _T("SIG") || Buffer == _T("sig"))
+	else if (Buffer == L"SIG" || Buffer == L"sig")
 		return htons(DNS_RECORD_SIG);
-	else if (Buffer == _T("KEY") || Buffer == _T("key"))
+	else if (Buffer == L"KEY" || Buffer == L"key")
 		return htons(DNS_RECORD_KEY);
-	else if (Buffer == _T("AAAA") || Buffer == _T("aaaa"))
+	else if (Buffer == L"AAAA" || Buffer == L"aaaa")
 		return htons(DNS_RECORD_AAAA);
-	else if (Buffer == _T("PX") || Buffer == _T("px"))
+	else if (Buffer == L"PX" || Buffer == L"px")
 		return htons(DNS_RECORD_PX);
-	else if (Buffer == _T("GPOS") || Buffer == _T("gpos"))
+	else if (Buffer == L"GPOS" || Buffer == L"gpos")
 		return htons(DNS_RECORD_GPOS);
-	else if (Buffer == _T("LOC") || Buffer == _T("loc"))
+	else if (Buffer == L"LOC" || Buffer == L"loc")
 		return htons(DNS_RECORD_LOC);
-	else if (Buffer == _T("NXT") || Buffer == _T("nxt"))
+	else if (Buffer == L"NXT" || Buffer == L"nxt")
 		return htons(DNS_RECORD_NXT);
-	else if (Buffer == _T("EID") || Buffer == _T("eid"))
+	else if (Buffer == L"EID" || Buffer == L"eid")
 		return htons(DNS_RECORD_EID);
-	else if (Buffer == _T("NIMLOC") || Buffer == _T("nimloc"))
+	else if (Buffer == L"NIMLOC" || Buffer == L"nimloc")
 		return htons(DNS_RECORD_NIMLOC);
-	else if (Buffer == _T("SRV") || Buffer == _T("srv"))
+	else if (Buffer == L"SRV" || Buffer == L"srv")
 		return htons(DNS_RECORD_SRV);
-	else if (Buffer == _T("ATMA") || Buffer == _T("atma"))
+	else if (Buffer == L"ATMA" || Buffer == L"atma")
 		return htons(DNS_RECORD_ATMA);
-	else if (Buffer == _T("NAPTR") || Buffer == _T("naptr"))
+	else if (Buffer == L"NAPTR" || Buffer == L"naptr")
 		return htons(DNS_RECORD_NAPTR);
-	else if (Buffer == _T("KX") || Buffer == _T("kx"))
+	else if (Buffer == L"KX" || Buffer == L"kx")
 		return htons(DNS_RECORD_KX);
-	else if (Buffer == _T("CERT") || Buffer == _T("cert"))
+	else if (Buffer == L"CERT" || Buffer == L"cert")
 		return htons(DNS_RECORD_CERT);
-	else if (Buffer == _T("A6") || Buffer == _T("a6"))
+	else if (Buffer == L"A6" || Buffer == L"a6")
 		return htons(DNS_RECORD_A6);
-	else if (Buffer == _T("DNAME") || Buffer == _T("dname"))
+	else if (Buffer == L"DNAME" || Buffer == L"dname")
 		return htons(DNS_RECORD_DNAME);
-	else if (Buffer == _T("SINK") || Buffer == _T("sink"))
+	else if (Buffer == L"SINK" || Buffer == L"sink")
 		return htons(DNS_RECORD_SINK);
-	else if (Buffer == _T("OPT") || Buffer == _T("opt"))
+	else if (Buffer == L"OPT" || Buffer == L"opt")
 		return htons(DNS_RECORD_OPT);
-	else if (Buffer == _T("AP_T(") || Buffer == _T("apl"))
+	else if (Buffer == L"APL" || Buffer == L"apl")
 		return htons(DNS_RECORD_APL);
-	else if (Buffer == _T("DS") || Buffer == _T("ds"))
+	else if (Buffer == L"DS" || Buffer == L"ds")
 		return htons(DNS_RECORD_DS);
-	else if (Buffer == _T("SSHFP") || Buffer == _T("sshfp"))
+	else if (Buffer == L"SSHFP" || Buffer == L"sshfp")
 		return htons(DNS_RECORD_SSHFP);
-	else if (Buffer == _T("IPSECKEY") || Buffer == _T("ipseckey"))
+	else if (Buffer == L"IPSECKEY" || Buffer == L"ipseckey")
 		return htons(DNS_RECORD_IPSECKEY);
-	else if (Buffer == _T("RRSIG") || Buffer == _T("rrsig"))
+	else if (Buffer == L"RRSIG" || Buffer == L"rrsig")
 		return htons(DNS_RECORD_RRSIG);
-	else if (Buffer == _T("NSEC") || Buffer == _T("nsec"))
+	else if (Buffer == L"NSEC" || Buffer == L"nsec")
 		return htons(DNS_RECORD_NSEC);
-	else if (Buffer == _T("DNSKEY") || Buffer == _T("dnskey"))
+	else if (Buffer == L"DNSKEY" || Buffer == L"dnskey")
 		return htons(DNS_RECORD_DNSKEY);
-	else if (Buffer == _T("DHCID") || Buffer == _T("dhcid"))
+	else if (Buffer == L"DHCID" || Buffer == L"dhcid")
 		return htons(DNS_RECORD_DHCID);
-	else if (Buffer == _T("NSEC3") || Buffer == _T("nsec3"))
+	else if (Buffer == L"NSEC3" || Buffer == L"nsec3")
 		return htons(DNS_RECORD_NSEC3);
-	else if (Buffer == _T("NSEC3PARAM") || Buffer == _T("nsec3param"))
+	else if (Buffer == L"NSEC3PARAM" || Buffer == L"nsec3param")
 		return htons(DNS_RECORD_NSEC3PARAM);
-	else if (Buffer == _T("TLSA") || Buffer == _T("tlsa"))
+	else if (Buffer == L"TLSA" || Buffer == L"tlsa")
 		return htons(DNS_RECORD_TLSA);
-	else if (Buffer == _T("HIP") || Buffer == _T("hip"))
+	else if (Buffer == L"HIP" || Buffer == L"hip")
 		return htons(DNS_RECORD_HIP);
-	else if (Buffer == _T("HINFO") || Buffer == _T("hinfo"))
+	else if (Buffer == L"HINFO" || Buffer == L"hinfo")
 		return htons(DNS_RECORD_HINFO);
-	else if (Buffer == _T("RKEY") || Buffer == _T("rkey"))
+	else if (Buffer == L"RKEY" || Buffer == L"rkey")
 		return htons(DNS_RECORD_RKEY);
-	else if (Buffer == _T("TALINK") || Buffer == _T("talink"))
+	else if (Buffer == L"TALINK" || Buffer == L"talink")
 		return htons(DNS_RECORD_TALINK);
-	else if (Buffer == _T("CDS") || Buffer == _T("cds"))
+	else if (Buffer == L"CDS" || Buffer == L"cds")
 		return htons(DNS_RECORD_CDS);
-	else if (Buffer == _T("CDNSKEY") || Buffer == _T("cdnskey"))
+	else if (Buffer == L"CDNSKEY" || Buffer == L"cdnskey")
 		return htons(DNS_RECORD_CDNSKEY);
-	else if (Buffer == _T("OPENPGPKEY") || Buffer == _T("openpgpkey"))
+	else if (Buffer == L"OPENPGPKEY" || Buffer == L"openpgpkey")
 		return htons(DNS_RECORD_OPENPGPKEY);
-	else if (Buffer == _T("SPF") || Buffer == _T("spf"))
+	else if (Buffer == L"SPF" || Buffer == L"spf")
 		return htons(DNS_RECORD_SPF);
-	else if (Buffer == _T("UINFO") || Buffer == _T("uinfo"))
+	else if (Buffer == L"UINFO" || Buffer == L"uinfo")
 		return htons(DNS_RECORD_UINFO);
-	else if (Buffer == _T("UID") || Buffer == _T("uid"))
+	else if (Buffer == L"UID" || Buffer == L"uid")
 		return htons(DNS_RECORD_UID);
-	else if (Buffer == _T("GID") || Buffer == _T("gid"))
+	else if (Buffer == L"GID" || Buffer == L"gid")
 		return htons(DNS_RECORD_GID);
-	else if (Buffer == _T("UNSPEC") || Buffer == _T("unspec"))
+	else if (Buffer == L"UNSPEC" || Buffer == L"unspec")
 		return htons(DNS_RECORD_UNSPEC);
-	else if (Buffer == _T("NID") || Buffer == _T("nid"))
+	else if (Buffer == L"NID" || Buffer == L"nid")
 		return htons(DNS_RECORD_NID);
-	else if (Buffer == _T("L32") || Buffer == _T("l32"))
+	else if (Buffer == L"L32" || Buffer == L"l32")
 		return htons(DNS_RECORD_L32);
-	else if (Buffer == _T("L64") || Buffer == _T("l64"))
+	else if (Buffer == L"L64" || Buffer == L"l64")
 		return htons(DNS_RECORD_L64);
-	else if (Buffer == _T("LP") || Buffer == _T("lp"))
+	else if (Buffer == L"LP" || Buffer == L"lp")
 		return htons(DNS_RECORD_LP);
-	else if (Buffer == _T("EUI48") || Buffer == _T("eui48"))
+	else if (Buffer == L"EUI48" || Buffer == L"eui48")
 		return htons(DNS_RECORD_EUI48);
-	else if (Buffer == _T("EUI64") || Buffer == _T("eui64"))
+	else if (Buffer == L"EUI64" || Buffer == L"eui64")
 		return htons(DNS_RECORD_EUI64);
-	else if (Buffer == _T("TKEY") || Buffer == _T("tkey"))
+	else if (Buffer == L"TKEY" || Buffer == L"tkey")
 		return htons(DNS_RECORD_TKEY);
-	else if (Buffer == _T("TSIG") || Buffer == _T("tsig"))
+	else if (Buffer == L"TSIG" || Buffer == L"tsig")
 		return htons(DNS_RECORD_TSIG);
-	else if (Buffer == _T("IXFR") || Buffer == _T("ixfr"))
+	else if (Buffer == L"IXFR" || Buffer == L"ixfr")
 		return htons(DNS_RECORD_IXFR);
-	else if (Buffer == _T("AXFR") || Buffer == _T("axfr"))
+	else if (Buffer == L"AXFR" || Buffer == L"axfr")
 		return htons(DNS_RECORD_AXFR);
-	else if (Buffer == _T("MAILB") || Buffer == _T("mailb"))
+	else if (Buffer == L"MAILB" || Buffer == L"mailb")
 		return htons(DNS_RECORD_MAILB);
-	else if (Buffer == _T("MAILA") || Buffer == _T("maila"))
+	else if (Buffer == L"MAILA" || Buffer == L"maila")
 		return htons(DNS_RECORD_MAILA);
-	else if (Buffer == _T("ANY") || Buffer == _T("any"))
+	else if (Buffer == L"ANY" || Buffer == L"any")
 		return htons(DNS_RECORD_ANY);
-	else if (Buffer == _T("URI") || Buffer == _T("uri"))
+	else if (Buffer == L"URI" || Buffer == L"uri")
 		return htons(DNS_RECORD_URI);
-	else if (Buffer == _T("CAA") || Buffer == _T("caa"))
+	else if (Buffer == L"CAA" || Buffer == L"caa")
 		return htons(DNS_RECORD_CAA);
-	else if (Buffer == _T("TA") || Buffer == _T("ta"))
+	else if (Buffer == L"TA" || Buffer == L"ta")
 		return htons(DNS_RECORD_TA);
-	else if (Buffer == _T("DLV") || Buffer == _T("dlv"))
+	else if (Buffer == L"DLV" || Buffer == L"dlv")
 		return htons(DNS_RECORD_DLV);
-	else if (Buffer == _T("RESERVED") || Buffer == _T("reserved"))
+	else if (Buffer == L"RESERVED" || Buffer == L"reserved")
 		return htons(DNS_RECORD_RESERVED);
 //No match.
 	return 0;
@@ -991,14 +988,14 @@ void __fastcall PrintSecondsInDateTime(const time_t Seconds)
 //Initialization
 	auto Before = false;
 	auto DateTime = Seconds;
-	wprintf_s(_T("("));
+	wprintf_s(L"(");
 
 //Years
 	if (DateTime / SECONDS_IN_YEAR > 0)
 	{
-		wprintf_s(_T("%u year"), (UINT)(DateTime / SECONDS_IN_YEAR));
+		wprintf_s(L"%u year", (UINT)(DateTime / SECONDS_IN_YEAR));
 		if (DateTime / SECONDS_IN_YEAR > 1U)
-			wprintf_s(_T("s"));
+			wprintf_s(L"s");
 		DateTime %= SECONDS_IN_YEAR;
 		Before = true;
 	}
@@ -1006,10 +1003,10 @@ void __fastcall PrintSecondsInDateTime(const time_t Seconds)
 	if (DateTime / SECONDS_IN_MONTH > 0)
 	{
 		if (Before)
-			wprintf_s(_T(" "));
-		wprintf_s(_T("%u month"), (UINT)(DateTime / SECONDS_IN_MONTH));
+			wprintf_s(L" ");
+		wprintf_s(L"%u month", (UINT)(DateTime / SECONDS_IN_MONTH));
 		if (DateTime / SECONDS_IN_MONTH > 1U)
-			wprintf_s(_T("s"));
+			wprintf_s(L"s");
 		DateTime %= SECONDS_IN_MONTH;
 		Before = true;
 	}
@@ -1017,10 +1014,10 @@ void __fastcall PrintSecondsInDateTime(const time_t Seconds)
 	if (DateTime / SECONDS_IN_DAY > 0)
 	{
 		if (Before)
-			wprintf_s(_T(" "));
-		wprintf_s(_T("%u day"), (UINT)(DateTime / SECONDS_IN_DAY));
+			wprintf_s(L" ");
+		wprintf_s(L"%u day", (UINT)(DateTime / SECONDS_IN_DAY));
 		if (DateTime / SECONDS_IN_DAY > 1U)
-			wprintf_s(_T("s"));
+			wprintf_s(L"s");
 		DateTime %= SECONDS_IN_DAY;
 		Before = true;
 	}
@@ -1028,10 +1025,10 @@ void __fastcall PrintSecondsInDateTime(const time_t Seconds)
 	if (DateTime / SECONDS_IN_HOUR > 0)
 	{
 		if (Before)
-			wprintf_s(_T(" "));
-		wprintf_s(_T("%u hour"), (UINT)(DateTime / SECONDS_IN_HOUR));
+			wprintf_s(L" ");
+		wprintf_s(L"%u hour", (UINT)(DateTime / SECONDS_IN_HOUR));
 		if (DateTime / SECONDS_IN_HOUR > 1U)
-			wprintf_s(_T("s"));
+			wprintf_s(L"s");
 		DateTime %= SECONDS_IN_HOUR;
 		Before = true;
 	}
@@ -1039,10 +1036,10 @@ void __fastcall PrintSecondsInDateTime(const time_t Seconds)
 	if (DateTime / SECONDS_IN_MINUTE > 0)
 	{
 		if (Before)
-			wprintf_s(_T(" "));
-		wprintf_s(_T("%u minute"), (UINT)(DateTime / SECONDS_IN_MINUTE));
+			wprintf_s(L" ");
+		wprintf_s(L"%u minute", (UINT)(DateTime / SECONDS_IN_MINUTE));
 		if (DateTime / SECONDS_IN_MINUTE > 1U)
-			wprintf_s(_T("s"));
+			wprintf_s(L"s");
 		DateTime %= SECONDS_IN_MINUTE;
 		Before = true;
 	}
@@ -1050,13 +1047,13 @@ void __fastcall PrintSecondsInDateTime(const time_t Seconds)
 	if (DateTime > 0)
 	{
 		if (Before)
-			wprintf_s(_T(" "));
-		wprintf_s(_T("%u second"), (UINT)(DateTime));
+			wprintf_s(L" ");
+		wprintf_s(L"%u second", (UINT)(DateTime));
 		if (DateTime > 1U)
-			wprintf_s(_T("s"));
+			wprintf_s(L"s");
 	}
 
-	wprintf_s(_T("))"));
+	wprintf_s(L")");
 	return;
 }
 
@@ -1070,14 +1067,14 @@ void __fastcall PrintSecondsInDateTime(const time_t Seconds, FILE *OutputFile)
 //Initialization
 	auto Before = false;
 	auto DateTime = Seconds;
-	fwprintf_s(OutputFile, _T("("));
+	fwprintf_s(OutputFile, L"(");
 
 //Years
 	if (DateTime / SECONDS_IN_YEAR > 0)
 	{
-		fwprintf_s(OutputFile, _T("%u year"), (UINT)(DateTime / SECONDS_IN_YEAR));
+		fwprintf_s(OutputFile, L"%u year", (UINT)(DateTime / SECONDS_IN_YEAR));
 		if (DateTime / SECONDS_IN_YEAR > 1U)
-			fwprintf_s(OutputFile, _T("s"));
+			fwprintf_s(OutputFile, L"s");
 		DateTime %= SECONDS_IN_YEAR;
 		Before = true;
 	}
@@ -1085,10 +1082,10 @@ void __fastcall PrintSecondsInDateTime(const time_t Seconds, FILE *OutputFile)
 	if (DateTime / SECONDS_IN_MONTH > 0)
 	{
 		if (Before)
-			fwprintf_s(OutputFile, _T(" "));
-		fwprintf_s(OutputFile, _T("%u month"), (UINT)(DateTime / SECONDS_IN_MONTH));
+			fwprintf_s(OutputFile, L" ");
+		fwprintf_s(OutputFile, L"%u month", (UINT)(DateTime / SECONDS_IN_MONTH));
 		if (DateTime / SECONDS_IN_MONTH > 1U)
-			fwprintf_s(OutputFile, _T("s"));
+			fwprintf_s(OutputFile, L"s");
 		DateTime %= SECONDS_IN_MONTH;
 		Before = true;
 	}
@@ -1096,10 +1093,10 @@ void __fastcall PrintSecondsInDateTime(const time_t Seconds, FILE *OutputFile)
 	if (DateTime / SECONDS_IN_DAY > 0)
 	{
 		if (Before)
-			fwprintf_s(OutputFile, _T(" "));
-		fwprintf_s(OutputFile, _T("%u day"), (UINT)(DateTime / SECONDS_IN_DAY));
+			fwprintf_s(OutputFile, L" ");
+		fwprintf_s(OutputFile, L"%u day", (UINT)(DateTime / SECONDS_IN_DAY));
 		if (DateTime / SECONDS_IN_DAY > 1U)
-			fwprintf_s(OutputFile, _T("s"));
+			fwprintf_s(OutputFile, L"s");
 		DateTime %= SECONDS_IN_DAY;
 		Before = true;
 	}
@@ -1107,10 +1104,10 @@ void __fastcall PrintSecondsInDateTime(const time_t Seconds, FILE *OutputFile)
 	if (DateTime / SECONDS_IN_HOUR > 0)
 	{
 		if (Before)
-			fwprintf_s(OutputFile, _T(" "));
-		fwprintf_s(OutputFile, _T("%u hour"), (UINT)(DateTime / SECONDS_IN_HOUR));
+			fwprintf_s(OutputFile, L" ");
+		fwprintf_s(OutputFile, L"%u hour", (UINT)(DateTime / SECONDS_IN_HOUR));
 		if (DateTime / SECONDS_IN_HOUR > 1U)
-			fwprintf_s(OutputFile, _T("s"));
+			fwprintf_s(OutputFile, L"s");
 		DateTime %= SECONDS_IN_HOUR;
 		Before = true;
 	}
@@ -1118,10 +1115,10 @@ void __fastcall PrintSecondsInDateTime(const time_t Seconds, FILE *OutputFile)
 	if (DateTime / SECONDS_IN_MINUTE > 0)
 	{
 		if (Before)
-			fwprintf_s(OutputFile, _T(" "));
-		fwprintf_s(OutputFile, _T("%u minute"), (UINT)(DateTime / SECONDS_IN_MINUTE));
+			fwprintf_s(OutputFile, L" ");
+		fwprintf_s(OutputFile, L"%u minute", (UINT)(DateTime / SECONDS_IN_MINUTE));
 		if (DateTime / SECONDS_IN_MINUTE > 1U)
-			fwprintf_s(OutputFile, _T("s"));
+			fwprintf_s(OutputFile, L"s");
 		DateTime %= SECONDS_IN_MINUTE;
 		Before = true;
 	}
@@ -1129,13 +1126,13 @@ void __fastcall PrintSecondsInDateTime(const time_t Seconds, FILE *OutputFile)
 	if (DateTime > 0)
 	{
 		if (Before)
-			fwprintf_s(OutputFile, _T(" "));
-		fwprintf_s(OutputFile, _T("%u second"), (UINT)(DateTime));
+			fwprintf_s(OutputFile, L" ");
+		fwprintf_s(OutputFile, L"%u second", (UINT)(DateTime));
 		if (DateTime > 1U)
-			fwprintf_s(OutputFile, _T("s"));
+			fwprintf_s(OutputFile, L"s");
 	}
 
-	fwprintf_s(OutputFile, _T("))"));
+	fwprintf_s(OutputFile, L")");
 	return;
 }
 
@@ -1143,8 +1140,9 @@ void __fastcall PrintSecondsInDateTime(const time_t Seconds, FILE *OutputFile)
 void __fastcall PrintDateTime(const time_t Time)
 {
 	std::shared_ptr<tm> TimeStructure(new tm());
+	memset(TimeStructure.get(), 0, sizeof(tm));
 	localtime_s(TimeStructure.get(), &Time);
-	wprintf_s(_T("%d-%02d-%02d %02d:%02d:%02d"), TimeStructure->tm_year + 1900, TimeStructure->tm_mon + 1, TimeStructure->tm_mday, TimeStructure->tm_hour, TimeStructure->tm_min, TimeStructure->tm_sec);
+	wprintf_s(L"%d-%02d-%02d %02d:%02d:%02d", TimeStructure->tm_year + 1900, TimeStructure->tm_mon + 1, TimeStructure->tm_mday, TimeStructure->tm_hour, TimeStructure->tm_min, TimeStructure->tm_sec);
 
 	return;
 }
@@ -1153,8 +1151,9 @@ void __fastcall PrintDateTime(const time_t Time)
 void __fastcall PrintDateTime(const time_t Time, FILE *OutputFile)
 {
 	std::shared_ptr<tm> TimeStructure(new tm());
+	memset(TimeStructure.get(), 0, sizeof(tm));
 	localtime_s(TimeStructure.get(), &Time);
-	fwprintf_s(OutputFile, _T("%d-%02d-%02d %02d:%02d:%02d"), TimeStructure->tm_year + 1900, TimeStructure->tm_mon + 1, TimeStructure->tm_mday, TimeStructure->tm_hour, TimeStructure->tm_min, TimeStructure->tm_sec);
+	fwprintf_s(OutputFile, L"%d-%02d-%02d %02d:%02d:%02d", TimeStructure->tm_year + 1900, TimeStructure->tm_mon + 1, TimeStructure->tm_mday, TimeStructure->tm_hour, TimeStructure->tm_min, TimeStructure->tm_sec);
 
 	return;
 }

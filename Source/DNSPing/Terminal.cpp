@@ -1,7 +1,7 @@
 ﻿// This code is part of DNSPing
 // Ping with DNS requesting.
 // Copyright (C) 2014-2015 Chengr28
-//
+// 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either
@@ -23,7 +23,7 @@
 //Handle the system signal.
 	void SIG_Handler(const int Signal)
 	{
-		printf("Get signal to stop.\n");
+		wprintf_s(L"Get closing signal.\n");
 		PrintProcess(true, true);
 
 	//Close file handle.

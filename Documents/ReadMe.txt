@@ -7,6 +7,7 @@
 
 ### Usage
        DNSPing [Options] Test_DomainName Target
+  e.g. DNSPing -a -qt AAAA -n 5 -w 500 -edns0 www.google.com 8.8.4.4
 
 
 ### Options

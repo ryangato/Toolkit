@@ -1,7 +1,7 @@
 ﻿// This code is part of DNSPing
 // Ping with DNS requesting.
 // Copyright (C) 2014-2015 Chengr28
-//
+// 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either
@@ -168,15 +168,14 @@
 //////////////////////////////////////////////////
 // Base header
 // 
-//C Standard Library Headers
-#include <ctime>                   //Date&Time
+//C Standard Library and C++ Standard Template Library/STL Headers
+#include <ctime>
 #if defined(PLATFORM_LINUX)
-	#include <cstring>                //C-Style string
+	#include <cstdlib>
+	#include <cstring>
 #endif
-
-//C++ Standard Template Library/STL Headers
-#include <memory>                  //Manage dynamic memory support
-#include <string>                  //String support
+#include <string>
+#include <memory>
 
 #if defined(PLATFORM_WIN)
 //Windows API Headers
@@ -1107,15 +1106,11 @@ typedef struct _dns_caa_
 // Function defines
 #if defined(PLATFORM_LINUX)
 	#define __fastcall
-	#define _T(String)                              String
-	#define wTargetString                           TargetString
-	#define wTestDomain                             TestDomain
-	#define wTargetDomainString                     TargetDomainString
 	#define strnlen_s                               strnlen
+	#define wcsnlen_s                               wcsnlen
 	#define memcpy_s(Dst, DstSize, Src, Size)       memcpy(Dst, Src, Size)
-	#define wprintf_s                               printf
-	#define fwprintf_s                              fprintf
-	#define wcstol                                  strtol
+	#define wprintf_s                               wprintf
+	#define fwprintf_s                              fwprintf
 	#define GetLastError()                          errno
 	#define WSAGetLastError()                       GetLastError()
 	#define WSACleanup()
@@ -1158,6 +1153,7 @@ typedef struct _dns_caa_
 #define SECONDS_IN_HOUR              3600U       //3600 seconds in an hour
 #define SECONDS_IN_MINUTE            60U         //60 seconds in a minute
 #define DOMAIN_MAXSIZE               256U        //Maximum size of whole level domain is 256 bytes(Section 2.3.1 in RFC 1035).
+#define DOMAIN_MINSIZE               2U          //Minimum size of whole level domain is 3 bytes(Section 2.3.1 in RFC 1035).
 
 //Protocol.cpp
 //Minimum supported system of Windows Version Helpers is Windows Vista.
@@ -1166,19 +1162,15 @@ typedef struct _dns_caa_
 #endif
 
 bool __fastcall CheckEmptyBuffer(const void *Buffer, const size_t Length);
+#if defined(PLATFORM_LINUX)
+	void MBSToWCSString(std::wstring &Target, const char *Buffer);
+#endif
 size_t __fastcall CaseConvert(const bool IsLowerUpper, const PSTR Buffer, const size_t Length);
 size_t __fastcall AddressStringToBinary(const PSTR AddrString, void *pAddr, const uint16_t Protocol, SSIZE_T &ErrCode);
-#if defined(PLATFORM_WIN)
-	uint16_t __fastcall InternetProtocolNameToPort(const std::wstring &Buffer);
-	uint16_t __fastcall ServiceNameToPort(const std::wstring &Buffer);
-	uint16_t __fastcall DNSClassesNameToHex(const std::wstring &Buffer);
-	uint16_t __fastcall DNSTypeNameToHex(const std::wstring &Buffer);
-#elif defined(PLATFORM_LINUX)
-	uint16_t __fastcall InternetProtocolNameToPort(const std::string &Buffer);
-	uint16_t __fastcall ServiceNameToPort(const std::string &Buffer);
-	uint16_t __fastcall DNSClassesNameToHex(const std::string &Buffer);
-	uint16_t __fastcall DNSTypeNameToHex(const std::string &Buffer);
-#endif
+uint16_t __fastcall InternetProtocolNameToPort(const std::wstring &Buffer);
+uint16_t __fastcall ServiceNameToPort(const std::wstring &Buffer);
+uint16_t __fastcall DNSClassesNameToHex(const std::wstring &Buffer);
+uint16_t __fastcall DNSTypeNameToHex(const std::wstring &Buffer);
 size_t __fastcall CharToDNSQuery(const PSTR FName, PSTR TName);
 size_t __fastcall DNSQueryToChar(const PSTR TName, PSTR FName, uint16_t &Truncated);
 bool __fastcall ValidatePacket(const PSTR Buffer, const size_t Length, const uint16_t DNS_ID);
@@ -1200,7 +1192,7 @@ void __fastcall PrintResponse(const PSTR Buffer, const size_t Length, FILE *Outp
 
 //Console.cpp
 #if defined(PLATFORM_WIN)
-	BOOL __fastcall CtrlHandler(const DWORD &fdwCtrlType);
+	BOOL __fastcall CtrlHandler(const DWORD fdwCtrlType);
 #elif defined(PLATFORM_LINUX)
 	void SIG_Handler(const int Signal);
 #endif

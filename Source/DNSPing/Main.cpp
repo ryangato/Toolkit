@@ -1,7 +1,7 @@
 ﻿// This code is part of DNSPing
 // Ping with DNS requesting.
 // Copyright (C) 2014-2015 Chengr28
-//
+// 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either
@@ -21,9 +21,9 @@
 
 //Main function of program
 #if defined(PLATFORM_WIN)
-int wmain(int argc, wchar_t* argv[])
+	int wmain(int argc, wchar_t* argv[])
 #elif defined(PLATFORM_LINUX)
-int main(int argc, char *argv[])
+	int main(int argc, char *argv[])
 #endif
 {
 #if defined(PLATFORM_WIN)
@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
 //Handle the system signal.
 	if (signal(SIGHUP, SIG_Handler) == SIG_ERR || signal(SIGINT, SIG_Handler) == SIG_ERR || signal(SIGQUIT, SIG_Handler) == SIG_ERR || signal(SIGTERM, SIG_Handler) == SIG_ERR)
 	{
-		printf("Handle the system signal error, error code is %d.\n", errno);
+		wprintf_s(L"Handle the system signal error, error code is %d.\n", errno);
 		return EXIT_FAILURE;
 	}
 #endif
@@ -55,57 +55,61 @@ int main(int argc, char *argv[])
 //Main
 	if (argc > 2)
 	{
-	#if defined(PLATFORM_WIN)
 		std::wstring Parameter;
-	#elif defined(PLATFORM_LINUX)
-		std::string Parameter;
-	#endif
 		SSIZE_T Result = 0;
 
 	//Read parameter
 		auto ReverseLookup = false;
 		for (size_t Index = 1U;Index < (size_t)argc;++Index)
 		{
+		#if defined(PLATFORM_WIN)
 			Parameter = argv[Index];
+		#elif defined(PLATFORM_LINUX)
+			MBSToWCSString(Parameter, argv[Index]);
+		#endif
 			Result = 0;
 
 		//Description(Usage)
-			if (Parameter.find(_T("?")) != std::string::npos || Parameter == _T("-H") || Parameter == _T("-h"))
+			if (Parameter.find(L"?") != std::string::npos || Parameter == L"-H" || Parameter == L"-h")
 			{
 				PrintDescription();
 			}
 		//Pings the specified host until stopped. To see statistics and continue type Control-Break. To stop type Control-C.
-			else if (Parameter == _T("-t"))
+			else if (Parameter == L"-t")
 			{
 				SendNum = 0;
 			}
 		//Resolve addresses to host names.
-			else if (Parameter == _T("-a"))
+			else if (Parameter == L"-a")
 			{
 				ReverseLookup = true;
 			}
 		//Set number of echo requests to send.
-			else if (Parameter == _T("-n"))
+			else if (Parameter == L"-n")
 			{
 				if (Index + 1U < (size_t)argc)
 				{
 					++Index;
+				#if defined(PLATFORM_WIN)
 					Parameter = argv[Index];
+				#elif defined(PLATFORM_LINUX)
+					MBSToWCSString(Parameter, argv[Index]);
+				#endif
 
-					Result = wcstol(Parameter.c_str(), nullptr, 0);
+					Result = wcstoul(Parameter.c_str(), nullptr, 0);
 					if (Result > 0 && Result <= UINT16_MAX)
 					{
 						SendNum = Result;
 					}
 					else {
-						wprintf_s(_T("\nParameter [-n Count] error.\n"));
+						wprintf_s(L"\nParameter [-n Count] error.\n");
 
 						WSACleanup();
 						return EXIT_FAILURE;
 					}
 				}
 				else {
-					wprintf_s(_T("\nNot enough parameters error.\n"));
+					wprintf_s(L"\nNot enough parameters error.\n");
 
 					WSACleanup();
 					return EXIT_FAILURE;
@@ -120,41 +124,49 @@ int main(int argc, char *argv[])
 			}
 		#endif
 		//Specifie a Time To Live for outgoing packets.
-			else if (Parameter == _T("-i"))
+			else if (Parameter == L"-i")
 			{
 				if (Index + 1U < (size_t)argc)
 				{
 					++Index;
+				#if defined(PLATFORM_WIN)
 					Parameter = argv[Index];
+				#elif defined(PLATFORM_LINUX)
+					MBSToWCSString(Parameter, argv[Index]);
+				#endif
 
-					Result = wcstol(Parameter.c_str(), nullptr, 0);
+					Result = wcstoul(Parameter.c_str(), nullptr, 0);
 					if (Result > 0 && Result <= UINT8_MAX)
 					{
 						IP_HopLimits = (int)Result;
 					}
 					else {
-						wprintf_s(_T("\nParameter [-i HopLimit/TTL] error.\n"));
+						wprintf_s(L"\nParameter [-i HopLimit/TTL] error.\n");
 
 						WSACleanup();
 						return EXIT_FAILURE;
 					}
 				}
 				else {
-					wprintf_s(_T("\nNot enough parameters error.\n"));
+					wprintf_s(L"\nNot enough parameters error.\n");
 
 					WSACleanup();
 					return EXIT_FAILURE;
 				}
 			}
 		//Set a long wait periods (in milliseconds) for a response.
-			else if (Parameter == _T("-w"))
+			else if (Parameter == L"-w")
 			{
 				if (Index + 1U < (size_t)argc)
 				{
 					++Index;
+				#if defined(PLATFORM_WIN)
 					Parameter = argv[Index];
+				#elif defined(PLATFORM_LINUX)
+					MBSToWCSString(Parameter, argv[Index]);
+				#endif
 
-					Result = wcstol(Parameter.c_str(), nullptr, 0);
+					Result = wcstoul(Parameter.c_str(), nullptr, 0);
 					if (Result >= TIME_OUT_MIN && Result < UINT16_MAX)
 					{
 					#if defined(PLATFORM_WIN)
@@ -165,60 +177,68 @@ int main(int argc, char *argv[])
 					#endif
 					}
 					else {
-						wprintf_s(_T("\nParameter [-w Timeout] error.\n"));
+						wprintf_s(L"\nParameter [-w Timeout] error.\n");
 
 						WSACleanup();
 						return EXIT_FAILURE;
 					}
 				}
 				else {
-					wprintf_s(_T("\nNot enough parameters error.\n"));
+					wprintf_s(L"\nNot enough parameters error.\n");
 
 					WSACleanup();
 					return EXIT_FAILURE;
 				}
 			}
 		//Specifie DNS header ID.
-			else if (Parameter == _T("-ID") || Parameter == _T("-id"))
+			else if (Parameter == L"-ID" || Parameter == L"-id")
 			{
 				if (Index + 1U < (size_t)argc)
 				{
 					++Index;
+				#if defined(PLATFORM_WIN)
 					Parameter = argv[Index];
+				#elif defined(PLATFORM_LINUX)
+					MBSToWCSString(Parameter, argv[Index]);
+				#endif
 
-					Result = wcstol(Parameter.c_str(), nullptr, 0);
+					Result = wcstoul(Parameter.c_str(), nullptr, 0);
 					if (Result > 0 && Result <= UINT16_MAX)
 					{
 						HeaderParameter.ID = htons((uint16_t)Result);
 					}
 					else {
-						wprintf_s(_T("\nParameter [-id DNS_ID] error.\n"));
+						wprintf_s(L"\nParameter [-id DNS_ID] error.\n");
 
 						WSACleanup();
 						return EXIT_FAILURE;
 					}
 				}
 				else {
-					wprintf_s(_T("\nNot enough parameters error.\n"));
+					wprintf_s(L"\nNot enough parameters error.\n");
 
 					WSACleanup();
 					return EXIT_FAILURE;
 				}
 			}
 		//Set DNS header flag: QR
-			else if (Parameter == _T("-QR") || Parameter == _T("-qr"))
+			else if (Parameter == L"-QR" || Parameter == L"-qr")
 			{
 				HeaderParameter.FlagsBits.QR = ~HeaderParameter.FlagsBits.QR;
 			}
 		//Specifie DNS header OPCode.
-			else if (Parameter == _T("-OPCode") || Parameter == _T("-opcode"))
+			else if (Parameter == L"-OPCode" || Parameter == L"-opcode")
 			{
 				if (Index + 1U < (size_t)argc)
 				{
 					++Index;
+				#if defined(PLATFORM_WIN)
 					Parameter = argv[Index];
+				#elif defined(PLATFORM_LINUX)
+					MBSToWCSString(Parameter, argv[Index]);
+				#endif
 
-					Result = wcstol(Parameter.c_str(), nullptr, 0);
+					Result = wcstoul(Parameter.c_str(), nullptr, 0);
 					if (Result > 0 && Result <= UINT4_MAX)
 					{
 					#if __BYTE_ORDER == __LITTLE_ENDIAN
@@ -232,58 +252,62 @@ int main(int argc, char *argv[])
 					#endif
 					}
 					else {
-						wprintf_s(_T("\nParameter [-opcode OPCode] error.\n"));
+						wprintf_s(L"\nParameter [-opcode OPCode] error.\n");
 
 						WSACleanup();
 						return EXIT_FAILURE;
 					}
 				}
 				else {
-					wprintf_s(_T("\nNot enough parameters error.\n"));
+					wprintf_s(L"\nNot enough parameters error.\n");
 
 					WSACleanup();
 					return EXIT_FAILURE;
 				}
 			}
 		//Set DNS header flag: AA
-			else if (Parameter == _T("-AA") || Parameter == _T("-aa"))
+			else if (Parameter == L"-AA" || Parameter == L"-aa")
 			{
 				HeaderParameter.FlagsBits.AA = ~HeaderParameter.FlagsBits.AA;
 			}
 		//Set DNS header flag: TC
-			else if (Parameter == _T("-TC") || Parameter == _T("-tc"))
+			else if (Parameter == L"-TC" || Parameter == L"-tc")
 			{
 				HeaderParameter.FlagsBits.TC = ~HeaderParameter.FlagsBits.TC;
 			}
 		//Set DNS header flag: RD
-			else if (Parameter == _T("-RD") || Parameter == _T("-rd"))
+			else if (Parameter == L"-RD" || Parameter == L"-rd")
 			{
 				HeaderParameter.FlagsBits.RD = ~HeaderParameter.FlagsBits.RD;
 			}
 		//Set DNS header flag: RA
-			else if (Parameter == _T("-RA") || Parameter == _T("-ra"))
+			else if (Parameter == L"-RA" || Parameter == L"-ra")
 			{
 				HeaderParameter.FlagsBits.RA = ~HeaderParameter.FlagsBits.RA;
 			}
 		//Set DNS header flag: AD
-			else if (Parameter == _T("-AD") || Parameter == _T("-ad"))
+			else if (Parameter == L"-AD" || Parameter == L"-ad")
 			{
 				HeaderParameter.FlagsBits.AD = ~HeaderParameter.FlagsBits.AD;
 			}
 		//Set DNS header flag: CD
-			else if (Parameter == _T("-CD") || Parameter == _T("-cd"))
+			else if (Parameter == L"-CD" || Parameter == L"-cd")
 			{
 				HeaderParameter.FlagsBits.CD = ~HeaderParameter.FlagsBits.CD;
 			}
 		//Specifie DNS header RCode.
-			else if (Parameter == _T("-RCode") || Parameter == _T("-rcode"))
+			else if (Parameter == L"-RCode" || Parameter == L"-rcode")
 			{
 				if (Index + 1U < (size_t)argc)
 				{
 					++Index;
+				#if defined(PLATFORM_WIN)
 					Parameter = argv[Index];
+				#elif defined(PLATFORM_LINUX)
+					MBSToWCSString(Parameter, argv[Index]);
+				#endif
 
-					Result = wcstol(Parameter.c_str(), nullptr, 0);
+					Result = wcstoul(Parameter.c_str(), nullptr, 0);
 					if (Result > 0 && Result <= UINT4_MAX)
 					{
 					#if __BYTE_ORDER == __LITTLE_ENDIAN
@@ -297,181 +321,209 @@ int main(int argc, char *argv[])
 					#endif
 					}
 					else {
-						wprintf_s(_T("\nParameter [-rcode RCode] error.\n"));
+						wprintf_s(L"\nParameter [-rcode RCode] error.\n");
 
 						WSACleanup();
 						return EXIT_FAILURE;
 					}
 				}
 				else {
-					wprintf_s(_T("\nNot enough parameters error.\n"));
+					wprintf_s(L"\nNot enough parameters error.\n");
 
 					WSACleanup();
 					return EXIT_FAILURE;
 				}
 			}
 		//Specifie DNS header question count.
-			else if (Parameter == _T("-QN") || Parameter == _T("-qn"))
+			else if (Parameter == L"-QN" || Parameter == L"-qn")
 			{
 				if (Index + 1U < (size_t)argc)
 				{
 					++Index;
+				#if defined(PLATFORM_WIN)
 					Parameter = argv[Index];
+				#elif defined(PLATFORM_LINUX)
+					MBSToWCSString(Parameter, argv[Index]);
+				#endif
 
-					Result = wcstol(Parameter.c_str(), nullptr, 0);
+					Result = wcstoul(Parameter.c_str(), nullptr, 0);
 					if (Result > 0 && Result <= UINT16_MAX)
 					{
 						HeaderParameter.Questions = htons((uint16_t)Result);
 					}
 					else {
-						wprintf_s(_T("\nParameter [-qn Count] error.\n"));
+						wprintf_s(L"\nParameter [-qn Count] error.\n");
 
 						WSACleanup();
 						return EXIT_FAILURE;
 					}
 				}
 				else {
-					wprintf_s(_T("\nNot enough parameters error.\n"));
+					wprintf_s(L"\nNot enough parameters error.\n");
 
 					WSACleanup();
 					return EXIT_FAILURE;
 				}
 			}
 		//Specifie DNS header Answer count.
-			else if (Parameter == _T("-ANN") || Parameter == _T("-ann"))
+			else if (Parameter == L"-ANN" || Parameter == L"-ann")
 			{
 				if (Index + 1U < (size_t)argc)
 				{
 					++Index;
+				#if defined(PLATFORM_WIN)
 					Parameter = argv[Index];
+				#elif defined(PLATFORM_LINUX)
+					MBSToWCSString(Parameter, argv[Index]);
+				#endif
 
-					Result = wcstol(Parameter.c_str(), nullptr, 0);
+					Result = wcstoul(Parameter.c_str(), nullptr, 0);
 					if (Result > 0 && Result <= UINT16_MAX)
 					{
 						HeaderParameter.Answer = htons((uint16_t)Result);
 					}
 					else {
-						wprintf_s(_T("\nParameter [-ann Count] error.\n"));
+						wprintf_s(L"\nParameter [-ann Count] error.\n");
 
 						WSACleanup();
 						return EXIT_FAILURE;
 					}
 				}
 				else {
-					wprintf_s(_T("\nNot enough parameters error.\n"));
+					wprintf_s(L"\nNot enough parameters error.\n");
 
 					WSACleanup();
 					return EXIT_FAILURE;
 				}
 			}
 		//Specifie DNS header Authority count.
-			else if (Parameter == _T("-AUN") || Parameter == _T("-aun"))
+			else if (Parameter == L"-AUN" || Parameter == L"-aun")
 			{
 				if (Index + 1U < (size_t)argc)
 				{
 					++Index;
+				#if defined(PLATFORM_WIN)
 					Parameter = argv[Index];
+				#elif defined(PLATFORM_LINUX)
+					MBSToWCSString(Parameter, argv[Index]);
+				#endif
 
-					Result = wcstol(Parameter.c_str(), nullptr, 0);
+					Result = wcstoul(Parameter.c_str(), nullptr, 0);
 					if (Result > 0 && Result <= UINT16_MAX)
 					{
 						HeaderParameter.Authority = htons((uint16_t)Result);
 					}
 					else {
-						wprintf_s(_T("\nParameter [-aun Count] error.\n"));
+						wprintf_s(L"\nParameter [-aun Count] error.\n");
 
 						WSACleanup();
 						return EXIT_FAILURE;
 					}
 				}
 				else {
-					wprintf_s(_T("\nNot enough parameters error.\n"));
+					wprintf_s(L"\nNot enough parameters error.\n");
 
 					WSACleanup();
 					return EXIT_FAILURE;
 				}
 			}
 		//Specifie DNS header Additional count.
-			else if (Parameter == _T("-ADN") || Parameter == _T("-adn"))
+			else if (Parameter == L"-ADN" || Parameter == L"-adn")
 			{
 				if (Index + 1U < (size_t)argc)
 				{
 					++Index;
+				#if defined(PLATFORM_WIN)
 					Parameter = argv[Index];
+				#elif defined(PLATFORM_LINUX)
+					MBSToWCSString(Parameter, argv[Index]);
+				#endif
 
-					Result = wcstol(Parameter.c_str(), nullptr, 0);
+					Result = wcstoul(Parameter.c_str(), nullptr, 0);
 					if (Result > 0 && Result <= UINT16_MAX)
 					{
 						HeaderParameter.Additional = htons((uint16_t)Result);
 					}
 					else {
-						wprintf_s(_T("\nParameter [-adn Count] error.\n"));
+						wprintf_s(L"\nParameter [-adn Count] error.\n");
 
 						WSACleanup();
 						return EXIT_FAILURE;
 					}
 				}
 				else {
-					wprintf_s(_T("\nNot enough parameters error.\n"));
+					wprintf_s(L"\nNot enough parameters error.\n");
 
 					WSACleanup();
 					return EXIT_FAILURE;
 				}
 			}
 		//Specifie transmission interval time(in milliseconds).
-			else if (Parameter == _T("-Ti") || Parameter == _T("-ti"))
+			else if (Parameter == L"-Ti" || Parameter == L"-ti")
 			{
 				if (Index + 1U < (size_t)argc)
 				{
 					++Index;
+				#if defined(PLATFORM_WIN)
 					Parameter = argv[Index];
+				#elif defined(PLATFORM_LINUX)
+					MBSToWCSString(Parameter, argv[Index]);
+				#endif
 
-					Result = wcstol(Parameter.c_str(), nullptr, 0);
+					Result = wcstoul(Parameter.c_str(), nullptr, 0);
 					if (Result >= 0)
 					{
+					#if defined(PLATFORM_WIN)
 						TransmissionInterval = Result;
+					#elif defined(PLATFORM_LINUX)
+						TransmissionInterval = Result * MICROSECOND_TO_MILLISECOND;
+					#endif
 					}
 					else {
-						wprintf_s(_T("\nParameter [-ti IntervalTime] error.\n"));
+						wprintf_s(L"\nParameter [-ti IntervalTime] error.\n");
 
 						WSACleanup();
 						return EXIT_FAILURE;
 					}
 				}
 				else {
-					wprintf_s(_T("\nNot enough parameters error.\n"));
+					wprintf_s(L"\nNot enough parameters error.\n");
 
 					WSACleanup();
 					return EXIT_FAILURE;
 				}
 			}
 		//Send with EDNS0 Label.
-			else if (Parameter == _T("-EDNS0") || Parameter == _T("-edns0"))
+			else if (Parameter == L"-EDNS0" || Parameter == L"-edns0")
 			{
 				EDNS0 = true;
 			}
 		//Specifie EDNS0 Label UDP Payload length.
-			else if (Parameter == _T("-Payload") || Parameter == _T("-payload"))
+			else if (Parameter == L"-Payload" || Parameter == L"-payload")
 			{
 				if (Index + 1U < (size_t)argc)
 				{
 					++Index;
+				#if defined(PLATFORM_WIN)
 					Parameter = argv[Index];
+				#elif defined(PLATFORM_LINUX)
+					MBSToWCSString(Parameter, argv[Index]);
+				#endif
 
-					Result = wcstol(Parameter.c_str(), nullptr, 0);
+					Result = wcstoul(Parameter.c_str(), nullptr, 0);
 					if (Result > OLD_DNS_MAXSIZE && Result <= UINT16_MAX)
 					{
 						EDNS0PayloadSize = Result;
 					}
 					else {
-						wprintf_s(_T("\nParameter [-payload Length] error.\n"));
+						wprintf_s(L"\nParameter [-payload Length] error.\n");
 
 						WSACleanup();
 						return EXIT_FAILURE;
 					}
 				}
 				else {
-					wprintf_s(_T("\nNot enough parameters error.\n"));
+					wprintf_s(L"\nNot enough parameters error.\n");
 
 					WSACleanup();
 					return EXIT_FAILURE;
@@ -480,31 +532,35 @@ int main(int argc, char *argv[])
 				EDNS0 = true;
 			}
 		//Send with DNSSEC requesting.
-			else if (Parameter == _T("-DNSSEC") || Parameter == _T("-dnssec"))
+			else if (Parameter == L"-DNSSEC" || Parameter == L"-dnssec")
 			{
 				EDNS0 = true;
 				DNSSEC = true;
 			}
 		//Specifie Query Type.
-			else if (Parameter == _T("-QT") || Parameter == _T("-qt"))
+			else if (Parameter == L"-QT" || Parameter == L"-qt")
 			{
 				if (Index + 1U < (size_t)argc)
 				{
 					++Index;
+				#if defined(PLATFORM_WIN)
 					Parameter = argv[Index];
+				#elif defined(PLATFORM_LINUX)
+					MBSToWCSString(Parameter, argv[Index]);
+				#endif
 
 				//Type name
 					Result = DNSTypeNameToHex(Parameter);
 					if (Result == 0)
 					{
 				//Type number
-						Result = wcstol(Parameter.c_str(), nullptr, 0);
+						Result = wcstoul(Parameter.c_str(), nullptr, 0);
 						if (Result > 0 && Result <= UINT16_MAX)
 						{
 							QueryParameter.Type = htons((uint16_t)Result);
 						}
 						else {
-							wprintf_s(_T("\nParameter [-qt Type] error.\n"));
+							wprintf_s(L"\nParameter [-qt Type] error.\n");
 
 							WSACleanup();
 							return EXIT_FAILURE;
@@ -515,32 +571,36 @@ int main(int argc, char *argv[])
 					}
 				}
 				else {
-					wprintf_s(_T("\nNot enough parameters error.\n"));
+					wprintf_s(L"\nNot enough parameters error.\n");
 
 					WSACleanup();
 					return EXIT_FAILURE;
 				}
 			}
 		//Specifie Query Classes.
-			else if (Parameter == _T("-QC") || Parameter == _T("-qc"))
+			else if (Parameter == L"-QC" || Parameter == L"-qc")
 			{
 				if (Index + 1U < (size_t)argc)
 				{
 					++Index;
+				#if defined(PLATFORM_WIN)
 					Parameter = argv[Index];
+				#elif defined(PLATFORM_LINUX)
+					MBSToWCSString(Parameter, argv[Index]);
+				#endif
 
 				//Classes name
 					Result = DNSClassesNameToHex(Parameter);
 					if (Result == 0)
 					{
 				//Classes number
-						Result = wcstol(Parameter.c_str(), nullptr, 0);
+						Result = wcstoul(Parameter.c_str(), nullptr, 0);
 						if (Result > 0 && Result <= UINT16_MAX)
 						{
 							QueryParameter.Classes = htons((uint16_t)Result);
 						}
 						else {
-							wprintf_s(_T("\nParameter [-qc Classes] error.\n"));
+							wprintf_s(L"\nParameter [-qc Classes] error.\n");
 
 							WSACleanup();
 							return EXIT_FAILURE;
@@ -551,92 +611,105 @@ int main(int argc, char *argv[])
 					}
 				}
 				else {
-					wprintf_s(_T("\nNot enough parameters error.\n"));
+					wprintf_s(L"\nNot enough parameters error.\n");
 
 					WSACleanup();
 					return EXIT_FAILURE;
 				}
 			}
 		//Specifie requesting server name or port.
-			else if (Parameter == _T("-p"))
+			else if (Parameter == L"-p")
 			{
 				if (Index + 1U < (size_t)argc)
 				{
 					++Index;
+				#if defined(PLATFORM_WIN)
 					Parameter = argv[Index];
+				#elif defined(PLATFORM_LINUX)
+					MBSToWCSString(Parameter, argv[Index]);
+				#endif
 
 				//Server name
 					Result = ServiceNameToPort(Parameter);
 					if (Result == 0)
 					{
 					//Number port
-						Result = wcstol(Parameter.c_str(), nullptr, 0);
+						Result = wcstoul(Parameter.c_str(), nullptr, 0);
 						if (Result > 0 && Result <= UINT16_MAX)
 						{
-							ServiceName = htons((uint16_t)Result);
+							ServiceType = htons((uint16_t)Result);
 						}
 						else {
-							wprintf_s(_T("\nParameter [-p ServiceName/Protocol] error.\n"));
+							wprintf_s(L"\nParameter [-p ServiceType/Protocol] error.\n");
 
 							WSACleanup();
 							return EXIT_FAILURE;
 						}
 					}
 					else {
-						ServiceName = (uint16_t)Result;
+						ServiceType = (uint16_t)Result;
 					}
 				}
 				else {
-					wprintf_s(_T("\nNot enough parameters error.\n"));
+					wprintf_s(L"\nNot enough parameters error.\n");
 
 					WSACleanup();
 					return EXIT_FAILURE;
 				}
 			}
 		//Specifie Raw data to send.
-			else if (Parameter == _T("-RAWDATA") || Parameter == _T("-rawdata"))
+			else if (Parameter == L"-RAWDATA" || Parameter == L"-rawdata")
 			{
 				if (Index + 1U < (size_t)argc)
 				{
 					++Index;
+				#if defined(PLATFORM_WIN)
+					Parameter = argv[Index];
+				#elif defined(PLATFORM_LINUX)
+					MBSToWCSString(Parameter, argv[Index]);
+				#endif
 
 				//Initialization
+					std::shared_ptr<char> RawDataStringPTR(new char[Parameter.length() + 1U]());
+					memset(RawDataStringPTR.get(), 0, Parameter.length() + 1U);
 				#if defined(PLATFORM_WIN)
-					std::shared_ptr<char> RawDataStringPTR(new char[wcsnlen_s(argv[Index], PACKET_MAXSIZE) + 1U]());
-					WideCharToMultiByte(CP_ACP, 0, Parameter.c_str(), (int)Parameter.length(), RawDataStringPTR.get(), (int)wcsnlen_s(argv[Index], PACKET_MAXSIZE) + 1U, nullptr, nullptr);
+					WideCharToMultiByte(CP_ACP, 0, Parameter.c_str(), (int)Parameter.length(), RawDataStringPTR.get(), (int)Parameter.length() + 1U, nullptr, nullptr);
+				#elif defined(PLATFORM_LINUX)
+					wcstombs(RawDataStringPTR.get(), Parameter.c_str(), Parameter.length());
+				#endif
 					std::string RawDataString(RawDataStringPTR.get());
 					RawDataStringPTR.reset();
-				#elif defined(PLATFORM_LINUX)
-					std::string RawDataString = argv[Index];
-				#endif
+
 					if (RawDataString.length() < PACKET_MINSIZE && RawDataString.length() > PACKET_MAXSIZE)
 					{
-						wprintf_s(_T("\nParameter [-rawdata RAW_Data] error.\n"));
+						wprintf_s(L"\nParameter [-rawdata RAW_Data] error.\n");
 
 						WSACleanup();
 						return EXIT_FAILURE;
 					}
 					std::shared_ptr<char> TempRawData(new char[PACKET_MAXSIZE]());
+					memset(TempRawData.get(), 0, PACKET_MAXSIZE);
 					RawData.swap(TempRawData);
 					TempRawData.reset();
-					std::shared_ptr<char> Temp(new char[5U]());
-					Temp.get()[0] = ASCII_ZERO;
-					Temp.get()[1U] = 120; //"x"
+					std::shared_ptr<char> TempString(new char[5U]());
+					memset(TempString.get(), 0, 5U);
+					TempString.get()[0] = ASCII_ZERO;
+					TempString.get()[1U] = 120; //"x"
 
 				//Read raw data.
 					for (size_t InnerIndex = 0;InnerIndex < RawDataString.length();++InnerIndex)
 					{
-						Temp.get()[2U] = RawDataString[InnerIndex];
+						TempString.get()[2U] = RawDataString[InnerIndex];
 						++InnerIndex;
-						Temp.get()[3U] = RawDataString[InnerIndex];
-						Result = (SSIZE_T)strtoul(Temp.get(), nullptr, 0);
+						TempString.get()[3U] = RawDataString[InnerIndex];
+						Result = (SSIZE_T)strtoul(TempString.get(), nullptr, 0);
 						if (Result > 0 && Result <= UINT8_MAX)
 						{
 							RawData.get()[RawDataLen] = (char)Result;
 							++RawDataLen;
 						}
 						else {
-							wprintf_s(_T("\nParameter [-rawdata RAW_Data] error.\n"));
+							wprintf_s(L"\nParameter [-rawdata RAW_Data] error.\n");
 
 							WSACleanup();
 							return EXIT_FAILURE;
@@ -644,37 +717,41 @@ int main(int argc, char *argv[])
 					}
 				}
 				else {
-					wprintf_s(_T("\nNot enough parameters error.\n"));
+					wprintf_s(L"\nNot enough parameters error.\n");
 
 					WSACleanup();
 					return EXIT_FAILURE;
 				}
 			}
 		//Send RAW data with Raw Socket.
-			else if (Parameter == _T("-RAW") || Parameter == _T("-raw"))
+			else if (Parameter == L"-RAW" || Parameter == L"-raw")
 			{
 				if (Index + 1U < (size_t)argc)
 				{
-					++Index;
-					Parameter = argv[Index];
 					RawSocket = true;
+					++Index;
+				#if defined(PLATFORM_WIN)
+					Parameter = argv[Index];
+				#elif defined(PLATFORM_LINUX)
+					MBSToWCSString(Parameter, argv[Index]);
+				#endif
 
 				//Protocol name
 					Result = InternetProtocolNameToPort(Parameter);
 					if (Result == 0)
 					{
 				//Protocol number
-						Result = wcstol(Parameter.c_str(), nullptr, 0);
+						Result = wcstoul(Parameter.c_str(), nullptr, 0);
 						if (Result == IPPROTO_UDP)
 						{
 							RawSocket = false;
 						}
 						else if (Result > 0 && Result <= UINT4_MAX)
 						{
-							ServiceName = (uint8_t)Result;
+							ServiceType = (uint8_t)Result;
 						}
 						else {
-							wprintf_s(_T("\nParameter [-raw ServiceName] error.\n"));
+							wprintf_s(L"\nParameter [-raw ServiceType] error.\n");
 
 							WSACleanup();
 							return EXIT_FAILURE;
@@ -685,144 +762,186 @@ int main(int argc, char *argv[])
 						RawSocket = false;
 					}
 					else {
-						ServiceName = (uint8_t)Result;
+						ServiceType = (uint8_t)Result;
 					}
 				}
 				else {
-					wprintf_s(_T("\nNot enough parameters error.\n"));
+					wprintf_s(L"\nNot enough parameters error.\n");
 
 					WSACleanup();
 					return EXIT_FAILURE;
 				}
 			}
 		//Specifie buffer size.
-			else if (Parameter == _T("-Buf") || Parameter == _T("-buf"))
+			else if (Parameter == L"-Buf" || Parameter == L"-buf")
 			{
 				if (Index + 1U < (size_t)argc)
 				{
 					++Index;
+				#if defined(PLATFORM_WIN)
 					Parameter = argv[Index];
+				#elif defined(PLATFORM_LINUX)
+					MBSToWCSString(Parameter, argv[Index]);
+				#endif
 
-					Result = wcstol(Parameter.c_str(), nullptr, 0);
+					Result = wcstoul(Parameter.c_str(), nullptr, 0);
 					if (Result >= OLD_DNS_MAXSIZE && Result <= LARGE_PACKET_MAXSIZE)
 					{
 						BufferSize = Result;
 					}
 					else {
-						wprintf_s(_T("\nParameter [-show Response] error.\n"));
+						wprintf_s(L"\nParameter [-show Response] error.\n");
 
 						WSACleanup();
 						return EXIT_FAILURE;
 					}
 				}
 				else {
-					wprintf_s(_T("\nNot enough parameters error.\n"));
+					wprintf_s(L"\nNot enough parameters error.\n");
 
 					WSACleanup();
 					return EXIT_FAILURE;
 				}
 			}
 		//Disable packets validated.
-			else if (Parameter == _T("-DV") || Parameter == _T("-dv"))
+			else if (Parameter == L"-DV" || Parameter == L"-dv")
 			{
 				Validate = false;
 			}
 		//Show response.
-			else if (Parameter == _T("-SHOW") || Parameter == _T("-show"))
+			else if (Parameter == L"-SHOW" || Parameter == L"-show")
 			{
 				if (Index + 1U < (size_t)argc)
 				{
 					++Index;
+				#if defined(PLATFORM_WIN)
 					Parameter = argv[Index];
+				#elif defined(PLATFORM_LINUX)
+					MBSToWCSString(Parameter, argv[Index]);
+				#endif
 
-					if (Parameter == _T("Result") || Parameter == _T("result"))
+					if (Parameter == L"Result" || Parameter == L"result")
 					{
 						ShowResponse = true;
 					}
-					else if (Parameter == _T("Hex") || Parameter == _T("hex"))
+					else if (Parameter == L"Hex" || Parameter == L"hex")
 					{
 						ShowResponseHex = true;
 					}
 					else {
-						wprintf_s(_T("\nParameter [-buf Size] error.\n"));
+						wprintf_s(L"\nParameter [-buf Size] error.\n");
 
 						WSACleanup();
 						return EXIT_FAILURE;
 					}
 				}
 				else {
-					wprintf_s(_T("\nNot enough parameters error.\n"));
+					wprintf_s(L"\nNot enough parameters error.\n");
 
 					WSACleanup();
 					return EXIT_FAILURE;
 				}
 			}
 		//Output result to file.
-			else if (Parameter == _T("-OF") || Parameter == _T("-of"))
+			else if (Parameter == L"-OF" || Parameter == L"-of")
 			{
 				if (Index + 1U < (size_t)argc)
 				{
 					++Index;
+				#if defined(PLATFORM_WIN)
 					Parameter = argv[Index];
+				#elif defined(PLATFORM_LINUX)
+					MBSToWCSString(Parameter, argv[Index]);
+				#endif
 
 					if (Parameter.length() <= MAX_PATH)
 					{
-						OutputFileName = Parameter;
+						wOutputFileName = Parameter;
+
+					#if defined(PLATFORM_LINUX)
+						std::shared_ptr<char> OutputFileNamePTR(new char[Parameter.length() + 1U]);
+						memset(OutputFileNamePTR.get(), 0, Parameter.length() + 1U);
+						wcstombs(OutputFileNamePTR.get(), Parameter.c_str(), Parameter.length());
+						OutputFileName = OutputFileNamePTR.get();
+					#endif
 					}
 					else {
-						wprintf_s(_T("\nParameter [-of FileName] error.\n"));
+						wprintf_s(L"\nParameter [-of FileName] error.\n");
 
 						WSACleanup();
 						return EXIT_FAILURE;
 					}
 				}
 				else {
-					wprintf_s(_T("\nNot enough parameters error.\n"));
+					wprintf_s(L"\nNot enough parameters error.\n");
 
 					WSACleanup();
 					return EXIT_FAILURE;
 				}
 			}
 		//Using IPv6.
-			else if (Parameter == _T("-6"))
+			else if (Parameter == L"-6")
 			{
 				Protocol = AF_INET6;
 			}
 		//Using IPv4.
-			else if (Parameter == _T("-4"))
+			else if (Parameter == L"-4")
 			{
 				Protocol = AF_INET;
 			}
 		//Specifie Query Domain.
-			else if (!RawData && TestDomain.empty() && Index == (size_t)(argc - 2) && Parameter.length() > 2U)
+			else if (!RawData && TestDomain.empty() && Index == (size_t)(argc - 2))
 			{
-			#if defined(PLATFORM_WIN)
+			//Check parameter.
+				if (Parameter.length() <= DOMAIN_MINSIZE || Parameter.length() > DOMAIN_MAXSIZE)
+				{
+					wprintf_s(L"\nTest domain length error.\n");
+					return EXIT_FAILURE;
+				}
+
 				std::shared_ptr<char> TestDomainPTR(new char[Parameter.length() + 1U]());
+				memset(TestDomainPTR.get(), 0, Parameter.length() + 1U);
+			#if defined(PLATFORM_WIN)
 				WideCharToMultiByte(CP_ACP, 0, Parameter.c_str(), (int)Parameter.length(), TestDomainPTR.get(), (int)(Parameter.length() + 1U), nullptr, nullptr);
-				TestDomain = TestDomainPTR.get();
 			#elif defined(PLATFORM_LINUX)
-				TestDomain = Parameter;
+				wcstombs(TestDomainPTR.get(), Parameter.c_str(), Parameter.length());
 			#endif
+
+				TestDomain = TestDomainPTR.get();
 			}
 		//Specifie target.
-			else if (Index == (size_t)(argc - 1) && Parameter.length() > 2U)
+			else if (Index == (size_t)(argc - 1))
 			{
+			//Check parameter.
+				if (Parameter.length() < DOMAIN_MINSIZE || Parameter.length() > DOMAIN_MAXSIZE)
+				{
+					wprintf_s(L"\nTarget length error.\n");
+					return EXIT_FAILURE;
+				}
+
 			//Initialization
-			#if defined(PLATFORM_WIN)
 				std::shared_ptr<char> ParameterPTR(new char[Parameter.length() + 1U]());
+				memset(ParameterPTR.get(), 0, Parameter.length() + 1U);
+			#if defined(PLATFORM_WIN)
 				WideCharToMultiByte(CP_ACP, 0, Parameter.c_str(), (int)Parameter.length(), ParameterPTR.get(), (int)(Parameter.length() + 1U), nullptr, nullptr);
+			#elif defined(PLATFORM_LINUX)
+				wcstombs(ParameterPTR.get(), Parameter.c_str(), Parameter.length());
+			#endif
 				std::string ParameterString(ParameterPTR.get());
 				ParameterPTR.reset();
-			#elif defined(PLATFORM_LINUX)
-				std::string ParameterString(Parameter);
-			#endif
 
 			//IPv6 address
 				if (ParameterString.find(ASCII_COLON) != std::string::npos)
 				{
-					if (Protocol == AF_INET)
+				//Check parameter.
+					if (Parameter.length() < 2U || Parameter.length() > 40U) //IPv6 format
 					{
-						wprintf_s(_T("\nTarget protocol error.\n"));
+						wprintf_s(L"\nTarget length error.\n");
+						return EXIT_FAILURE;
+					}
+					else if (Protocol == AF_INET)
+					{
+						wprintf_s(L"\nTarget protocol error.\n");
 
 						WSACleanup();
 						return EXIT_FAILURE;
@@ -832,7 +951,7 @@ int main(int argc, char *argv[])
 					SockAddr.ss_family = AF_INET6;
 					if (AddressStringToBinary((PSTR)ParameterString.c_str(), &((PSOCKADDR_IN6)&SockAddr)->sin6_addr, AF_INET6, Result) == EXIT_FAILURE)
 					{
-						wprintf_s(_T("\nTarget format error, error code is %d.\n"), (int)Result);
+						wprintf_s(L"\nTarget format error, error code is %d.\n", (int)Result);
 
 						WSACleanup();
 						return EXIT_FAILURE;
@@ -848,6 +967,13 @@ int main(int argc, char *argv[])
 					//Domain
 						if (*StringIter < ASCII_PERIOD || *StringIter == ASCII_SLASH || *StringIter > ASCII_NINE)
 						{
+						//Check parameter.
+							if (Parameter.length() <= DOMAIN_MINSIZE)
+							{
+								wprintf_s(L"\nTarget length error.\n");
+								return EXIT_FAILURE;
+							}
+
 							ADDRINFOA AddrInfoHints = {0}, *AddrInfo = nullptr;
 						//Try with IPv6.
 							if (Protocol == 0)
@@ -865,7 +991,7 @@ int main(int argc, char *argv[])
 
 								if (getaddrinfo(ParameterString.c_str(), nullptr, &AddrInfoHints, &AddrInfo) != 0)
 								{
-									wprintf_s(_T("\nResolve domain name error, error code is %d.\n"), WSAGetLastError());
+									wprintf_s(L"\nResolve domain name error, error code is %d.\n", WSAGetLastError());
 
 									WSACleanup();
 									return EXIT_FAILURE;
@@ -887,6 +1013,7 @@ int main(int argc, char *argv[])
 									//Get string of address.
 										TargetDomainString = ParameterString;
 										std::shared_ptr<char> Buffer(new char[ADDR_STRING_MAXSIZE]());
+										memset(Buffer.get(), 0, ADDR_STRING_MAXSIZE);
 
 									//Minimum supported system of inet_ntop() and inet_pton() is Windows Vista. [Roy Tam]
 									#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64)) //x86
@@ -912,6 +1039,7 @@ int main(int argc, char *argv[])
 									//Get string of address.
 										TargetDomainString = ParameterString;
 										std::shared_ptr<char> Buffer(new char[ADDR_STRING_MAXSIZE]());
+										memset(Buffer.get(), 0, ADDR_STRING_MAXSIZE);
 
 									//Minimum supported system of inet_ntop() and inet_pton() is Windows Vista. [Roy Tam]
 									#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64)) //x86
@@ -935,9 +1063,15 @@ int main(int argc, char *argv[])
 					//IPv4
 						if (StringIter == ParameterString.end() - 1U)
 						{
-							if (Protocol == AF_INET6)
+						//Check parameter.
+							if (Parameter.length() < 7U || Parameter.length() > 15U) //IPv4 format
 							{
-								wprintf_s(_T("\nTarget protocol error.\n"));
+								wprintf_s(L"\nTarget length error.\n");
+								return EXIT_FAILURE;
+							}
+							else if (Protocol == AF_INET6)
+							{
+								wprintf_s(L"\nTarget protocol error.\n");
 
 								WSACleanup();
 								return EXIT_FAILURE;
@@ -947,7 +1081,7 @@ int main(int argc, char *argv[])
 							SockAddr.ss_family = AF_INET;
 							if (AddressStringToBinary((PSTR)ParameterString.c_str(), &((PSOCKADDR_IN)&SockAddr)->sin_addr, AF_INET, Result) == EXIT_FAILURE)
 							{
-								wprintf_s(_T("\nTarget format error, error code is %d.\n"), (int)Result);
+								wprintf_s(L"\nTarget format error, error code is %d.\n", (int)Result);
 
 								WSACleanup();
 								return EXIT_FAILURE;
@@ -965,40 +1099,40 @@ int main(int argc, char *argv[])
 		{
 			if (CheckEmptyBuffer(&((PSOCKADDR_IN6)&SockAddr)->sin6_addr, sizeof(in6_addr)))
 			{
-				wprintf_s(_T("\nTarget is empty.\n"));
+				wprintf_s(L"\nTarget is empty.\n");
 
 				WSACleanup();
 				return EXIT_FAILURE;
 			}
 			else {
 			//Mark port.
-				if (ServiceName == 0)
+				if (ServiceType == 0)
 				{
-					ServiceName = htons(IPPORT_DNS);
+					ServiceType = htons(IPPORT_DNS);
 					((PSOCKADDR_IN6)&SockAddr)->sin6_port = htons(IPPORT_DNS);
 				}
 				else {
-					((PSOCKADDR_IN6)&SockAddr)->sin6_port = ServiceName;
+					((PSOCKADDR_IN6)&SockAddr)->sin6_port = ServiceType;
 				}
 			}
 		}
 		else { //IPv4
 			if (((PSOCKADDR_IN)&SockAddr)->sin_addr.s_addr == 0)
 			{
-				wprintf_s(_T("\nTarget is empty.\n"));
+				wprintf_s(L"\nTarget is empty.\n");
 
 				WSACleanup();
 				return EXIT_FAILURE;
 			}
 			else {
 			//Mark port.
-				if (ServiceName == 0)
+				if (ServiceType == 0)
 				{
-					ServiceName = htons(IPPORT_DNS);
+					ServiceType = htons(IPPORT_DNS);
 					((PSOCKADDR_IN)&SockAddr)->sin_port = htons(IPPORT_DNS);
 				}
 				else {
-					((PSOCKADDR_IN)&SockAddr)->sin_port = ServiceName;
+					((PSOCKADDR_IN)&SockAddr)->sin_port = ServiceType;
 				}
 			}
 		}
@@ -1011,34 +1145,39 @@ int main(int argc, char *argv[])
 		#elif defined(PLATFORM_WIN32)
 			if (IsLowerThanWin8())
 		#endif
-				SocketTimeout -= 500;
-
+			{
+				if (SocketTimeout > TIME_OUT_MIN)
+					SocketTimeout -= 500;
+				else if (SocketTimeout == TIME_OUT_MIN)
+					SocketTimeout = 1;
+			}
 		MinTime = SocketTimeout;
 	#elif defined(PLATFORM_LINUX)
 		MinTime = SocketTimeout.tv_sec * SECOND_TO_MILLISECOND + SocketTimeout.tv_usec / MICROSECOND_TO_MILLISECOND;
 	#endif
 
-	//Convert Multi byte(s) to wide char(s).
-	#if defined(PLATFORM_WIN)
+	//Convert multiple byte string to wide char string.
 		std::wstring wTestDomain, wTargetDomainString;
+	#if defined(PLATFORM_WIN)
 		std::shared_ptr<wchar_t> wTargetStringPTR(new wchar_t[LARGE_PACKET_MAXSIZE]());
-		if (TargetString.length() > LARGE_PACKET_MAXSIZE || TargetDomainString.length() > LARGE_PACKET_MAXSIZE || TestDomain.length() > LARGE_PACKET_MAXSIZE)
-		{
-			wprintf_s(_T("\nTest Domain or Target is/are too long.\n"));
-			return EXIT_FAILURE;
-		}
+		wmemset(wTargetStringPTR.get(), 0, LARGE_PACKET_MAXSIZE);
 		MultiByteToWideChar(CP_ACP, 0, TargetString.c_str(), MBSTOWCS_NULLTERMINATE, wTargetStringPTR.get(), (int)TargetString.length());
 		wTargetString = wTargetStringPTR.get();
-		memset(wTargetStringPTR.get(), 0, sizeof(wchar_t) * LARGE_PACKET_MAXSIZE);
+		wmemset(wTargetStringPTR.get(), 0, LARGE_PACKET_MAXSIZE);
 		MultiByteToWideChar(CP_ACP, 0, TestDomain.c_str(), MBSTOWCS_NULLTERMINATE, wTargetStringPTR.get(), (int)TestDomain.length());
 		wTestDomain = wTargetStringPTR.get();
 		if (!TargetDomainString.empty())
 		{
-			memset(wTargetStringPTR.get(), 0, sizeof(wchar_t) * LARGE_PACKET_MAXSIZE);
+			wmemset(wTargetStringPTR.get(), 0, LARGE_PACKET_MAXSIZE);
 			MultiByteToWideChar(CP_ACP, 0, TargetDomainString.c_str(), MBSTOWCS_NULLTERMINATE, wTargetStringPTR.get(), (int)TargetDomainString.length());
 			wTargetDomainString = wTargetStringPTR.get();
 		}
 		wTargetStringPTR.reset();
+	#elif defined(PLATFORM_LINUX)
+		MBSToWCSString(wTargetString, TargetString.c_str());
+		MBSToWCSString(wTestDomain, TestDomain.c_str());
+		if (!TargetDomainString.empty())
+			MBSToWCSString(wTargetDomainString, TargetDomainString.c_str());
 	#endif
 
 	//Check DNS header.
@@ -1078,118 +1217,86 @@ int main(int argc, char *argv[])
 		}
 
 	//Output result to file.
-		if (!OutputFileName.empty())
+		if (!wOutputFileName.empty())
 		{
 		#if defined(PLATFORM_WIN)
-			Result = _wfopen_s(&OutputFile, OutputFileName.c_str(), _T("a,ccs=UTF-8"));
+			Result = _wfopen_s(&OutputFile, wOutputFileName.c_str(), L"a,ccs=UTF-8");
 		#elif defined(PLATFORM_LINUX)
 			OutputFile = fopen(OutputFileName.c_str(), ("a"));
 		#endif
 			if (OutputFile == nullptr)
 			{
-			#if defined(PLATFORM_WIN)
-				wprintf_s(L"Create output result file %ls error, error code is %d.\n", OutputFileName.c_str(), (int)Result);
-			#elif defined(PLATFORM_LINUX)
-				printf(("Create output result file %s error, error code is %d.\n"), OutputFileName.c_str(), errno);
-			#endif
+				wprintf_s(L"Create output result file %ls error, error code is %d.\n", wOutputFileName.c_str(), (int)Result);
 
 				WSACleanup();
 				return EXIT_SUCCESS;
 			}
 			else {
-//				fwprintf_s(OutputFile, _T("\n"));
 				std::shared_ptr<tm> TimeStructure(new tm());
+				memset(TimeStructure.get(), 0, sizeof(tm));
 				time_t TimeValues = 0;
 				time(&TimeValues);
 				localtime_s(TimeStructure.get(), &TimeValues);
 
-				fwprintf_s(OutputFile, _T("------------------------------ %d-%02d-%02d %02d:%02d:%02d ------------------------------\n"), TimeStructure->tm_year + 1900, TimeStructure->tm_mon + 1, TimeStructure->tm_mday, TimeStructure->tm_hour, TimeStructure->tm_min, TimeStructure->tm_sec);
+				fwprintf_s(OutputFile, L"------------------------------ %d-%02d-%02d %02d:%02d:%02d ------------------------------\n", TimeStructure->tm_year + 1900, TimeStructure->tm_mon + 1, TimeStructure->tm_mday, TimeStructure->tm_hour, TimeStructure->tm_min, TimeStructure->tm_sec);
 			}
 		}
 
 	//Print to screen before sending.
-		wprintf_s(_T("\n"));
+		wprintf_s(L"\n");
 		if (ReverseLookup)
 		{
 			if (wTargetDomainString.empty())
 			{
-				std::shared_ptr<char> FQDN(new char[NI_MAXHOST]());
+				std::shared_ptr<char> FQDN(new char[NI_MAXHOST + 1U]());
+				memset(FQDN.get(), 0, NI_MAXHOST + 1U);
 				if (getnameinfo((PSOCKADDR)&SockAddr, sizeof(sockaddr_in), FQDN.get(), NI_MAXHOST, nullptr, 0, NI_NUMERICSERV) != 0)
 				{
-					wprintf_s(_T("\nResolve addresses to host names error, error code is %d.\n"), WSAGetLastError());
-				#if defined(PLATFORM_WIN)
-					wprintf_s(L"DNSPing %ls:%u with %ls:\n", wTargetString.c_str(), ntohs(ServiceName), wTestDomain.c_str());
+					wprintf_s(L"\nResolve addresses to host names error, error code is %d.\n", WSAGetLastError());
+					wprintf_s(L"DNSPing %ls:%u with %ls:\n", wTargetString.c_str(), ntohs(ServiceType), wTestDomain.c_str());
 					if (OutputFile != nullptr)
-						fwprintf_s(OutputFile, L"DNSPing %ls:%u with %ls:\n", wTargetString.c_str(), ntohs(ServiceName), wTestDomain.c_str());
-				#elif defined(PLATFORM_LINUX)
-					printf(("DNSPing %s:%u with %s:\n"), TargetString.c_str(), ntohs(ServiceName), TestDomain.c_str());
-					if (OutputFile != nullptr)
-						fprintf(OutputFile, ("DNSPing %s:%u with %s:\n"), TargetString.c_str(), ntohs(ServiceName), TestDomain.c_str());
-				#endif
+						fwprintf_s(OutputFile, L"DNSPing %ls:%u with %ls:\n", wTargetString.c_str(), ntohs(ServiceType), wTestDomain.c_str());
 				}
 				else {
 					if (TargetString == FQDN.get())
 					{
-					#if defined(PLATFORM_WIN)
-						wprintf_s(L"DNSPing %ls:%u with %ls:\n", wTargetString.c_str(), ntohs(ServiceName), wTestDomain.c_str());
+						wprintf_s(L"DNSPing %ls:%u with %ls:\n", wTargetString.c_str(), ntohs(ServiceType), wTestDomain.c_str());
 						if (OutputFile != nullptr)
-							fwprintf_s(OutputFile, L"DNSPing %ls:%u with %ls:\n", wTargetString.c_str(), ntohs(ServiceName), wTestDomain.c_str());
-					#elif defined(PLATFORM_LINUX)
-						printf(("DNSPing %s:%u with %s:\n"), TargetString.c_str(), ntohs(ServiceName), TestDomain.c_str());
-						if (OutputFile != nullptr)
-							fprintf(OutputFile, ("DNSPing %s:%u with %s:\n"), TargetString.c_str(), ntohs(ServiceName), TestDomain.c_str());
-					#endif
+							fwprintf_s(OutputFile, L"DNSPing %ls:%u with %ls:\n", wTargetString.c_str(), ntohs(ServiceType), wTestDomain.c_str());
 					}
 					else {
+						std::shared_ptr<wchar_t> wFQDN(new wchar_t[strnlen(FQDN.get(), NI_MAXHOST) + 1U]());
+						wmemset(wFQDN.get(), 0, strnlen(FQDN.get(), NI_MAXHOST) + 1U);
+
 					#if defined(PLATFORM_WIN)
-						std::shared_ptr<wchar_t> wFQDN(new wchar_t[strlen(FQDN.get())]());
 						MultiByteToWideChar(CP_ACP, 0, FQDN.get(), MBSTOWCS_NULLTERMINATE, wFQDN.get(), (int)strlen(FQDN.get()));
-						wprintf_s(_T("DNSPing %ls:%u [%ls] with %ls:\n"), wFQDN.get(), ntohs(ServiceName), wTargetString.c_str(), wTestDomain.c_str());
-						if (OutputFile != nullptr)
-							fwprintf_s(OutputFile, _T("DNSPing %ls:%u [%ls] with %ls:\n"), wFQDN.get(), ntohs(ServiceName), wTargetString.c_str(), wTestDomain.c_str());
 					#elif defined(PLATFORM_LINUX)
-						printf("DNSPing %s:%u [%s] with %s:\n", FQDN.get(), ntohs(ServiceName), TargetString.c_str(), TestDomain.c_str());
-						if (OutputFile != nullptr)
-							fprintf(OutputFile, "DNSPing %s:%u [%s] with %s:\n", FQDN.get(), ntohs(ServiceName), TargetString.c_str(), TestDomain.c_str());
+						mbstowcs(wFQDN.get(), FQDN.get(), strlen(FQDN.get()));
 					#endif
+
+						wprintf_s(L"DNSPing %ls:%u [%ls] with %ls:\n", wFQDN.get(), ntohs(ServiceType), wTargetString.c_str(), wTestDomain.c_str());
+						if (OutputFile != nullptr)
+							fwprintf_s(OutputFile, L"DNSPing %ls:%u [%ls] with %ls:\n", wFQDN.get(), ntohs(ServiceType), wTargetString.c_str(), wTestDomain.c_str());
 					}
 				}
 			}
 			else {
-			#if defined(PLATFORM_WIN)
-				wprintf_s(L"DNSPing %ls:%u [%ls] with %ls:\n", wTargetDomainString.c_str(), ntohs(ServiceName), wTargetString.c_str(), wTestDomain.c_str());
+				wprintf_s(L"DNSPing %ls:%u [%ls] with %ls:\n", wTargetDomainString.c_str(), ntohs(ServiceType), wTargetString.c_str(), wTestDomain.c_str());
 				if (OutputFile != nullptr)
-					fwprintf_s(OutputFile, L"DNSPing %ls:%u [%ls] with %ls:\n", wTargetDomainString.c_str(), ntohs(ServiceName), wTargetString.c_str(), wTestDomain.c_str());
-			#elif defined(PLATFORM_LINUX)
-				printf(("DNSPing %s:%u [%s] with %s:\n"), TargetDomainString.c_str(), ntohs(ServiceName), TargetString.c_str(), TestDomain.c_str());
-				if (OutputFile != nullptr)
-					fprintf(OutputFile, ("DNSPing %s:%u [%s] with %s:\n"), TargetDomainString.c_str(), ntohs(ServiceName), TargetString.c_str(), TestDomain.c_str());
-			#endif
+					fwprintf_s(OutputFile, L"DNSPing %ls:%u [%ls] with %ls:\n", wTargetDomainString.c_str(), ntohs(ServiceType), wTargetString.c_str(), wTestDomain.c_str());
 			}
 		}
 		else {
 			if (!TargetDomainString.empty())
 			{
-			#if defined(PLATFORM_WIN)
-				wprintf_s(L"DNSPing %ls:%u [%ls] with %ls:\n", wTargetDomainString.c_str(), ntohs(ServiceName), wTargetString.c_str(), wTestDomain.c_str());
+				wprintf_s(L"DNSPing %ls:%u [%ls] with %ls:\n", wTargetDomainString.c_str(), ntohs(ServiceType), wTargetString.c_str(), wTestDomain.c_str());
 				if (OutputFile != nullptr)
-					fwprintf_s(OutputFile, L"DNSPing %ls:%u [%ls] with %ls:\n", wTargetDomainString.c_str(), ntohs(ServiceName), wTargetString.c_str(), wTestDomain.c_str());
-			#elif defined(PLATFORM_LINUX)
-				printf(("DNSPing %s:%u [%s] with %s:\n"), TargetDomainString.c_str(), ntohs(ServiceName), TargetString.c_str(), TestDomain.c_str());
-				if (OutputFile != nullptr)
-					fprintf(OutputFile, ("DNSPing %s:%u [%s] with %s:\n"), TargetDomainString.c_str(), ntohs(ServiceName), TargetString.c_str(), TestDomain.c_str());
-			#endif
+					fwprintf_s(OutputFile, L"DNSPing %ls:%u [%ls] with %ls:\n", wTargetDomainString.c_str(), ntohs(ServiceType), wTargetString.c_str(), wTestDomain.c_str());
 			}
 			else {
-			#if defined(PLATFORM_WIN)
-				wprintf_s(L"DNSPing %ls:%u with %ls:\n", wTargetString.c_str(), ntohs(ServiceName), wTestDomain.c_str());
+				wprintf_s(L"DNSPing %ls:%u with %ls:\n", wTargetString.c_str(), ntohs(ServiceType), wTestDomain.c_str());
 				if (OutputFile != nullptr)
-					fwprintf_s(OutputFile, L"DNSPing %ls:%u with %ls:\n", wTargetString.c_str(), ntohs(ServiceName), wTestDomain.c_str());
-			#elif defined(PLATFORM_LINUX)
-				printf(("DNSPing %s:%u with %s:\n"), TargetString.c_str(), ntohs(ServiceName), TestDomain.c_str());
-				if (OutputFile != nullptr)
-					fprintf(OutputFile, ("DNSPing %s:%u with %s:\n"), TargetString.c_str(), ntohs(ServiceName), TestDomain.c_str());
-			#endif
+					fwprintf_s(OutputFile, L"DNSPing %ls:%u with %ls:\n", wTargetString.c_str(), ntohs(ServiceType), wTestDomain.c_str());
 			}
 		}
 
@@ -1208,9 +1315,9 @@ int main(int argc, char *argv[])
 					}
 				}
 				else {
-					wprintf_s(_T("\nStatistics is full.\n"));
+					wprintf_s(L"\nStatistics is full.\n");
 					if (OutputFile != nullptr)
-						fwprintf_s(OutputFile, _T("\nStatistics is full.\n"));
+						fwprintf_s(OutputFile, L"\nStatistics is full.\n");
 
 					PrintProcess(true, true);
 				//Close file handle.

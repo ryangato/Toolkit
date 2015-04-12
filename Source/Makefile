@@ -26,7 +26,7 @@ OBJ_DIR = ./Object/
 BIN_DIR = ./Release/
 Target_Name = $(BIN_DIR)DNSPing
 
-all : Directory Target clean
+all : Directory Target Clean_OBJ
 Directory : 
 		@echo 
 		@echo Creating directories of object files.
@@ -54,9 +54,15 @@ Main.o : $(SRC_DIR)Main.cpp
 		@$(CC) $(COM_FLAGS) $(SRC_DIR)Main.cpp -o $(OBJ_DIR)Main.o
 
 #Cleanup
-.PHONY : clean
-clean : 
+Clean_OBJ : 
 		@echo Cleaning...
 		@echo All processes are finished, the binary is in Release directory.
 		@echo 
-		@-rm -r Object
+		@-rm -f -r ./Object
+
+.PHONY : clean
+clean : 
+		@echo Cleaning...
+		@echo 
+		@-rm -f -r ./Object
+		@-rm -f -r ./Release
