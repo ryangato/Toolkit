@@ -1,7 +1,7 @@
 ﻿### Linux Usage
 * You should compile the sources before using.
 * Run terminal and enter to source directory.
-* Run "make".
+* Run "make" to compile.
 * After all processes finished, the binary is in Release directory.
 
 

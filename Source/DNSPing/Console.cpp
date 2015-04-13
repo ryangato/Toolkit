@@ -19,33 +19,31 @@
 
 #include "Console.h"
 
-#if defined(PLATFORM_WIN)
 //Catch Control-C exception from keyboard.
-	BOOL __fastcall CtrlHandler(const DWORD fdwCtrlType)
+BOOL __fastcall CtrlHandler(const DWORD fdwCtrlType)
+{
+//Handle the CTRL-C signal.
+	if (fdwCtrlType == CTRL_C_EVENT)
 	{
-	//Handle the CTRL-C signal.
-		if (fdwCtrlType == CTRL_C_EVENT)
-		{
-			wprintf_s(L"Get Control-C.\n");
-		}
-	//Handle the CTRL-Break signal.
-		else if (fdwCtrlType == CTRL_BREAK_EVENT)
-		{
-			wprintf_s(L"Get Control-Break.\n");
-			PrintProcess(true, true);
-
-			return TRUE;
-		}
-	//Handle other signals.
-		else {
-			wprintf_s(L"Get closing signal.\n");
-		}
-
-	//Print statistics and close all file handles.
-		PrintProcess(true, true);
-		_fcloseall();
-
-		WSACleanup();
-		return FALSE;
+		wprintf_s(L"Get Control-C.\n");
 	}
-#endif
+//Handle the CTRL-Break signal.
+	else if (fdwCtrlType == CTRL_BREAK_EVENT)
+	{
+		wprintf_s(L"Get Control-Break.\n");
+		PrintProcess(true, true);
+		
+		return TRUE;
+	}
+//Handle other signals.
+	else {
+		wprintf_s(L"Get closing signal.\n");
+	}
+
+//Print statistics and close all file handles.
+	PrintProcess(true, true);
+	_fcloseall();
+
+	WSACleanup();
+	return FALSE;
+}

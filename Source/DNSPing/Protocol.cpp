@@ -22,18 +22,18 @@
 //Minimum supported system of Windows Version Helpers is Windows Vista.
 #if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64)) //x86
 //Check operation system which higher than Windows 7.
-bool __fastcall IsLowerThanWin8(void)
-{
-	OSVERSIONINFOEX OSVI = {0};
-	OSVI.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
-	BOOL bOsVersionInfoEx = GetVersionExW((OSVERSIONINFO *)&OSVI);
+	bool __fastcall IsLowerThanWin8(void)
+	{
+		OSVERSIONINFOEX OSVI = {0};
+		OSVI.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+		BOOL bOsVersionInfoEx = GetVersionExW((OSVERSIONINFO *)&OSVI);
 
-	if (bOsVersionInfoEx && OSVI.dwPlatformId == VER_PLATFORM_WIN32_NT && 
-		(OSVI.dwMajorVersion < 6U || OSVI.dwMajorVersion == 6U && OSVI.dwMinorVersion < 2U))
-			return true;
+		if (bOsVersionInfoEx && OSVI.dwPlatformId == VER_PLATFORM_WIN32_NT && 
+			(OSVI.dwMajorVersion < 6U || OSVI.dwMajorVersion == 6U && OSVI.dwMinorVersion < 2U))
+				return true;
 
-	return false;
-}
+		return false;
+	}
 #endif
 
 //Check empty buffer
@@ -53,15 +53,15 @@ bool __fastcall CheckEmptyBuffer(const void *Buffer, const size_t Length)
 
 #if defined(PLATFORM_LINUX)
 //Convert multiple bytes to wide char string
-void MBSToWCSString(std::wstring &Target, const char *Buffer)
-{
-	std::shared_ptr<wchar_t> TargetPTR(new wchar_t[strnlen(Buffer, LARGE_PACKET_MAXSIZE) + 1U]());
-	wmemset(TargetPTR.get(), 0, strnlen(Buffer, LARGE_PACKET_MAXSIZE) + 1U);
-	mbstowcs(TargetPTR.get(), Buffer, strnlen(Buffer, LARGE_PACKET_MAXSIZE));
-	Target = TargetPTR.get();
+	void MBSToWCSString(std::wstring &Target, const char *Buffer)
+	{
+		std::shared_ptr<wchar_t> TargetPTR(new wchar_t[strnlen(Buffer, LARGE_PACKET_MAXSIZE) + 1U]());
+		wmemset(TargetPTR.get(), 0, strnlen(Buffer, LARGE_PACKET_MAXSIZE) + 1U);
+		mbstowcs(TargetPTR.get(), Buffer, strnlen(Buffer, LARGE_PACKET_MAXSIZE));
+		Target = TargetPTR.get();
 
-	return;
-}
+		return;
+	}
 #endif
 
 //Convert lowercase/uppercase word(s) to uppercase/lowercase word(s).

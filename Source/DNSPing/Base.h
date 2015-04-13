@@ -1127,7 +1127,6 @@ typedef struct _dns_caa_
 #endif
 #define HIGHEST_MOVE_BIT_U16         15U         //Move 15 bits to get highest bit in uint16_t/16 bits data.
 #define BYTES_TO_BITS                8U
-#define NUM_DECIMAL                  10
 #define NUM_HEX                      16
 #define UINT4_MAX                    0x000F
 #define HIGHEST_BIT_U16              0x7FFF      //Get highest bit in uint16_t/16 bits data
@@ -1155,7 +1154,7 @@ typedef struct _dns_caa_
 #define DOMAIN_MAXSIZE               256U        //Maximum size of whole level domain is 256 bytes(Section 2.3.1 in RFC 1035).
 #define DOMAIN_MINSIZE               2U          //Minimum size of whole level domain is 3 bytes(Section 2.3.1 in RFC 1035).
 
-//Protocol.cpp
+//Protocol.h
 //Minimum supported system of Windows Version Helpers is Windows Vista.
 #if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64)) //x86
 	bool __fastcall IsLowerThanWin8(void);
@@ -1179,18 +1178,18 @@ void __fastcall PrintSecondsInDateTime(const time_t Seconds, FILE *OutputFile);
 void __fastcall PrintDateTime(const time_t Time);
 void __fastcall PrintDateTime(const time_t Time, FILE *OutputFile);
 
-//Process.cpp
+//Process.h
 size_t __fastcall SendProcess(const sockaddr_storage &Target, const bool LastSend);
 size_t __fastcall PrintProcess(const bool IsPacketStatistics, const bool IsTimeStatistics);
 void __fastcall PrintDescription(void);
 
-//Resolver.cpp
+//Resolver.h
 void __fastcall PrintResponseHex(const PSTR Buffer, const size_t Length);
 void __fastcall PrintResponseHex(const PSTR Buffer, const size_t Length, FILE *OutputFile);
 void __fastcall PrintResponse(const PSTR Buffer, const size_t Length);
 void __fastcall PrintResponse(const PSTR Buffer, const size_t Length, FILE *OutputFile);
 
-//Console.cpp
+//Console.h
 #if defined(PLATFORM_WIN)
 	BOOL __fastcall CtrlHandler(const DWORD fdwCtrlType);
 #elif defined(PLATFORM_LINUX)

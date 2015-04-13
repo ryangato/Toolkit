@@ -19,6 +19,4 @@
 
 #include "Base.h"
 
-#if defined(PLATFORM_WIN)
-	extern FILE *OutputFile;
-#endif
+extern FILE *OutputFile;
