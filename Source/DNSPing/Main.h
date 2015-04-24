@@ -21,7 +21,7 @@
 
 std::string TargetString, TestDomain, TargetDomainString;
 std::wstring wTargetString, wOutputFileName;
-#if defined(PLATFORM_LINUX)
+#if (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 	std::string OutputFileName;
 #endif
 long double TotalTime = 0, MaxTime = 0, MinTime = 0;
@@ -34,7 +34,7 @@ int IP_HopLimits = 0;
 #if defined(PLATFORM_WIN)
 	int SocketTimeout = DEFAULT_TIME_OUT;
 	auto IPv4_DF = false;
-#elif defined(PLATFORM_LINUX)
+#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 	timeval SocketTimeout = {DEFAULT_TIME_OUT, 0};
 #endif
 dns_hdr HeaderParameter = {0};

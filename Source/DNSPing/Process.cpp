@@ -30,7 +30,7 @@ size_t __fastcall SendProcess(const sockaddr_storage &Target, const bool LastSen
 #if defined(PLATFORM_WIN)
 	LARGE_INTEGER CPUFrequency = {0}, BeforeTime = {0}, AfterTime = {0};
 	int AddrLen = 0;
-#elif defined(PLATFORM_LINUX)
+#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 	timeval BeforeTime = {0}, AfterTime = {0};
 	socklen_t AddrLen = 0;
 #endif
@@ -74,7 +74,7 @@ size_t __fastcall SendProcess(const sockaddr_storage &Target, const bool LastSen
 #if defined(PLATFORM_WIN)
 	if (setsockopt(Socket, SOL_SOCKET, SO_SNDTIMEO, (PSTR)&SocketTimeout, sizeof(int)) == SOCKET_ERROR || 
 		setsockopt(Socket, SOL_SOCKET, SO_RCVTIMEO, (PSTR)&SocketTimeout, sizeof(int)) == SOCKET_ERROR)
-#elif defined(PLATFORM_LINUX)
+#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 	if (setsockopt(Socket, SOL_SOCKET, SO_SNDTIMEO, &SocketTimeout, sizeof(timeval)) == SOCKET_ERROR ||
 		setsockopt(Socket, SOL_SOCKET, SO_RCVTIMEO, &SocketTimeout, sizeof(timeval)) == SOCKET_ERROR)
 #endif
@@ -88,7 +88,7 @@ size_t __fastcall SendProcess(const sockaddr_storage &Target, const bool LastSen
 	{
 	#if defined(PLATFORM_WIN)
 		if (IP_HopLimits != 0 && setsockopt(Socket, IPPROTO_IP, IPV6_UNICAST_HOPS, (PSTR)&IP_HopLimits, sizeof(int)) == SOCKET_ERROR)
-	#elif defined(PLATFORM_LINUX)
+	#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 		if (IP_HopLimits != 0 && setsockopt(Socket, IPPROTO_IP, IPV6_UNICAST_HOPS, &IP_HopLimits, sizeof(int)) == SOCKET_ERROR)
 	#endif
 		{
@@ -99,7 +99,7 @@ size_t __fastcall SendProcess(const sockaddr_storage &Target, const bool LastSen
 	else { //IPv4
 	#if defined(PLATFORM_WIN)
 		if (IP_HopLimits != 0 && setsockopt(Socket, IPPROTO_IP, IP_TTL, (PSTR)&IP_HopLimits, sizeof(int)) == SOCKET_ERROR)
-	#elif defined(PLATFORM_LINUX)
+	#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 		if (IP_HopLimits != 0 && setsockopt(Socket, IPPROTO_IP, IP_TTL, &IP_HopLimits, sizeof(int)) == SOCKET_ERROR)
 	#endif
 		{
@@ -128,7 +128,11 @@ size_t __fastcall SendProcess(const sockaddr_storage &Target, const bool LastSen
 		if (HeaderParameter.ID == 0)
 		{
 			pdns_hdr = (dns_hdr *)(Buffer.get() + DataLength);
+		#if defined(PLATFORM_MACX)
+			pdns_hdr->ID = htons(*(uint16_t *)GetCurrentProcessId());
+		#else
 			pdns_hdr->ID = htons((uint16_t)GetCurrentProcessId());
+		#endif
 		}
 		DataLength += sizeof(dns_hdr);
 		DataLength += CharToDNSQuery((PSTR)TestDomain.c_str(), Buffer.get() + DataLength);
@@ -161,13 +165,18 @@ size_t __fastcall SendProcess(const sockaddr_storage &Target, const bool LastSen
 	}
 	sendto(Socket, Buffer.get(), (int)DataLength, 0, (PSOCKADDR)&Target, AddrLen);
 
-#elif defined(PLATFORM_LINUX)
+#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 	if (gettimeofday(&BeforeTime, NULL) != 0)
 	{
 		wprintf_s(L"Get current time error, error code is %d.\n", errno);
 		return EXIT_FAILURE;
 	}
-	sendto(Socket, Buffer.get(), DataLength, MSG_NOSIGNAL, (PSOCKADDR)&Target, AddrLen);
+
+	#if defined(PLATFORM_LINUX)
+		sendto(Socket, Buffer.get(), DataLength, MSG_NOSIGNAL, (PSOCKADDR)&Target, AddrLen);
+	#elif defined(PLATFORM_MACX)
+		sendto(Socket, Buffer.get(), DataLength, 0, (PSOCKADDR)&Target, AddrLen);
+	#endif
 #endif
 
 //Receive response.
@@ -177,8 +186,12 @@ size_t __fastcall SendProcess(const sockaddr_storage &Target, const bool LastSen
 	{
 		wprintf_s(L"Get current time from High Precision Event Timer/HPET error, error code is %d.\n", (int)GetLastError());
 
-#elif defined(PLATFORM_LINUX)
-	DataLength = recvfrom(Socket, RecvBuffer.get(), BufferSize, MSG_NOSIGNAL, (PSOCKADDR)&Target, &AddrLen);
+#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
+	#if defined(PLATFORM_LINUX)
+		DataLength = recvfrom(Socket, RecvBuffer.get(), BufferSize, MSG_NOSIGNAL, (PSOCKADDR)&Target, &AddrLen);
+	#elif defined(PLATFORM_MACX)
+		DataLength = recvfrom(Socket, RecvBuffer.get(), BufferSize, 0, (PSOCKADDR)&Target, &AddrLen);
+	#endif
 	if (gettimeofday(&AfterTime, NULL) != 0)
 	{
 		wprintf_s(L"Get current time error, error code is %d.\n", errno);
@@ -189,7 +202,7 @@ size_t __fastcall SendProcess(const sockaddr_storage &Target, const bool LastSen
 //Get waiting time.
 #if defined(PLATFORM_WIN)
 	long double Result = (long double)((AfterTime.QuadPart - BeforeTime.QuadPart) * (long double)MICROSECOND_TO_MILLISECOND / (long double)CPUFrequency.QuadPart);
-#elif defined(PLATFORM_LINUX)
+#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 	long double Result = (long double)(AfterTime.tv_sec - BeforeTime.tv_sec) * (long double)SECOND_TO_MILLISECOND;
 	if (AfterTime.tv_sec >= BeforeTime.tv_sec)
 		Result += (long double)(AfterTime.tv_usec - BeforeTime.tv_usec) / (long double)MICROSECOND_TO_MILLISECOND;
@@ -207,7 +220,7 @@ size_t __fastcall SendProcess(const sockaddr_storage &Target, const bool LastSen
 			wprintf_s(L"Receive from %ls:%u -> %d bytes but validate error, waiting %lf ms.\n", wTargetString.c_str(), ntohs(ServiceType), (int)DataLength, Result);
 			if (OutputFile != nullptr)
 				fwprintf_s(OutputFile, L"Receive from %ls:%u -> %d bytes but validate error, waiting %lf ms.\n", wTargetString.c_str(), ntohs(ServiceType), (int)DataLength, Result);
-		#elif defined(PLATFORM_LINUX)
+		#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 			wprintf_s(L"Receive from %ls:%u -> %d bytes but validate error, waiting %Lf ms.\n", wTargetString.c_str(), ntohs(ServiceType), (int)DataLength, Result);
 			if (OutputFile != nullptr)
 				fwprintf_s(OutputFile, L"Receive from %ls:%u -> %d bytes but validate error, waiting %Lf ms.\n", wTargetString.c_str(), ntohs(ServiceType), (int)DataLength, Result);
@@ -220,7 +233,7 @@ size_t __fastcall SendProcess(const sockaddr_storage &Target, const bool LastSen
 			#if defined(PLATFORM_WIN)
 				if (Result >= SocketTimeout)
 					break;
-			#elif defined(PLATFORM_LINUX)
+			#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 				if (Result >= SocketTimeout.tv_usec / MICROSECOND_TO_MILLISECOND + SocketTimeout.tv_sec * SECOND_TO_MILLISECOND)
 					break;
 			#endif
@@ -238,9 +251,13 @@ size_t __fastcall SendProcess(const sockaddr_storage &Target, const bool LastSen
 			//Get waiting time.
 				Result = (long double)((AfterTime.QuadPart - BeforeTime.QuadPart) * (long double)MICROSECOND_TO_MILLISECOND / (long double)CPUFrequency.QuadPart);
 
-			#elif defined(PLATFORM_LINUX)
+			#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 			//Receive.
+			#if defined(PLATFORM_LINUX)
 				DataLength = recvfrom(Socket, RecvBuffer.get(), BufferSize, MSG_NOSIGNAL, (PSOCKADDR)&Target, &AddrLen);
+			#elif defined(PLATFORM_MACX)
+				DataLength = recvfrom(Socket, RecvBuffer.get(), BufferSize, 0, (PSOCKADDR)&Target, &AddrLen);
+			#endif
 
 			//Get waiting time.
 				if (gettimeofday(&AfterTime, NULL) != 0)
@@ -267,7 +284,7 @@ size_t __fastcall SendProcess(const sockaddr_storage &Target, const bool LastSen
 					wprintf_s(L"Receive from %ls:%u -> %d bytes but validate error, waiting %lf ms.\n", wTargetString.c_str(), ntohs(ServiceType), (int)DataLength, Result);
 					if (OutputFile != nullptr)
 						fwprintf_s(OutputFile, L"Receive from %ls:%u -> %d bytes but validate error, waiting %lf ms.\n", wTargetString.c_str(), ntohs(ServiceType), (int)DataLength, Result);
-				#elif defined(PLATFORM_LINUX)
+				#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 					wprintf_s(L"Receive from %ls:%u -> %d bytes but validate error, waiting %Lf ms.\n", wTargetString.c_str(), ntohs(ServiceType), (int)DataLength, Result);
 					if (OutputFile != nullptr)
 						fwprintf_s(OutputFile, L"Receive from %ls:%u -> %d bytes but validate error, waiting %Lf ms.\n", wTargetString.c_str(), ntohs(ServiceType), (int)DataLength, Result);
@@ -284,7 +301,7 @@ size_t __fastcall SendProcess(const sockaddr_storage &Target, const bool LastSen
 				wprintf_s(L"Receive error: %d(%d), waiting correct answers timeout(%lf ms).\n", (int)DataLength, WSAGetLastError(), Result);
 				if (OutputFile != nullptr)
 					fwprintf_s(OutputFile, L"Receive error: %d(%d), waiting correct answers timeout(%lf ms).\n", (int)DataLength, WSAGetLastError(), Result);
-			#elif defined(PLATFORM_LINUX)
+			#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 				wprintf(L"Receive error: %d(%d), waiting correct answers timeout(%Lf ms).\n", (int)DataLength, WSAGetLastError(), Result);
 				if (OutputFile != nullptr)
 					fwprintf(OutputFile, L"Receive error: %d(%d), waiting correct answers timeout(%Lf ms).\n", (int)DataLength, WSAGetLastError(), Result);
@@ -297,7 +314,7 @@ size_t __fastcall SendProcess(const sockaddr_storage &Target, const bool LastSen
 				wprintf_s(L"Receive from %ls:%u -> %d bytes, waiting %lf ms.\n", wTargetString.c_str(), ntohs(ServiceType), (int)DataLength, Result);
 				if (OutputFile != nullptr)
 					fwprintf_s(OutputFile, L"Receive from %ls:%u -> %d bytes, waiting %lf ms.\n", wTargetString.c_str(), ntohs(ServiceType), (int)DataLength, Result);
-			#elif defined(PLATFORM_LINUX)
+			#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 				wprintf_s(L"Receive from %ls:%u -> %d bytes, waiting %Lf ms.\n", wTargetString.c_str(), ntohs(ServiceType), (int)DataLength, Result);
 				if (OutputFile != nullptr)
 					fwprintf_s(OutputFile, L"Receive from %ls:%u -> %d bytes, waiting %Lf ms.\n", wTargetString.c_str(), ntohs(ServiceType), (int)DataLength, Result);
@@ -309,7 +326,7 @@ size_t __fastcall SendProcess(const sockaddr_storage &Target, const bool LastSen
 			wprintf_s(L"Receive from %ls:%u -> %d bytes, waiting %lf ms.\n", wTargetString.c_str(), ntohs(ServiceType), (int)DataLength, Result);
 			if (OutputFile != nullptr)
 				fwprintf_s(OutputFile, L"Receive from %ls:%u -> %d bytes, waiting %lf ms.\n", wTargetString.c_str(), ntohs(ServiceType), (int)DataLength, Result);
-		#elif defined(PLATFORM_LINUX)
+		#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 			wprintf_s(L"Receive from %ls:%u -> %d bytes, waiting %Lf ms.\n", wTargetString.c_str(), ntohs(ServiceType), (int)DataLength, Result);
 			if (OutputFile != nullptr)
 				fwprintf_s(OutputFile, L"Receive from %ls:%u -> %d bytes, waiting %Lf ms.\n", wTargetString.c_str(), ntohs(ServiceType), (int)DataLength, Result);
@@ -354,7 +371,7 @@ size_t __fastcall SendProcess(const sockaddr_storage &Target, const bool LastSen
 		wprintf_s(L"Receive error: %d(%d), waiting %lf ms.\n", (int)DataLength, WSAGetLastError(), Result);
 		if (OutputFile != nullptr)
 			fwprintf_s(OutputFile, L"Receive error: %d(%d), waiting %lf ms.\n", (int)DataLength, WSAGetLastError(), Result);
-	#elif defined(PLATFORM_LINUX)
+	#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 		wprintf(L"Receive error: %d(%d), waiting %Lf ms.\n", (int)DataLength, errno, Result);
 		if (OutputFile != nullptr)
 			fwprintf(OutputFile, L"Receive error: %d(%d), waiting %Lf ms.\n", (int)DataLength, errno, Result);
@@ -369,7 +386,7 @@ size_t __fastcall SendProcess(const sockaddr_storage &Target, const bool LastSen
 			Sleep((DWORD)(TransmissionInterval - Result));
 		else if (Result <= STANDARD_TIME_OUT)
 			Sleep(STANDARD_TIME_OUT);
-	#elif defined(PLATFORM_LINUX)
+	#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 		if (TransmissionInterval != 0 && TransmissionInterval > Result)
 			usleep(TransmissionInterval - Result);
 		else if (Result <= STANDARD_TIME_OUT)
@@ -442,7 +459,7 @@ size_t __fastcall PrintProcess(const bool IsPacketStatistics, const bool IsTimeS
 			fwprintf_s(OutputFile, L"   Maximum time: %lf ms.\n", MaxTime);
 			fwprintf_s(OutputFile, L"   Average time: %lf ms.\n", TotalTime / (long double)RecvNum);
 		}
-	#elif defined(PLATFORM_LINUX)
+	#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 		wprintf_s(L"   Minimum time: %Lf ms.\n", MinTime);
 		wprintf_s(L"   Maximum time: %Lf ms.\n", MaxTime);
 		wprintf_s(L"   Average time: %Lf ms.\n", TotalTime / (long double)RecvNum);
@@ -472,7 +489,9 @@ void __fastcall PrintDescription(void)
 #if defined(PLATFORM_WIN)
 	wprintf_s(L"DNSPing v0.1.1(Windows)\n");
 #elif defined(PLATFORM_LINUX)
-	wprintf_s(L"DNSPing v0.1.1(Linux)\n");
+	wprintf(L"DNSPing v0.1.1(Linux)\n");
+#elif defined(PLATFORM_MACX)
+	wprintf(L"DNSPing v0.1.1(Mac)\n");
 #endif
 	wprintf_s(L"Ping with DNS requesting.\n");
 	wprintf_s(L"Copyright (C) 2014-2015 Chengr28\n");
@@ -569,7 +588,7 @@ void __fastcall PrintDescription(void)
 	wprintf_s(L"                     to DNS server.\n");
 	wprintf_s(L"   Target            Target of DNSPing, support IPv4/IPv6 address and domain.\n");
 
-#if defined(PLATFORM_LINUX)
+#if (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 	wprintf_s(L"\n");
 #endif
 	return;

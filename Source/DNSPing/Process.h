@@ -30,7 +30,7 @@ extern int IP_HopLimits;
 #if defined(PLATFORM_WIN)
 	extern int SocketTimeout;
 	extern bool IPv4_DF;
-#elif defined(PLATFORM_LINUX)
+#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 	extern timeval SocketTimeout;
 #endif
 extern dns_hdr HeaderParameter;

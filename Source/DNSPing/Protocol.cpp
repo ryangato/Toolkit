@@ -51,7 +51,7 @@ bool __fastcall CheckEmptyBuffer(const void *Buffer, const size_t Length)
 	return true;
 }
 
-#if defined(PLATFORM_LINUX)
+#if (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 //Convert multiple bytes to wide char string
 	void MBSToWCSString(std::wstring &Target, const char *Buffer)
 	{

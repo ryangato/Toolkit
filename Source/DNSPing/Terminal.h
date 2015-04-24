@@ -19,6 +19,6 @@
 
 #include "Base.h"
 
-#if defined(PLATFORM_LINUX)
+#if (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 	extern FILE *OutputFile;
 #endif

@@ -19,7 +19,7 @@
 
 #include "Terminal.h"
 
-#if defined(PLATFORM_LINUX)
+#if (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 //Handle the system signal.
 	void SIG_Handler(const int Signal)
 	{

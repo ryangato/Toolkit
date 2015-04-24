@@ -22,7 +22,7 @@
 //Main function of program
 #if defined(PLATFORM_WIN)
 	int wmain(int argc, wchar_t* argv[])
-#elif defined(PLATFORM_LINUX)
+#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 	int main(int argc, char *argv[])
 #endif
 {
@@ -43,7 +43,7 @@
 		WSACleanup();
 		return EXIT_FAILURE;
 	}
-#elif defined(PLATFORM_LINUX)
+#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 //Handle the system signal.
 	if (signal(SIGHUP, SIG_Handler) == SIG_ERR || signal(SIGINT, SIG_Handler) == SIG_ERR || signal(SIGQUIT, SIG_Handler) == SIG_ERR || signal(SIGTERM, SIG_Handler) == SIG_ERR)
 	{
@@ -64,7 +64,7 @@
 		{
 		#if defined(PLATFORM_WIN)
 			Parameter = argv[Index];
-		#elif defined(PLATFORM_LINUX)
+		#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 			MBSToWCSString(Parameter, argv[Index]);
 		#endif
 			Result = 0;
@@ -92,7 +92,7 @@
 					++Index;
 				#if defined(PLATFORM_WIN)
 					Parameter = argv[Index];
-				#elif defined(PLATFORM_LINUX)
+				#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 					MBSToWCSString(Parameter, argv[Index]);
 				#endif
 
@@ -131,7 +131,7 @@
 					++Index;
 				#if defined(PLATFORM_WIN)
 					Parameter = argv[Index];
-				#elif defined(PLATFORM_LINUX)
+				#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 					MBSToWCSString(Parameter, argv[Index]);
 				#endif
 
@@ -162,7 +162,7 @@
 					++Index;
 				#if defined(PLATFORM_WIN)
 					Parameter = argv[Index];
-				#elif defined(PLATFORM_LINUX)
+				#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 					MBSToWCSString(Parameter, argv[Index]);
 				#endif
 
@@ -171,7 +171,7 @@
 					{
 					#if defined(PLATFORM_WIN)
 						SocketTimeout = (int)Result;
-					#elif defined(PLATFORM_LINUX)
+					#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 						SocketTimeout.tv_sec = (time_t)(Result / SECOND_TO_MILLISECOND);
 						SocketTimeout.tv_usec = (suseconds_t)(Result % MICROSECOND_TO_MILLISECOND * MICROSECOND_TO_MILLISECOND);
 					#endif
@@ -198,7 +198,7 @@
 					++Index;
 				#if defined(PLATFORM_WIN)
 					Parameter = argv[Index];
-				#elif defined(PLATFORM_LINUX)
+				#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 					MBSToWCSString(Parameter, argv[Index]);
 				#endif
 
@@ -234,7 +234,7 @@
 					++Index;
 				#if defined(PLATFORM_WIN)
 					Parameter = argv[Index];
-				#elif defined(PLATFORM_LINUX)
+				#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 					MBSToWCSString(Parameter, argv[Index]);
 				#endif
 
@@ -303,7 +303,7 @@
 					++Index;
 				#if defined(PLATFORM_WIN)
 					Parameter = argv[Index];
-				#elif defined(PLATFORM_LINUX)
+				#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 					MBSToWCSString(Parameter, argv[Index]);
 				#endif
 
@@ -342,7 +342,7 @@
 					++Index;
 				#if defined(PLATFORM_WIN)
 					Parameter = argv[Index];
-				#elif defined(PLATFORM_LINUX)
+				#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 					MBSToWCSString(Parameter, argv[Index]);
 				#endif
 
@@ -373,7 +373,7 @@
 					++Index;
 				#if defined(PLATFORM_WIN)
 					Parameter = argv[Index];
-				#elif defined(PLATFORM_LINUX)
+				#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 					MBSToWCSString(Parameter, argv[Index]);
 				#endif
 
@@ -404,7 +404,7 @@
 					++Index;
 				#if defined(PLATFORM_WIN)
 					Parameter = argv[Index];
-				#elif defined(PLATFORM_LINUX)
+				#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 					MBSToWCSString(Parameter, argv[Index]);
 				#endif
 
@@ -435,7 +435,7 @@
 					++Index;
 				#if defined(PLATFORM_WIN)
 					Parameter = argv[Index];
-				#elif defined(PLATFORM_LINUX)
+				#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 					MBSToWCSString(Parameter, argv[Index]);
 				#endif
 
@@ -466,7 +466,7 @@
 					++Index;
 				#if defined(PLATFORM_WIN)
 					Parameter = argv[Index];
-				#elif defined(PLATFORM_LINUX)
+				#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 					MBSToWCSString(Parameter, argv[Index]);
 				#endif
 
@@ -475,7 +475,7 @@
 					{
 					#if defined(PLATFORM_WIN)
 						TransmissionInterval = Result;
-					#elif defined(PLATFORM_LINUX)
+					#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 						TransmissionInterval = Result * MICROSECOND_TO_MILLISECOND;
 					#endif
 					}
@@ -506,7 +506,7 @@
 					++Index;
 				#if defined(PLATFORM_WIN)
 					Parameter = argv[Index];
-				#elif defined(PLATFORM_LINUX)
+				#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 					MBSToWCSString(Parameter, argv[Index]);
 				#endif
 
@@ -545,7 +545,7 @@
 					++Index;
 				#if defined(PLATFORM_WIN)
 					Parameter = argv[Index];
-				#elif defined(PLATFORM_LINUX)
+				#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 					MBSToWCSString(Parameter, argv[Index]);
 				#endif
 
@@ -585,7 +585,7 @@
 					++Index;
 				#if defined(PLATFORM_WIN)
 					Parameter = argv[Index];
-				#elif defined(PLATFORM_LINUX)
+				#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 					MBSToWCSString(Parameter, argv[Index]);
 				#endif
 
@@ -625,7 +625,7 @@
 					++Index;
 				#if defined(PLATFORM_WIN)
 					Parameter = argv[Index];
-				#elif defined(PLATFORM_LINUX)
+				#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 					MBSToWCSString(Parameter, argv[Index]);
 				#endif
 
@@ -665,7 +665,7 @@
 					++Index;
 				#if defined(PLATFORM_WIN)
 					Parameter = argv[Index];
-				#elif defined(PLATFORM_LINUX)
+				#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 					MBSToWCSString(Parameter, argv[Index]);
 				#endif
 
@@ -674,7 +674,7 @@
 					memset(RawDataStringPTR.get(), 0, Parameter.length() + 1U);
 				#if defined(PLATFORM_WIN)
 					WideCharToMultiByte(CP_ACP, 0, Parameter.c_str(), (int)Parameter.length(), RawDataStringPTR.get(), (int)Parameter.length() + 1U, nullptr, nullptr);
-				#elif defined(PLATFORM_LINUX)
+				#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 					wcstombs(RawDataStringPTR.get(), Parameter.c_str(), Parameter.length());
 				#endif
 					std::string RawDataString(RawDataStringPTR.get());
@@ -732,7 +732,7 @@
 					++Index;
 				#if defined(PLATFORM_WIN)
 					Parameter = argv[Index];
-				#elif defined(PLATFORM_LINUX)
+				#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 					MBSToWCSString(Parameter, argv[Index]);
 				#endif
 
@@ -780,7 +780,7 @@
 					++Index;
 				#if defined(PLATFORM_WIN)
 					Parameter = argv[Index];
-				#elif defined(PLATFORM_LINUX)
+				#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 					MBSToWCSString(Parameter, argv[Index]);
 				#endif
 
@@ -816,7 +816,7 @@
 					++Index;
 				#if defined(PLATFORM_WIN)
 					Parameter = argv[Index];
-				#elif defined(PLATFORM_LINUX)
+				#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 					MBSToWCSString(Parameter, argv[Index]);
 				#endif
 
@@ -850,7 +850,7 @@
 					++Index;
 				#if defined(PLATFORM_WIN)
 					Parameter = argv[Index];
-				#elif defined(PLATFORM_LINUX)
+				#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 					MBSToWCSString(Parameter, argv[Index]);
 				#endif
 
@@ -858,7 +858,7 @@
 					{
 						wOutputFileName = Parameter;
 
-					#if defined(PLATFORM_LINUX)
+					#if (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 						std::shared_ptr<char> OutputFileNamePTR(new char[Parameter.length() + 1U]);
 						memset(OutputFileNamePTR.get(), 0, Parameter.length() + 1U);
 						wcstombs(OutputFileNamePTR.get(), Parameter.c_str(), Parameter.length());
@@ -903,7 +903,7 @@
 				memset(TestDomainPTR.get(), 0, Parameter.length() + 1U);
 			#if defined(PLATFORM_WIN)
 				WideCharToMultiByte(CP_ACP, 0, Parameter.c_str(), (int)Parameter.length(), TestDomainPTR.get(), (int)(Parameter.length() + 1U), nullptr, nullptr);
-			#elif defined(PLATFORM_LINUX)
+			#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 				wcstombs(TestDomainPTR.get(), Parameter.c_str(), Parameter.length());
 			#endif
 
@@ -924,7 +924,7 @@
 				memset(ParameterPTR.get(), 0, Parameter.length() + 1U);
 			#if defined(PLATFORM_WIN)
 				WideCharToMultiByte(CP_ACP, 0, Parameter.c_str(), (int)Parameter.length(), ParameterPTR.get(), (int)(Parameter.length() + 1U), nullptr, nullptr);
-			#elif defined(PLATFORM_LINUX)
+			#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 				wcstombs(ParameterPTR.get(), Parameter.c_str(), Parameter.length());
 			#endif
 				std::string ParameterString(ParameterPTR.get());
@@ -1152,7 +1152,7 @@
 					SocketTimeout = 1;
 			}
 		MinTime = SocketTimeout;
-	#elif defined(PLATFORM_LINUX)
+	#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 		MinTime = SocketTimeout.tv_sec * SECOND_TO_MILLISECOND + SocketTimeout.tv_usec / MICROSECOND_TO_MILLISECOND;
 	#endif
 
@@ -1173,7 +1173,7 @@
 			wTargetDomainString = wTargetStringPTR.get();
 		}
 		wTargetStringPTR.reset();
-	#elif defined(PLATFORM_LINUX)
+	#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 		MBSToWCSString(wTargetString, TargetString.c_str());
 		MBSToWCSString(wTestDomain, TestDomain.c_str());
 		if (!TargetDomainString.empty())
@@ -1221,7 +1221,7 @@
 		{
 		#if defined(PLATFORM_WIN)
 			Result = _wfopen_s(&OutputFile, wOutputFileName.c_str(), L"a,ccs=UTF-8");
-		#elif defined(PLATFORM_LINUX)
+		#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 			OutputFile = fopen(OutputFileName.c_str(), ("a"));
 		#endif
 			if (OutputFile == nullptr)
@@ -1270,7 +1270,7 @@
 
 					#if defined(PLATFORM_WIN)
 						MultiByteToWideChar(CP_ACP, 0, FQDN.get(), MBSTOWCS_NULLTERMINATE, wFQDN.get(), (int)strlen(FQDN.get()));
-					#elif defined(PLATFORM_LINUX)
+					#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 						mbstowcs(wFQDN.get(), FQDN.get(), strlen(FQDN.get()));
 					#endif
 

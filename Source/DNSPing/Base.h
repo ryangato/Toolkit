@@ -147,6 +147,7 @@
 #elif !defined(PLATFORM_UNIX)
 #  define PLATFORM_UNIX
 #endif
+/* XCode support
 #if defined(PLATFORM_MACX)
 #  ifdef MAC_OS_X_VERSION_MIN_REQUIRED
 #    undef MAC_OS_X_VERSION_MIN_REQUIRED
@@ -163,6 +164,7 @@
 #    error "This version of Mac OS X is unsupported"
 #  endif
 #endif
+*/
 
 
 //////////////////////////////////////////////////
@@ -170,9 +172,12 @@
 // 
 //C Standard Library and C++ Standard Template Library/STL Headers
 #include <ctime>
-#if defined(PLATFORM_LINUX)
+#if (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 	#include <cstdlib>
 	#include <cstring>
+	#if defined(PLATFORM_MACX)
+		#include <errno.h>
+	#endif
 #endif
 #include <string>
 #include <memory>
@@ -195,7 +200,7 @@
 	#define __LITTLE_ENDIAN           1U                 //Little Endian
 //	#define __BIG_ENDIAN              2U                 //Big Endian
 	#define __BYTE_ORDER              __LITTLE_ENDIAN    //x86 and x86-64/x64
-#elif defined(PLATFORM_LINUX)
+#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 //Portable Operating System Interface/POSIX and Unix system header
 	#include <limits.h>               //Limits
 	#include <pthread.h>              //Threads
@@ -283,7 +288,7 @@
 	#define IPPROTO_ST                5U                   //Stream
 #endif
 //#define IPPROTO_TCP               6U                   //Transmission Control
-#if defined(PLATFORM_LINUX)
+#if (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 	#define IPPROTO_CBT             7U                     //Core Based Tree
 #endif
 //#define IPPROTO_EGP               8U                   //Exterior Gateway Protocol
@@ -293,15 +298,21 @@
 #define IPPROTO_BBN_RCC_MON       10U                  //BBN RCC Monitoring
 #define IPPROTO_NVP_II            11U                  //Network Voice Protocol
 //#define IPPROTO_PUP               12U                  //PUP
-#define IPPROTO_ARGUS             13U                  //ARGUS
-#define IPPROTO_EMCON             14U                  //EMCON
-#define IPPROTO_XNET              15U                  //Cross Net Debugger
-#define IPPROTO_CHAOS             16U                  //Chaos
+#if !defined(PLATFORM_MACX)
+	#define IPPROTO_ARGUS             13U                  //ARGUS
+	#define IPPROTO_EMCON             14U                  //EMCON
+	#define IPPROTO_XNET              15U                  //Cross Net Debugger
+	#define IPPROTO_CHAOS             16U                  //Chaos
+#endif
 //#define IPPROTO_UDP               17U                  //User Datagram
-#define IPPROTO_MUX               18U                  //Multiplexing
+#if !defined(PLATFORM_MACX)
+	#define IPPROTO_MUX               18U                  //Multiplexing
+#endif
 #define IPPROTO_DCN               19U                  //DCN Measurement Subsystems
-#define IPPROTO_HMP               20U                  //Host Monitoring
-#define IPPROTO_PRM               21U                  //Packet Radio Measurement
+#if !defined(PLATFORM_MACX)
+	#define IPPROTO_HMP               20U                  //Host Monitoring
+	#define IPPROTO_PRM               21U                  //Packet Radio Measurement
+#endif
 //#define IPPROTO_IDP               22U                  //XEROX NS IDP
 #define IPPROTO_TRUNK_1           23U                  //Trunk-1
 #define IPPROTO_TRUNK_2           24U                  //Trunk-2
@@ -310,26 +321,36 @@
 #if defined(PLATFORM_LINUX)
 	#define IPPROTO_RDP               27U                  //Reliable Data Protocol
 #endif
-#define IPPROTO_IRTP              28U                  //Internet Reliable Transaction
+#if !defined(PLATFORM_MACX)
+	#define IPPROTO_IRTP              28U                  //Internet Reliable Transaction
+#endif
 #define IPPROTO_ISO_TP4           29U                  //ISO Transport Protocol Class 4
 #define IPPROTO_NETBLT            30U                  //Bulk Data Transfer Protocol
 #define IPPROTO_MFE               31U                  //MFE Network Services Protocol
 #define IPPROTO_MERIT             32U                  //MERIT Internodal Protocol
-#if defined(PLATFORM_WIN)
+#if (defined(PLATFORM_WIN) || defined(PLATFORM_MACX))
 	#define IPPROTO_DCCP              33U                  //Datagram Congestion Control Protocol
 #endif
-#define IPPROTO_3PC               34U                  //Third Party Connect Protocol
-#define IPPROTO_IDPR              35U                  //Inter-Domain Policy Routing Protocol
-#define IPPROTO_XTP               36U                  //XTP
-#define IPPROTO_DDP               37U                  //Datagram Delivery Protocol
+#if !defined(PLATFORM_MACX)
+	#define IPPROTO_3PC               34U                  //Third Party Connect Protocol
+	#define IPPROTO_IDPR              35U                  //Inter-Domain Policy Routing Protocol
+	#define IPPROTO_XTP               36U                  //XTP
+	#define IPPROTO_DDP               37U                  //Datagram Delivery Protocol
+#endif
 #define IPPROTO_IDPR_CMTP         38U                  //IDPR Control Message Transport Proto
 #define IPPROTO_TPPLUS            39U                  //TP++ Transport Protocol
-#define IPPROTO_IL                40U                  //IL Transport Protocol
+#if !defined(PLATFORM_MACX)
+	#define IPPROTO_IL                40U                  //IL Transport Protocol
+#endif
 //#define IPPROTO_IPv6              41U                  //IPv6 encapsulation
-#define IPPROTO_SDRP              42U                  //Source Demand Routing Protocol
+#if !defined(PLATFORM_MACX)
+	#define IPPROTO_SDRP              42U                  //Source Demand Routing Protocol
+#endif
 //#define IPPROTO_ROUTING           43U                  //Route Routing Header for IPv6
 //#define IPPROTO_FRAGMENT          44U                  //Frag Fragment Header for IPv6
-#define IPPROTO_IDRP              45U                  //Inter - Domain Routing Protocol
+#if !defined(PLATFORM_MACX)
+	#define IPPROTO_IDRP              45U                  //Inter - Domain Routing Protocol
+#endif
 #if defined(PLATFORM_WIN)
 	#define IPPROTO_RSVP              46U                  //Reservation Protocol
 	#define IPPROTO_GRE               47U                  //Generic Routing Encapsulation
@@ -339,7 +360,9 @@
 //#define IPPROTO_ESP               50U                  //Encap Security Payload
 //#define IPPROTO_AH                51U                  //Authentication Header
 #define IPPROTO_NLSP              52U                  //Integrated Net Layer Security TUBA
-#define IPPROTO_SWIPE             53U                  //IP with Encryption
+#if !defined(PLATFORM_MACX)
+	#define IPPROTO_SWIPE             53U                  //IP with Encryption
+#endif
 #define IPPROTO_NARP              54U                  //NBMA Address Resolution Protocol
 #define IPPROTO_MOBILE            55U                  //IP Mobility
 #define IPPROTO_TLSP              56U                  //Transport Layer Security Protocol using Kryptonet key management
@@ -348,53 +371,77 @@
 //#define IPPROTO_NONE              59U                  //No Next Header for IPv6
 //#define IPPROTO_DSTOPTS           6OU                  //Destination Options for IPv6
 #define IPPROTO_AHI               61U                  //Any host internal protocol
-#define IPPROTO_CFTP              62U                  //CFTP
+#if !defined(PLATFORM_MACX)
+	#define IPPROTO_CFTP              62U                  //CFTP
+#endif
 #define IPPROTO_ALN               63U                  //Any local network
 #define IPPROTO_SAT               64U                  //EXPAK SATNET and Backroom EXPAK
-#define IPPROTO_KRYPTOLAN         65U                  //Kryptolan
-#define IPPROTO_RVD               66U                  //MIT Remote Virtual Disk Protocol
-#define IPPROTO_IPPC              67U                  //Internet Pluribus Packet Core
+#if !defined(PLATFORM_MACX)
+	#define IPPROTO_KRYPTOLAN         65U                  //Kryptolan
+	#define IPPROTO_RVD               66U                  //MIT Remote Virtual Disk Protocol
+	#define IPPROTO_IPPC              67U                  //Internet Pluribus Packet Core
+#endif
 #define IPPROTO_ADF               68U                  //Any distributed file system
 #define IPPROTO_SAT_MON           69U                  //SATNET Monitoring
-#define IPPROTO_VISA              70U                  //VISA Protocol
-#define IPPROTO_IPCV              71U                  //Internet Packet Core Utility
-#define IPPROTO_CPNX              72U                  //Computer Protocol Network Executive
-#define IPPROTO_CPHB              73U                  //Computer Protocol Heart Beat
-#define IPPROTO_WSN               74U                  //Wang Span Network
-#define IPPROTO_PVP               75U                  //Packet Video Protocol
+#if !defined(PLATFORM_MACX)
+	#define IPPROTO_VISA              70U                  //VISA Protocol
+	#define IPPROTO_IPCV              71U                  //Internet Packet Core Utility
+	#define IPPROTO_CPNX              72U                  //Computer Protocol Network Executive
+	#define IPPROTO_CPHB              73U                  //Computer Protocol Heart Beat
+	#define IPPROTO_WSN               74U                  //Wang Span Network
+	#define IPPROTO_PVP               75U                  //Packet Video Protocol
+#endif
 #define IPPROTO_BR                76U                  //SAT - MON Backroom SATNET Monitoring
-#if defined(PLATFORM_LINUX)
-	#define IPPROTO_ND                77U                  //SUN ND PROTOCOL - Temporary
+#if (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
+	#if !defined(PLATFORM_MACX)
+		#define IPPROTO_ND                77U                  //SUN ND PROTOCOL - Temporary
+	#endif
 	#define IPPROTO_ICLFXBM           78U                  //WIDEBAND Monitoring
 #endif
-#define IPPROTO_WBEXPAK           79U                  //WIDEBAND EXPAK
+#if !defined(PLATFORM_MACX)
+	#define IPPROTO_WBEXPAK           79U                  //WIDEBAND EXPAK
+#endif
 #define IPPROTO_ISO               80U                  //IP ISO Internet Protocol
-#define IPPROTO_VMTP              81U                  //VMTP
-#define IPPROTO_SVMTP             82U                  //SECURE - VMTP
-#define IPPROTO_VINES             83U                  //VINES
-#define IPPROTO_TTP               84U                  //Transaction Transport Protocol
+#if !defined(PLATFORM_MACX)
+	#define IPPROTO_VMTP              81U                  //VMTP
+	#define IPPROTO_SVMTP             82U                  //SECURE - VMTP
+	#define IPPROTO_VINES             83U                  //VINES
+	#define IPPROTO_TTP               84U                  //Transaction Transport Protocol
+#endif
 #define IPPROTO_IPTM              85U                  //Internet Protocol Traffic ManageR
 #define IPPROTO_NSFNET            86U                  //NSFNET - IGP
-#define IPPROTO_DGP               87U                  //Dissimilar Gateway Protocol
-#define IPPROTO_TCF               88U                  //TCF
+#if !defined(PLATFORM_MACX)
+	#define IPPROTO_DGP               87U                  //Dissimilar Gateway Protocol
+	#define IPPROTO_TCF               88U                  //TCF
+#endif
 #define IPPROTO_EIGRP             89U                  //EIGRP
 #define IPPROTO_SPRITE            90U                  //RPC Sprite RPC Protocol
-#define IPPROTO_LARP              91U                  //Locus Address Resolution Protocol
+#if !defined(PLATFORM_MACX)
+	#define IPPROTO_LARP              91U                  //Locus Address Resolution Protocol
+#endif
 #if defined(PLATFORM_WIN)
 	#define IPPROTO_MTP               92U                  //Multicast Transport Protocol
 #endif
-#define IPPROTO_AX25              93U                  //AX.25 Frames
+#if !defined(PLATFORM_MACX)
+	#define IPPROTO_AX25              93U                  //AX.25 Frames
+#endif
 #if defined(PLATFORM_WIN)
 	#define IPPROTO_IPIP              94U                  //IP - within - IP Encapsulation Protocol
 #endif
-#define IPPROTO_MICP              95U                  //Mobile Internetworking Control Pro.
+#if !defined(PLATFORM_MACX)
+	#define IPPROTO_MICP              95U                  //Mobile Internetworking Control Pro.
+#endif
 #define IPPROTO_SCC               96U                  //Semaphore Communications Sec.Pro.
-#define IPPROTO_ETHERIP           97U                  //Ethernet - within - IP Encapsulation
+#if !defined(PLATFORM_MACX)
+	#define IPPROTO_ETHERIP           97U                  //Ethernet - within - IP Encapsulation
+#endif
 #if defined(PLATFORM_WIN)
 	#define IPPROTO_ENCAP             98U                  //Encapsulation Header
 #endif
-#define IPPROTO_APES              100U                 //Any private encryption scheme
-#define IPPROTO_GMTP              101U                 //GMTP
+#if !defined(PLATFORM_MACX)
+	#define IPPROTO_APES              100U                 //Any private encryption scheme
+	#define IPPROTO_GMTP              101U                 //GMTP
+#endif
 #define IPPROTO_IFMP              102U                 //Ipsilon Flow Management Protocol
 #define IPPROTO_PNNI              103U                 //PNNI over IP
 //#define IPPROTO_PIM               104U                 //Protocol Independent Multicast
@@ -402,7 +449,9 @@
 #define IPPROTO_SCPS              106U                 //SCPS
 #define IPPROTO_QNX               107U                 //QNX
 #define IPPROTO_AN                108U                 //Active Networks
-#define IPPROTO_IPCOMP            109U                 //IP Payload Compression Protocol
+#if !defined(PLATFORM_MACX)
+	#define IPPROTO_IPCOMP            109U                 //IP Payload Compression Protocol
+#endif
 #define IPPROTO_SNP               110U                 //Sitara Networks Protocol
 #define IPPROTO_COMPAQ            111U                 //Peer Compaq Peer Protocol
 #define IPPROTO_IPX               112U                 //IP IPX in IP
@@ -410,7 +459,7 @@
 	#define IPPROTO_PGM               113U                 //PGM Reliable Transport Protocol
 #endif
 #define IPPROTO_0HOP              114U                 //Any 0-hop protocol
-#if defined(PLATFORM_LINUX)
+#if (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 	#define IPPROTO_L2TP              115U                 //Layer Two Tunneling Protocol
 #endif
 #define IPPROTO_DDX               116U                 //D - II Data Exchange(DDX)
@@ -433,7 +482,7 @@
 #define IPPROTO_FC                133U                 //Fibre Channel
 #define IPPROTO_RSVP_E2E          134U                 //RSVP-E2E-IGNORE
 #define IPPROTO_MOBILITY          135U                 //Mobility Header
-#if defined(PLATFORM_WIN)
+#if (defined(PLATFORM_WIN) || defined(PLATFORM_MACX))
 	#define IPPROTO_UDPLITE           136U                 //UDP Lite
 #endif
 #define IPPROTO_MPLS              137U                 //MPLS in IP
@@ -448,28 +497,61 @@
 
 //Port definitions(1 - 1024, well-known ports)
 //About this list, see https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml
-#if defined(PLATFORM_LINUX)
+#if (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 	#define IPPORT_TCPMUX               1U
+#endif
+#if defined(PLATFORM_MACX)
+	#define IPPORT_ECHO                 7U
+	#define IPPORT_DISCARD              9U
+	#define IPPORT_SYSTAT               11U
+	#define IPPORT_DAYTIME              13U
+	#define IPPORT_NETSTAT              15U
+#endif
+#if (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 	#define IPPORT_QOTD                 17U
 	#define IPPORT_MSP                  18U
 	#define IPPORT_CHARGEN              19U
 	#define IPPORT_FTP_DATA             20U
 #endif
+#if defined(PLATFORM_MACX)
+	#define IPPORT_FTP                  21U
+#endif
 #define IPPORT_SSH                  22U
+#if defined(PLATFORM_MACX)
+	#define IPPORT_TELNET               23U
+	#define IPPORT_SMTP                 25U
+	#define IPPORT_TIMESERVER           37U
+#endif
 #define IPPORT_RAP                  38U
 #define IPPORT_RLP                  39U
+#if defined(PLATFORM_MACX)
+	#define IPPORT_NAMESERVER           42U
+	#define IPPORT_WHOIS                43U
+#endif
 #define IPPORT_TACACS               49U
 #define IPPORT_XNSAUTH              56U
+#if defined(PLATFORM_MACX)
+	#define IPPORT_MTP                  57U
+#endif
 #define IPPORT_BOOTPS               67U
 #define IPPORT_BOOTPC               68U
+#if defined(PLATFORM_MACX)
+	#define IPPORT_TFTP                 69U
+	#define IPPORT_RJE                  77U
+	#define IPPORT_FINGER               79U
+#endif
 #define IPPORT_HTTP                 80U
 #define IPPORT_HTTPBACKUP           81U
-#if defined(PLATFORM_LINUX)
+#if defined(PLATFORM_MACX)
+	#define IPPORT_TTYLINK              87U
+	#define IPPORT_SUPDUP               95U
+#endif
+#if (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 	#define IPPORT_POP3                 110U
 #endif
 #define IPPORT_SUNRPC               111U
 #define IPPORT_SQL                  118U
-#if defined(PLATFORM_LINUX)
+#if (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 	#define IPPORT_NTP                  123U
 	#define IPPORT_EPMAP                135U
 	#define IPPORT_NETBIOS_NS           137U
@@ -481,7 +563,7 @@
 #define IPPORT_SGMP                 153U
 #define IPPORT_SQLSRV               156U
 #define IPPORT_DMSP                 158U
-#if defined(PLATFORM_LINUX)
+#if (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 	#define IPPORT_SNMP                 161U
 	#define IPPORT_SNMP_TRAP            162U
 #endif
@@ -489,7 +571,7 @@
 #define IPPORT_ATHBP                202U
 #define IPPORT_QMTP                 209U
 #define IPPORT_IPX                  213U
-#if defined(PLATFORM_LINUX)
+#if (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 	#define IPPORT_IMAP3                220U
 #endif
 #define IPPORT_BGMP                 264U
@@ -501,23 +583,30 @@
 #define IPPORT_HPALARMMGR           383U
 #define IPPORT_ARNS                 384U
 #define IPPORT_AURP                 387U
-#if defined(PLATFORM_LINUX)
+#if (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 	#define IPPORT_LDAP                 389U
 #endif
 #define IPPORT_UPS                  401U
 #define IPPORT_SLP                  427U
-#if defined(PLATFORM_LINUX)
+#if (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 	#define IPPORT_HTTPS                443U
 #endif
 #define IPPORT_SNPP                 444U
-#if defined(PLATFORM_LINUX)
+#if (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 	#define IPPORT_MICROSOFT_DS         445U
 #endif
 #define IPPORT_KPASSWD              464U
 #define IPPORT_TCPNETHASPSRV        475U
 #define IPPORT_RETROSPECT           497U
 #define IPPORT_ISAKMP               500U
+#if defined(PLATFORM_MACX)
+	#define IPPORT_BIFFUDP              512U
+	#define IPPORT_WHOSERVER			513U
+#endif
 #define IPPORT_SYSLOG               514U
+#if defined(PLATFORM_MACX)
+	#define IPPORT_ROUTESERVER          520U
+#endif
 #define IPPORT_NCP                  524U
 #define IPPORT_COURIER              530U
 #define IPPORT_COMMERCE             542U
@@ -1104,7 +1193,7 @@ typedef struct _dns_caa_
 
 //////////////////////////////////////////////////
 // Function defines
-#if defined(PLATFORM_LINUX)
+#if (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 	#define __fastcall
 	#define strnlen_s                               strnlen
 	#define wcsnlen_s                               wcsnlen
@@ -1138,7 +1227,7 @@ typedef struct _dns_caa_
 #if defined(PLATFORM_WIN)
 	#define STANDARD_TIME_OUT            1000U       //Standard timeout, 1000 ms(1 second)
 	#define DEFAULT_TIME_OUT             2000U       //Default timeout, 2000 ms(2 seconds)
-#elif defined(PLATFORM_LINUX)
+#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 	#define STANDARD_TIME_OUT            1000000U    //Standard timeout, 1000000 us(1000 ms or 1 second)
 	#define SECOND_TO_MILLISECOND        1000U       //1000 milliseconds(1 second)
 	#define DEFAULT_TIME_OUT             2U          //Default timeout, 2 seconds
@@ -1161,7 +1250,7 @@ typedef struct _dns_caa_
 #endif
 
 bool __fastcall CheckEmptyBuffer(const void *Buffer, const size_t Length);
-#if defined(PLATFORM_LINUX)
+#if (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 	void MBSToWCSString(std::wstring &Target, const char *Buffer);
 #endif
 size_t __fastcall CaseConvert(const bool IsLowerUpper, const PSTR Buffer, const size_t Length);
@@ -1192,6 +1281,6 @@ void __fastcall PrintResponse(const PSTR Buffer, const size_t Length, FILE *Outp
 //Console.h
 #if defined(PLATFORM_WIN)
 	BOOL __fastcall CtrlHandler(const DWORD fdwCtrlType);
-#elif defined(PLATFORM_LINUX)
+#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 	void SIG_Handler(const int Signal);
 #endif
