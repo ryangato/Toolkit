@@ -1,8 +1,7 @@
 ﻿### Linux Usage
-* You should compile the sources before using.
-* Run terminal and enter to source directory.
-* Run "make" to compile.
-* After all processes finished, the binary is in Release directory.
+* Run terminal and enter to DNSPing directory of source directory.
+* Run "cmake ." to build a Makefile and run "make" to compile.
+* After all processes finished, the binary is in current directory.
 
 
 ### Usage
