@@ -1239,7 +1239,7 @@ void __fastcall PrintResourseData(const PSTR Buffer, const size_t Location, cons
 
 		std::shared_ptr<char> BufferTemp(new char[ADDR_STRING_MAXSIZE]());
 		memset(BufferTemp.get(), 0, ADDR_STRING_MAXSIZE);
-	#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64)) //x86
+	#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64)) //Windows(x86)
 		DWORD BufferLength = ADDR_STRING_MAXSIZE;
 		std::shared_ptr<sockaddr_storage> SockAddr(new sockaddr_storage());
 		memset(SockAddr.get(), 0, sizeof(sockaddr_storage));
@@ -1491,7 +1491,7 @@ void __fastcall PrintResourseData(const PSTR Buffer, const size_t Location, cons
 
 		std::shared_ptr<char> BufferTemp(new char[ADDR_STRING_MAXSIZE]());
 		memset(BufferTemp.get(), 0, ADDR_STRING_MAXSIZE);
-	#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64)) //x86
+	#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64)) //Windows(x86)
 		DWORD BufferLength = ADDR_STRING_MAXSIZE;
 		std::shared_ptr<sockaddr_storage> SockAddr(new sockaddr_storage());
 		memset(SockAddr.get(), 0, sizeof(sockaddr_storage));

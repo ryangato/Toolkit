@@ -20,7 +20,7 @@
 #include "Protocol.h"
 
 //Minimum supported system of Windows Version Helpers is Windows Vista.
-#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64)) //x86
+#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64)) //Windows(x86)
 //Check operation system which higher than Windows 7.
 	bool __fastcall IsLowerThanWin8(void)
 	{
@@ -89,7 +89,7 @@ size_t __fastcall AddressStringToBinary(const PSTR AddrString, void *pAddr, cons
 	SSIZE_T Result = 0;
 
 //inet_ntop() and inet_pton() was only support in Windows Vista and newer system. [Roy Tam]
-#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64)) //x86
+#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64)) //Windows(x86)
 	sockaddr_storage SockAddr = {0};
 	int SockLength = 0;
 #endif
@@ -118,7 +118,7 @@ size_t __fastcall AddressStringToBinary(const PSTR AddrString, void *pAddr, cons
 		}
 
 	//Convert to binary.
-	#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64)) //x86
+	#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64)) //Windows(x86)
 		SockLength = sizeof(sockaddr_in6);
 		if (WSAStringToAddressA((PSTR)sAddrString.c_str(), AF_INET6, nullptr, (PSOCKADDR)&SockAddr, &SockLength) == SOCKET_ERROR)
 	#else 
@@ -129,7 +129,7 @@ size_t __fastcall AddressStringToBinary(const PSTR AddrString, void *pAddr, cons
 			ErrCode = WSAGetLastError();
 			return EXIT_FAILURE;
 		}
-	#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64)) //x86
+	#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64)) //Windows(x86)
 		memcpy_s(pAddr, sizeof(in6_addr), &((PSOCKADDR_IN6)&SockAddr)->sin6_addr, sizeof(in6_addr));
 	#endif
 	}
@@ -176,7 +176,7 @@ size_t __fastcall AddressStringToBinary(const PSTR AddrString, void *pAddr, cons
 			sAddrString.append("0");
 
 	//Convert to binary.
-	#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64)) //x86
+	#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64)) //Windows(x86)
 		SockLength = sizeof(sockaddr_in);
 		if (WSAStringToAddressA((PSTR)sAddrString.c_str(), AF_INET, nullptr, (PSOCKADDR)&SockAddr, &SockLength) == SOCKET_ERROR)
 	#else 
@@ -187,7 +187,7 @@ size_t __fastcall AddressStringToBinary(const PSTR AddrString, void *pAddr, cons
 			ErrCode = WSAGetLastError();
 			return EXIT_FAILURE;
 		}
-	#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64)) //x86
+	#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64)) //Windows(x86)
 		memcpy_s(pAddr, sizeof(in_addr), &((PSOCKADDR_IN)&SockAddr)->sin_addr, sizeof(in_addr));
 	#endif
 	}

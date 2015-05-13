@@ -47,7 +47,7 @@
 //Handle the system signal.
 	if (signal(SIGHUP, SIG_Handler) == SIG_ERR || signal(SIGINT, SIG_Handler) == SIG_ERR || signal(SIGQUIT, SIG_Handler) == SIG_ERR || signal(SIGTERM, SIG_Handler) == SIG_ERR)
 	{
-		wprintf_s(L"Handle the system signal error, error code is %d.\n", errno);
+		wprintf(L"Handle the system signal error, error code is %d.\n", errno);
 		return EXIT_FAILURE;
 	}
 #endif
@@ -1016,7 +1016,7 @@
 										memset(Buffer.get(), 0, ADDR_STRING_MAXSIZE);
 
 									//Minimum supported system of inet_ntop() and inet_pton() is Windows Vista. [Roy Tam]
-									#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64)) //x86
+									#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64)) //Windows(x86)
 										DWORD BufferLength = ADDR_STRING_MAXSIZE;
 										WSAAddressToStringA((PSOCKADDR)&SockAddr, sizeof(sockaddr_in6), nullptr, Buffer.get(), &BufferLength);
 									#else
@@ -1042,7 +1042,7 @@
 										memset(Buffer.get(), 0, ADDR_STRING_MAXSIZE);
 
 									//Minimum supported system of inet_ntop() and inet_pton() is Windows Vista. [Roy Tam]
-									#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64)) //x86
+									#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64)) //Windows(x86)
 										DWORD BufferLength = ADDR_STRING_MAXSIZE;
 										WSAAddressToStringA((PSOCKADDR)&SockAddr, sizeof(sockaddr_in), nullptr, Buffer.get(), &BufferLength);
 									#else

@@ -171,14 +171,8 @@
 // Base header
 // 
 //C Standard Library and C++ Standard Template Library/STL Headers
+#include <cstring>
 #include <ctime>
-#if (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
-	#include <cstdlib>
-	#include <cstring>
-	#if defined(PLATFORM_MACX)
-		#include <errno.h>
-	#endif
-#endif
 #include <string>
 #include <memory>
 
@@ -202,13 +196,16 @@
 	#define __BYTE_ORDER              __LITTLE_ENDIAN    //x86 and x86-64/x64
 #elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 //Portable Operating System Interface/POSIX and Unix system header
-	#include <limits.h>               //Limits
+	#include <cerrno>                 //Error report
+	#include <cstdio>                 //File Input/Output
+	#include <cstdlib>                //C Standard Library
+	#include <climits>                //Limits
 	#include <pthread.h>              //Threads
 	#include <signal.h>               //Signals
 	#include <unistd.h>               //Standard library API
 	#include <netdb.h>                //Network database operations
-	#include <arpa/inet.h>            //Internet operations
 	#include <sys/time.h>             //Date and time
+	#include <arpa/inet.h>            //Internet operations
 
 //Windows compatible
 	#define FALSE                    0
@@ -1245,7 +1242,7 @@ typedef struct _dns_caa_
 
 //Protocol.h
 //Minimum supported system of Windows Version Helpers is Windows Vista.
-#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64)) //x86
+#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64)) //Windows(x86)
 	bool __fastcall IsLowerThanWin8(void);
 #endif
 

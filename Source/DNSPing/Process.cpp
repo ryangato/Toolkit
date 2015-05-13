@@ -168,7 +168,7 @@ size_t __fastcall SendProcess(const sockaddr_storage &Target, const bool LastSen
 #elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 	if (gettimeofday(&BeforeTime, NULL) != 0)
 	{
-		wprintf_s(L"Get current time error, error code is %d.\n", errno);
+		wprintf(L"Get current time error, error code is %d.\n", errno);
 		return EXIT_FAILURE;
 	}
 
@@ -194,7 +194,7 @@ size_t __fastcall SendProcess(const sockaddr_storage &Target, const bool LastSen
 	#endif
 	if (gettimeofday(&AfterTime, NULL) != 0)
 	{
-		wprintf_s(L"Get current time error, error code is %d.\n", errno);
+		wprintf(L"Get current time error, error code is %d.\n", errno);
 #endif
 		return EXIT_FAILURE;
 	}
@@ -221,9 +221,9 @@ size_t __fastcall SendProcess(const sockaddr_storage &Target, const bool LastSen
 			if (OutputFile != nullptr)
 				fwprintf_s(OutputFile, L"Receive from %ls:%u -> %d bytes but validate error, waiting %lf ms.\n", wTargetString.c_str(), ntohs(ServiceType), (int)DataLength, Result);
 		#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
-			wprintf_s(L"Receive from %ls:%u -> %d bytes but validate error, waiting %Lf ms.\n", wTargetString.c_str(), ntohs(ServiceType), (int)DataLength, Result);
+			wprintf(L"Receive from %ls:%u -> %d bytes but validate error, waiting %Lf ms.\n", wTargetString.c_str(), ntohs(ServiceType), (int)DataLength, Result);
 			if (OutputFile != nullptr)
-				fwprintf_s(OutputFile, L"Receive from %ls:%u -> %d bytes but validate error, waiting %Lf ms.\n", wTargetString.c_str(), ntohs(ServiceType), (int)DataLength, Result);
+				fwprintf(OutputFile, L"Receive from %ls:%u -> %d bytes but validate error, waiting %Lf ms.\n", wTargetString.c_str(), ntohs(ServiceType), (int)DataLength, Result);
 		#endif
 
 		//Try to waiting correct packet.
@@ -262,7 +262,7 @@ size_t __fastcall SendProcess(const sockaddr_storage &Target, const bool LastSen
 			//Get waiting time.
 				if (gettimeofday(&AfterTime, NULL) != 0)
 				{
-					wprintf_s(L"Get current time error, error code is %d.\n", errno);
+					wprintf(L"Get current time error, error code is %d.\n", errno);
 					return EXIT_FAILURE;
 				}
 				Result = (long double)(AfterTime.tv_sec - BeforeTime.tv_sec) * (long double)SECOND_TO_MILLISECOND;
@@ -285,9 +285,9 @@ size_t __fastcall SendProcess(const sockaddr_storage &Target, const bool LastSen
 					if (OutputFile != nullptr)
 						fwprintf_s(OutputFile, L"Receive from %ls:%u -> %d bytes but validate error, waiting %lf ms.\n", wTargetString.c_str(), ntohs(ServiceType), (int)DataLength, Result);
 				#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
-					wprintf_s(L"Receive from %ls:%u -> %d bytes but validate error, waiting %Lf ms.\n", wTargetString.c_str(), ntohs(ServiceType), (int)DataLength, Result);
+					wprintf(L"Receive from %ls:%u -> %d bytes but validate error, waiting %Lf ms.\n", wTargetString.c_str(), ntohs(ServiceType), (int)DataLength, Result);
 					if (OutputFile != nullptr)
-						fwprintf_s(OutputFile, L"Receive from %ls:%u -> %d bytes but validate error, waiting %Lf ms.\n", wTargetString.c_str(), ntohs(ServiceType), (int)DataLength, Result);
+						fwprintf(OutputFile, L"Receive from %ls:%u -> %d bytes but validate error, waiting %Lf ms.\n", wTargetString.c_str(), ntohs(ServiceType), (int)DataLength, Result);
 				#endif
 				}
 				else {
@@ -315,9 +315,9 @@ size_t __fastcall SendProcess(const sockaddr_storage &Target, const bool LastSen
 				if (OutputFile != nullptr)
 					fwprintf_s(OutputFile, L"Receive from %ls:%u -> %d bytes, waiting %lf ms.\n", wTargetString.c_str(), ntohs(ServiceType), (int)DataLength, Result);
 			#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
-				wprintf_s(L"Receive from %ls:%u -> %d bytes, waiting %Lf ms.\n", wTargetString.c_str(), ntohs(ServiceType), (int)DataLength, Result);
+				wprintf(L"Receive from %ls:%u -> %d bytes, waiting %Lf ms.\n", wTargetString.c_str(), ntohs(ServiceType), (int)DataLength, Result);
 				if (OutputFile != nullptr)
-					fwprintf_s(OutputFile, L"Receive from %ls:%u -> %d bytes, waiting %Lf ms.\n", wTargetString.c_str(), ntohs(ServiceType), (int)DataLength, Result);
+					fwprintf(OutputFile, L"Receive from %ls:%u -> %d bytes, waiting %Lf ms.\n", wTargetString.c_str(), ntohs(ServiceType), (int)DataLength, Result);
 			#endif
 			}
 		}
@@ -327,9 +327,9 @@ size_t __fastcall SendProcess(const sockaddr_storage &Target, const bool LastSen
 			if (OutputFile != nullptr)
 				fwprintf_s(OutputFile, L"Receive from %ls:%u -> %d bytes, waiting %lf ms.\n", wTargetString.c_str(), ntohs(ServiceType), (int)DataLength, Result);
 		#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
-			wprintf_s(L"Receive from %ls:%u -> %d bytes, waiting %Lf ms.\n", wTargetString.c_str(), ntohs(ServiceType), (int)DataLength, Result);
+			wprintf(L"Receive from %ls:%u -> %d bytes, waiting %Lf ms.\n", wTargetString.c_str(), ntohs(ServiceType), (int)DataLength, Result);
 			if (OutputFile != nullptr)
-				fwprintf_s(OutputFile, L"Receive from %ls:%u -> %d bytes, waiting %Lf ms.\n", wTargetString.c_str(), ntohs(ServiceType), (int)DataLength, Result);
+				fwprintf(OutputFile, L"Receive from %ls:%u -> %d bytes, waiting %Lf ms.\n", wTargetString.c_str(), ntohs(ServiceType), (int)DataLength, Result);
 		#endif
 		}
 
@@ -460,15 +460,15 @@ size_t __fastcall PrintProcess(const bool IsPacketStatistics, const bool IsTimeS
 			fwprintf_s(OutputFile, L"   Average time: %lf ms.\n", TotalTime / (long double)RecvNum);
 		}
 	#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
-		wprintf_s(L"   Minimum time: %Lf ms.\n", MinTime);
-		wprintf_s(L"   Maximum time: %Lf ms.\n", MaxTime);
-		wprintf_s(L"   Average time: %Lf ms.\n", TotalTime / (long double)RecvNum);
+		wprintf(L"   Minimum time: %Lf ms.\n", MinTime);
+		wprintf(L"   Maximum time: %Lf ms.\n", MaxTime);
+		wprintf(L"   Average time: %Lf ms.\n", TotalTime / (long double)RecvNum);
 		if (OutputFile != nullptr)
 		{
-			fwprintf_s(OutputFile, L"\nTime statistics for pinging %ls:\n", wTargetString.c_str());
-			fwprintf_s(OutputFile, L"   Minimum time: %Lf ms.\n", MinTime);
-			fwprintf_s(OutputFile, L"   Maximum time: %Lf ms.\n", MaxTime);
-			fwprintf_s(OutputFile, L"   Average time: %Lf ms.\n", TotalTime / (long double)RecvNum);
+			fwprintf(OutputFile, L"\nTime statistics for pinging %ls:\n", wTargetString.c_str());
+			fwprintf(OutputFile, L"   Minimum time: %Lf ms.\n", MinTime);
+			fwprintf(OutputFile, L"   Maximum time: %Lf ms.\n", MaxTime);
+			fwprintf(OutputFile, L"   Average time: %Lf ms.\n", TotalTime / (long double)RecvNum);
 		}
 	#endif
 	}
