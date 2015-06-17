@@ -17,12 +17,16 @@
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 
+# CMake minimum version
 cmake_minimum_required(VERSION 3.0.2)
 
+# Project name
 project(DNSPing)
 
+# Release version
 set(CMAKE_BUILD_TYPE "Release")
 
+# All source files
 set(SRC_FILES
 		"Base.h"
 		"Main.h"
@@ -36,6 +40,15 @@ set(SRC_FILES
 		"Resolver.cpp"
 		"Terminal.cpp")
 
-add_definitions(-std=c++11 -fpic)
+# Compiling and linking flags
+IF(COMPILE_OPENWRT)
+	add_definitions(-std=c++11)
+ELSE(COMPILE_OPENWRT)
+	add_definitions(-std=c++11 -fpic)
+ENDIF(COMPILE_OPENWRT)
 
+# Executable file name
 add_executable(DNSPing ${SRC_FILES})
+IF(COMPILE_OPENWRT)
+	INSTALL(TARGETS DNSPing RUNTIME DESTINATION sbin)
+ENDIF(COMPILE_OPENWRT)
