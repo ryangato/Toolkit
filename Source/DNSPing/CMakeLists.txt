@@ -18,7 +18,11 @@
 
 
 # CMake minimum version
-cmake_minimum_required(VERSION 3.0.2)
+IF(PLATFORM_OPENWRT)
+	cmake_minimum_required(VERSION 2.8.12.2)
+ELSE(PLATFORM_OPENWRT)
+	cmake_minimum_required(VERSION 3.0.2)
+ENDIF(PLATFORM_OPENWRT)
 
 # Project name
 project(DNSPing)
@@ -41,14 +45,14 @@ set(SRC_FILES
 		"Terminal.cpp")
 
 # Compiling and linking flags
-IF(COMPILE_OPENWRT)
+IF(PLATFORM_OPENWRT)
 	add_definitions(-std=c++11)
-ELSE(COMPILE_OPENWRT)
+ELSE(PLATFORM_OPENWRT)
 	add_definitions(-std=c++11 -fpic)
-ENDIF(COMPILE_OPENWRT)
+ENDIF(PLATFORM_OPENWRT)
 
 # Executable file name
 add_executable(DNSPing ${SRC_FILES})
-IF(COMPILE_OPENWRT)
+IF(PLATFORM_OPENWRT)
 	INSTALL(TARGETS DNSPing RUNTIME DESTINATION sbin)
-ENDIF(COMPILE_OPENWRT)
+ENDIF(PLATFORM_OPENWRT)

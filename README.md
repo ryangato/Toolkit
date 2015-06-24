@@ -6,7 +6,7 @@ Ping with DNS requesting.
 **0.1.1** for Windows/Linux/Mac
 
 ### Usage
-See https://github.com/chengr28/DNSPing/tree/master/Documents
+Please see https://github.com/chengr28/DNSPing/tree/master/Documents
 
 ### Thanks
 * [tcping.exe - Ping over a tcp connection.](http://www.elifulkerson.com/projects/tcping.php)
