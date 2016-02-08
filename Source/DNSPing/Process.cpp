@@ -1,6 +1,6 @@
 ﻿// This code is part of DNSPing
 // Ping with DNS requesting.
-// Copyright (C) 2014-2015 Chengr28
+// Copyright (C) 2014-2016 Chengr28
 // 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -494,11 +494,11 @@ void __fastcall PrintDescription(void)
 	wprintf(L"DNSPing v0.1.1(Mac)\n");
 #endif
 	wprintf_s(L"Ping with DNS requesting.\n");
-	wprintf_s(L"Copyright (C) 2014-2015 Chengr28\n");
+	wprintf_s(L"Copyright (C) 2014-2016 Chengr28\n");
 	wprintf_s(L"--------------------------------------------------\n");
 
 //Usage
-	wprintf_s(L"\nUsage: DNSPing [Options] Test_DomainName Target\n");
+	wprintf_s(L"\nUsage: DNSPing [-options] Test_DomainName Target\n");
 	wprintf_s(L"  e.g. DNSPing -a -qt AAAA -n 5 -w 500 -edns0 www.google.com 8.8.4.4\n");
 
 //Options

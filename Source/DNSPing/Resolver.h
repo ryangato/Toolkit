@@ -19,8 +19,6 @@
 
 #include "Base.h"
 
-extern FILE *OutputFile;
-
 void __fastcall PrintFlags(const uint16_t Flags);
 void __fastcall PrintFlags(const uint16_t Flags, FILE *OutputFile);
 void __fastcall PrintTypeClassesName(const uint16_t Type, const uint16_t Classes);

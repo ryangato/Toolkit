@@ -1,6 +1,6 @@
 ﻿// This code is part of DNSPing
 // Ping with DNS requesting.
-// Copyright (C) 2014-2015 Chengr28
+// Copyright (C) 2014-2016 Chengr28
 // 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License

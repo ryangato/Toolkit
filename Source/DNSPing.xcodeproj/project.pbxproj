@@ -7,15 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		D93C25C11B034C2A00E98313 /* Process.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D93C25BB1B034C2A00E98313 /* Process.cpp */; };
-		D93C25C21B034C2A00E98313 /* Protocol.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D93C25BD1B034C2A00E98313 /* Protocol.cpp */; };
-		D93C25C31B034C2A00E98313 /* Resolver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D93C25BF1B034C2A00E98313 /* Resolver.cpp */; };
-		D93C25C71B034C4B00E98313 /* Terminal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D93C25C51B034C4B00E98313 /* Terminal.cpp */; };
-		D93C25C91B034D9900E98313 /* Main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D93C25C81B034D9900E98313 /* Main.cpp */; };
+		D9AC82BA1C68764100619942 /* Console.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D9AC82AE1C68764100619942 /* Console.cpp */; };
+		D9AC82BB1C68764100619942 /* Main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D9AC82B01C68764100619942 /* Main.cpp */; };
+		D9AC82BC1C68764100619942 /* Process.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D9AC82B21C68764100619942 /* Process.cpp */; };
+		D9AC82BD1C68764100619942 /* Protocol.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D9AC82B41C68764100619942 /* Protocol.cpp */; };
+		D9AC82BE1C68764100619942 /* Resolver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D9AC82B61C68764100619942 /* Resolver.cpp */; };
+		D9AC82BF1C68764100619942 /* Terminal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D9AC82B81C68764100619942 /* Terminal.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		D93C25AD1B034B8300E98313 /* CopyFiles */ = {
+		D98B82AE1C6875A0003F7018 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = /usr/share/man/man1/;
@@ -27,22 +28,24 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		D93C25AF1B034B8300E98313 /* DNSPing */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = DNSPing; sourceTree = BUILT_PRODUCTS_DIR; };
-		D93C25BA1B034C2A00E98313 /* Main.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Main.h; sourceTree = "<group>"; };
-		D93C25BB1B034C2A00E98313 /* Process.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Process.cpp; sourceTree = "<group>"; };
-		D93C25BC1B034C2A00E98313 /* Process.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Process.h; sourceTree = "<group>"; };
-		D93C25BD1B034C2A00E98313 /* Protocol.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Protocol.cpp; sourceTree = "<group>"; };
-		D93C25BE1B034C2A00E98313 /* Protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Protocol.h; sourceTree = "<group>"; };
-		D93C25BF1B034C2A00E98313 /* Resolver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Resolver.cpp; sourceTree = "<group>"; };
-		D93C25C01B034C2A00E98313 /* Resolver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Resolver.h; sourceTree = "<group>"; };
-		D93C25C41B034C3900E98313 /* Base.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Base.h; sourceTree = "<group>"; };
-		D93C25C51B034C4B00E98313 /* Terminal.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Terminal.cpp; sourceTree = "<group>"; };
-		D93C25C61B034C4B00E98313 /* Terminal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Terminal.h; sourceTree = "<group>"; };
-		D93C25C81B034D9900E98313 /* Main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Main.cpp; sourceTree = "<group>"; };
+		D98B82B01C6875A0003F7018 /* DNSPing */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = DNSPing; sourceTree = BUILT_PRODUCTS_DIR; };
+		D9AC82AD1C68764100619942 /* Base.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Base.h; sourceTree = "<group>"; };
+		D9AC82AE1C68764100619942 /* Console.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Console.cpp; sourceTree = "<group>"; };
+		D9AC82AF1C68764100619942 /* Console.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Console.h; sourceTree = "<group>"; };
+		D9AC82B01C68764100619942 /* Main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Main.cpp; sourceTree = "<group>"; };
+		D9AC82B11C68764100619942 /* Main.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Main.h; sourceTree = "<group>"; };
+		D9AC82B21C68764100619942 /* Process.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Process.cpp; sourceTree = "<group>"; };
+		D9AC82B31C68764100619942 /* Process.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Process.h; sourceTree = "<group>"; };
+		D9AC82B41C68764100619942 /* Protocol.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Protocol.cpp; sourceTree = "<group>"; };
+		D9AC82B51C68764100619942 /* Protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Protocol.h; sourceTree = "<group>"; };
+		D9AC82B61C68764100619942 /* Resolver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Resolver.cpp; sourceTree = "<group>"; };
+		D9AC82B71C68764100619942 /* Resolver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Resolver.h; sourceTree = "<group>"; };
+		D9AC82B81C68764100619942 /* Terminal.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Terminal.cpp; sourceTree = "<group>"; };
+		D9AC82B91C68764100619942 /* Terminal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Terminal.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		D93C25AC1B034B8300E98313 /* Frameworks */ = {
+		D98B82AD1C6875A0003F7018 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -52,36 +55,38 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		D93C25A61B034B8300E98313 = {
+		D98B82A71C6875A0003F7018 = {
 			isa = PBXGroup;
 			children = (
-				D93C25B11B034B8300E98313 /* DNSPing */,
-				D93C25B01B034B8300E98313 /* Products */,
+				D98B82B21C6875A0003F7018 /* DNSPing */,
+				D98B82B11C6875A0003F7018 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		D93C25B01B034B8300E98313 /* Products */ = {
+		D98B82B11C6875A0003F7018 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				D93C25AF1B034B8300E98313 /* DNSPing */,
+				D98B82B01C6875A0003F7018 /* DNSPing */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		D93C25B11B034B8300E98313 /* DNSPing */ = {
+		D98B82B21C6875A0003F7018 /* DNSPing */ = {
 			isa = PBXGroup;
 			children = (
-				D93C25C81B034D9900E98313 /* Main.cpp */,
-				D93C25BB1B034C2A00E98313 /* Process.cpp */,
-				D93C25BD1B034C2A00E98313 /* Protocol.cpp */,
-				D93C25BF1B034C2A00E98313 /* Resolver.cpp */,
-				D93C25C51B034C4B00E98313 /* Terminal.cpp */,
-				D93C25C41B034C3900E98313 /* Base.h */,
-				D93C25BA1B034C2A00E98313 /* Main.h */,
-				D93C25BC1B034C2A00E98313 /* Process.h */,
-				D93C25BE1B034C2A00E98313 /* Protocol.h */,
-				D93C25C01B034C2A00E98313 /* Resolver.h */,
-				D93C25C61B034C4B00E98313 /* Terminal.h */,
+				D9AC82AE1C68764100619942 /* Console.cpp */,
+				D9AC82B01C68764100619942 /* Main.cpp */,
+				D9AC82B21C68764100619942 /* Process.cpp */,
+				D9AC82B41C68764100619942 /* Protocol.cpp */,
+				D9AC82B61C68764100619942 /* Resolver.cpp */,
+				D9AC82B81C68764100619942 /* Terminal.cpp */,
+				D9AC82AD1C68764100619942 /* Base.h */,
+				D9AC82AF1C68764100619942 /* Console.h */,
+				D9AC82B11C68764100619942 /* Main.h */,
+				D9AC82B31C68764100619942 /* Process.h */,
+				D9AC82B51C68764100619942 /* Protocol.h */,
+				D9AC82B71C68764100619942 /* Resolver.h */,
+				D9AC82B91C68764100619942 /* Terminal.h */,
 			);
 			path = DNSPing;
 			sourceTree = "<group>";
@@ -89,13 +94,13 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		D93C25AE1B034B8300E98313 /* DNSPing */ = {
+		D98B82AF1C6875A0003F7018 /* DNSPing */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = D93C25B61B034B8300E98313 /* Build configuration list for PBXNativeTarget "DNSPing" */;
+			buildConfigurationList = D98B82B71C6875A0003F7018 /* Build configuration list for PBXNativeTarget "DNSPing" */;
 			buildPhases = (
-				D93C25AB1B034B8300E98313 /* Sources */,
-				D93C25AC1B034B8300E98313 /* Frameworks */,
-				D93C25AD1B034B8300E98313 /* CopyFiles */,
+				D98B82AC1C6875A0003F7018 /* Sources */,
+				D98B82AD1C6875A0003F7018 /* Frameworks */,
+				D98B82AE1C6875A0003F7018 /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -103,61 +108,61 @@
 			);
 			name = DNSPing;
 			productName = DNSPing;
-			productReference = D93C25AF1B034B8300E98313 /* DNSPing */;
+			productReference = D98B82B01C6875A0003F7018 /* DNSPing */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		D93C25A71B034B8300E98313 /* Project object */ = {
+		D98B82A81C6875A0003F7018 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0630;
-				ORGANIZATIONNAME = "Xeporing Chen";
+				LastUpgradeCheck = 0710;
+				ORGANIZATIONNAME = Chengr28;
 				TargetAttributes = {
-					D93C25AE1B034B8300E98313 = {
-						CreatedOnToolsVersion = 6.3.1;
+					D98B82AF1C6875A0003F7018 = {
+						CreatedOnToolsVersion = 7.1.1;
 					};
 				};
 			};
-			buildConfigurationList = D93C25AA1B034B8300E98313 /* Build configuration list for PBXProject "DNSPing" */;
+			buildConfigurationList = D98B82AB1C6875A0003F7018 /* Build configuration list for PBXProject "DNSPing" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 			);
-			mainGroup = D93C25A61B034B8300E98313;
-			productRefGroup = D93C25B01B034B8300E98313 /* Products */;
+			mainGroup = D98B82A71C6875A0003F7018;
+			productRefGroup = D98B82B11C6875A0003F7018 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				D93C25AE1B034B8300E98313 /* DNSPing */,
+				D98B82AF1C6875A0003F7018 /* DNSPing */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		D93C25AB1B034B8300E98313 /* Sources */ = {
+		D98B82AC1C6875A0003F7018 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D93C25C11B034C2A00E98313 /* Process.cpp in Sources */,
-				D93C25C71B034C4B00E98313 /* Terminal.cpp in Sources */,
-				D93C25C31B034C2A00E98313 /* Resolver.cpp in Sources */,
-				D93C25C21B034C2A00E98313 /* Protocol.cpp in Sources */,
-				D93C25C91B034D9900E98313 /* Main.cpp in Sources */,
+				D9AC82BB1C68764100619942 /* Main.cpp in Sources */,
+				D9AC82BC1C68764100619942 /* Process.cpp in Sources */,
+				D9AC82BA1C68764100619942 /* Console.cpp in Sources */,
+				D9AC82BF1C68764100619942 /* Terminal.cpp in Sources */,
+				D9AC82BE1C68764100619942 /* Resolver.cpp in Sources */,
+				D9AC82BD1C68764100619942 /* Protocol.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		D93C25B41B034B8300E98313 /* Debug */ = {
+		D98B82B51C6875A0003F7018 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -171,10 +176,12 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				GCC_C_LANGUAGE_STANDARD = c11;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -182,7 +189,6 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -196,11 +202,10 @@
 			};
 			name = Debug;
 		};
-		D93C25B51B034B8300E98313 /* Release */ = {
+		D98B82B61C6875A0003F7018 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -214,11 +219,12 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				GCC_C_LANGUAGE_STANDARD = c11;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
@@ -232,14 +238,14 @@
 			};
 			name = Release;
 		};
-		D93C25B71B034B8300E98313 /* Debug */ = {
+		D98B82B81C6875A0003F7018 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
 		};
-		D93C25B81B034B8300E98313 /* Release */ = {
+		D98B82B91C6875A0003F7018 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -249,25 +255,25 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		D93C25AA1B034B8300E98313 /* Build configuration list for PBXProject "DNSPing" */ = {
+		D98B82AB1C6875A0003F7018 /* Build configuration list for PBXProject "DNSPing" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				D93C25B41B034B8300E98313 /* Debug */,
-				D93C25B51B034B8300E98313 /* Release */,
+				D98B82B51C6875A0003F7018 /* Debug */,
+				D98B82B61C6875A0003F7018 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		D93C25B61B034B8300E98313 /* Build configuration list for PBXNativeTarget "DNSPing" */ = {
+		D98B82B71C6875A0003F7018 /* Build configuration list for PBXNativeTarget "DNSPing" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				D93C25B71B034B8300E98313 /* Debug */,
-				D93C25B81B034B8300E98313 /* Release */,
+				D98B82B81C6875A0003F7018 /* Debug */,
+				D98B82B91C6875A0003F7018 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = D93C25A71B034B8300E98313 /* Project object */;
+	rootObject = D98B82A81C6875A0003F7018 /* Project object */;
 }

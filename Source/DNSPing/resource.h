@@ -1,6 +1,6 @@
 ﻿// This code is part of DNSPing
 // Ping with DNS requesting.
-// Copyright (C) 2014-2015 Chengr28
+// Copyright (C) 2014-2016 Chengr28
 // 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -18,11 +18,10 @@
 
 
 //{{NO_DEPENDENCIES}}
-// Microsoft Visual C++ 生成的包含文件。
-// 供 DNSPing.rc 使用
-//
+// Microsoft Visual C++ generated include file.
+// Used by DNSPing.rc
 
-// Next default values for new objects
+// 新对象的下一组默认值
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS

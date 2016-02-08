@@ -1155,7 +1155,7 @@ size_t __fastcall PrintDomainName(const PSTR Buffer, const size_t Location, FILE
 void __fastcall PrintResourseData(const PSTR Buffer, const size_t Location, const uint16_t Length, const uint16_t Type, const uint16_t Classes)
 {
 //Length and Type check
-	if (Length == 0 && Type != htons(DNS_RECORD_OPT))
+	if (Length == 0 && Type != htons(DNS_RECORD_OPT) || Classes == 0)
 		return;
 
 //Initialization
@@ -1419,7 +1419,7 @@ void __fastcall PrintResourseData(const PSTR Buffer, const size_t Location, cons
 void __fastcall PrintResourseData(const PSTR Buffer, const size_t Location, const uint16_t Length, const uint16_t Type, const uint16_t Classes, FILE *OutputFile)
 {
 //Length and Type check
-	if (Length == 0 && Type != htons(DNS_RECORD_OPT))
+	if (Length == 0 && Type != htons(DNS_RECORD_OPT) || Classes == 0)
 		return;
 	size_t Index = 0, CurrentLength = 0;
 
