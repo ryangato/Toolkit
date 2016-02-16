@@ -31,17 +31,13 @@
 		D98B82B01C6875A0003F7018 /* DNSPing */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = DNSPing; sourceTree = BUILT_PRODUCTS_DIR; };
 		D9AC82AD1C68764100619942 /* Base.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Base.h; sourceTree = "<group>"; };
 		D9AC82AE1C68764100619942 /* Console.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Console.cpp; sourceTree = "<group>"; };
-		D9AC82AF1C68764100619942 /* Console.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Console.h; sourceTree = "<group>"; };
 		D9AC82B01C68764100619942 /* Main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Main.cpp; sourceTree = "<group>"; };
 		D9AC82B11C68764100619942 /* Main.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Main.h; sourceTree = "<group>"; };
 		D9AC82B21C68764100619942 /* Process.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Process.cpp; sourceTree = "<group>"; };
-		D9AC82B31C68764100619942 /* Process.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Process.h; sourceTree = "<group>"; };
 		D9AC82B41C68764100619942 /* Protocol.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Protocol.cpp; sourceTree = "<group>"; };
-		D9AC82B51C68764100619942 /* Protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Protocol.h; sourceTree = "<group>"; };
 		D9AC82B61C68764100619942 /* Resolver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Resolver.cpp; sourceTree = "<group>"; };
 		D9AC82B71C68764100619942 /* Resolver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Resolver.h; sourceTree = "<group>"; };
 		D9AC82B81C68764100619942 /* Terminal.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Terminal.cpp; sourceTree = "<group>"; };
-		D9AC82B91C68764100619942 /* Terminal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Terminal.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -81,12 +77,8 @@
 				D9AC82B61C68764100619942 /* Resolver.cpp */,
 				D9AC82B81C68764100619942 /* Terminal.cpp */,
 				D9AC82AD1C68764100619942 /* Base.h */,
-				D9AC82AF1C68764100619942 /* Console.h */,
 				D9AC82B11C68764100619942 /* Main.h */,
-				D9AC82B31C68764100619942 /* Process.h */,
-				D9AC82B51C68764100619942 /* Protocol.h */,
 				D9AC82B71C68764100619942 /* Resolver.h */,
-				D9AC82B91C68764100619942 /* Terminal.h */,
 			);
 			path = DNSPing;
 			sourceTree = "<group>";

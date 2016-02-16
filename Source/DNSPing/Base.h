@@ -1554,6 +1554,177 @@ typedef struct _dns_caa_
 }dns_caa_record;
 
 
+//SOCKS protocol part
+//Version, Method, Command and Reply definitions
+#define SOCKS_VERSION_5                            5U
+#define SOCKS_METHOD_NO_AUTHENTICATION_NUM         1U
+#define SOCKS_METHOD_SUPPORT_NUM                   2U
+#define SOCKS_METHOD_NO_AUTHENTICATION_REQUIRED    0
+#define SOCKS_METHOD_GSSAPI                        1U
+#define SOCKS_METHOD_USERNAME_PASSWORD             2U
+#define SOCKS_METHOD_IANA_ASSIGNED_A               3U
+#define SOCKS_METHOD_IANA_ASSIGNED_B               0x7F
+#define SOCKS_METHOD_RESERVED_FOR_PRIVATE_A        0x80
+#define SOCKS_METHOD_RESERVED_FOR_PRIVATE_B        0xFE
+#define SOCKS_METHOD_NO_ACCEPTABLE_METHODS         0xFF
+#define SOCKS_USERNAME_PASSWORD_VERSION            1U
+#define SOCKS_USERNAME_PASSWORD_MAXNUM             255U
+#define SOCKS_USERNAME_PASSWORD_SUCCESS            0
+#define SOCKS_COMMAND_CONNECT                      1U
+#define SOCKS_COMMAND_BIND                         2U
+#define SOCKS_COMMAND_UDP_ASSOCIATE                3U
+#define SOCKS5_ADDRESS_IPV4                        1U
+#define SOCKS5_ADDRESS_DOMAIN                      3U
+#define SOCKS5_ADDRESS_IPV6                        4U
+#define SOCKS5_REPLY_SUCCESS                       0
+#define SOCKS5_REPLY_SERVER_FAILURE                1U
+#define SOCKS5_REPLY_NOT_ALLOWED                   2U
+#define SOCKS5_REPLY_NETWORK_UNREACHABLE           3U
+#define SOCKS5_REPLY_HOST_UNREACHABLE              4U
+#define SOCKS5_REPLY_REFUSED                       5U
+#define SOCKS5_REPLY_TTL_EXPORED                   6U
+#define SOCKS5_REPLY_COMMAND_NOT_SUPPORTED         7U
+#define SOCKS5_REPLY_ADDRESS_TYPE_NOT_SUPPORTED    8U
+#define SOCKS5_REPLY_UNASSIGNED_A                  9U
+#define SOCKS5_REPLY_UNASSIGNED_B                  0xFF
+
+//SOCKS client version identifier and method selection message
+/*
+                    1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 3 3 3
+0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|    Version    | Method Number |            Methods            /
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+*/
+typedef struct _socks_client_selection_message_
+{
+	uint8_t               Version;
+	uint8_t               Methods_Number;
+	uint8_t               Methods_A;               //Usually is 0(NO_AUTHENTICATION_REQUIRED)
+	uint8_t               Methods_B;               //Usually is 2(USERNAME/PASSWORD)
+}socks_client_selection, *psocks_client_selection;
+
+//SOCKS server method selection message
+/*
+                    1 1 1 1 1 1 1
+0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|    Version    |    Method     |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+*/
+typedef struct _socks_server_selection_message_
+{
+	uint8_t               Version;
+	uint8_t               Method;
+}socks_server_selection, *psocks_server_selection;
+
+//SOCKS client Username/Password authentication message
+/*
+                    1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 3 3 3
+0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|    Version    |UserName Length|           User Name           /
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|Password Length|                   Password                    /
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+typedef struct _socks_client_user_authentication_
+{
+	uint8_t               Version;
+	uint8_t               UserName_Length;
+	uint8_t               *UserName;
+	uint8_t               Password_Length;
+	uint8_t               *Password;
+}socks_client_user_authentication, *psocks_client_user_authentication;
+*/
+
+//SOCKS server Username/Password authentication message
+/*
+                    1 1 1 1 1 1 1
+0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|    Version    |    Status     |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+*/
+typedef struct _socks_server_user_authentication_
+{
+	uint8_t               Version;
+	uint8_t               Status;
+}socks_server_user_authentication, *psocks_server_user_authentication;
+
+//SOCKS version 5 client request message
+/*
+                    1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 3 3 3
+0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|    Version    |    Command    |   Reserved    | Address Type  |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+/                        Remote Address                         /
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|         Remote Port           |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+*/
+typedef struct _socks5_client_command_request_
+{
+	uint8_t               Version;
+	uint8_t               Command;
+	uint8_t               Reserved;
+	uint8_t               Address_Type;
+//	uint8_t               *Remote_Address;
+//	uint16_t              Remote_Port;
+}socks5_client_command_request, *psocks5_client_command_request;
+
+//SOCKS version 5 server reply message
+/*
+                    1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 3 3 3
+0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|    Version    |     Reply     |   Reserved    | Address Type  |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+/                         Bind Address                          /
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|           Bind Port           |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+*/
+typedef struct _socks5_server_command_reply_
+{
+	uint8_t               Version;
+	uint8_t               Reply;
+	uint8_t               Reserved;
+	uint8_t               Bind_Address_Type;
+//	uint8_t               *Bind_Address;
+//	uint16_t              Bind_Port;
+}socks5_server_command_reply, *psocks5_server_command_reply;
+
+//SOCKS UDP relay request
+/*
+                    1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 3 3 3
+0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|           Reserved            |Fragment Number| Address Type  |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+/                        Remote Address                         /
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|         Remote Port           |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+*/
+typedef struct _socks_udp_relay_request_
+{
+	uint16_t              Reserved;
+	uint8_t               FragmentNumber;
+	uint8_t               Address_Type;
+//	uint8_t               *Remote_Address;
+//	uint16_t              Remote_Port;
+}socks_udp_relay_request, *psocks_udp_relay_request;
+
+
+
 //////////////////////////////////////////////////
 // Function defines
 #if (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
@@ -1561,7 +1732,6 @@ typedef struct _dns_caa_
 	#define strnlen_s                               strnlen
 	#define wcsnlen_s                               wcsnlen
 	#define memcpy_s(Dst, DstSize, Src, Size)       memcpy(Dst, Src, Size)
-	#define wprintf_s                               wprintf
 	#define fwprintf_s                              fwprintf
 	#define GetLastError()                          errno
 	#define WSAGetLastError()                       GetLastError()
@@ -1606,44 +1776,137 @@ typedef struct _dns_caa_
 #define DOMAIN_MAXSIZE               256U        //Maximum size of whole level domain is 256 bytes(Section 2.3.1 in RFC 1035).
 #define DOMAIN_MINSIZE               2U          //Minimum size of whole level domain is 3 bytes(Section 2.3.1 in RFC 1035).
 
+//Structure definitions
+struct ConfigurationTable
+{
+//C-Syle types
+	FILE *OutputFile;
+	size_t SendNum;
+	size_t RealSendNum;
+	size_t RecvNum;
+	size_t TransmissionInterval;
+	size_t BufferSize;
+	size_t RawDataLen;
+	size_t EDNS0PayloadSize;
+	long double TotalTime;
+	long double MaxTime;
+	long double MinTime;
+	sockaddr_storage SockAddr;
+	uint16_t Protocol;
+	uint16_t ServiceType;
+	bool ReverseLookup;
+	bool RawSocket;
+	bool EDNS0;
+	bool DNSSEC;
+	bool Validate;
+	bool ShowResponse;
+	bool ShowResponseHex;
+	int IP_HopLimits;
+#if defined(PLATFORM_WIN)
+	int SocketTimeout;
+	bool IPv4_DF;
+#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
+	timeval SocketTimeout;
+#endif
+	dns_hdr HeaderParameter;
+	dns_qry QueryParameter;
+	dns_opt_record EDNS0Parameter;
+
+//STL types
+	std::string TargetString;
+	std::string TestDomain;
+	std::string TargetDomainString;
+	std::wstring wTargetString;
+	std::wstring wOutputFileName;
+#if (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
+	std::string OutputFileName;
+#endif
+	std::shared_ptr<char> RawData;
+};
+
 //Protocol.h
 //Minimum supported system of Windows Version Helpers is Windows Vista.
 #if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64)) //Windows(x86)
-	bool __fastcall IsLowerThanWin8(void);
+	bool __fastcall IsLowerThanWin8(
+		void);
 #endif
 
-bool __fastcall CheckEmptyBuffer(const void *Buffer, const size_t Length);
+bool __fastcall CheckEmptyBuffer(
+	const void *Buffer, 
+	const size_t Length);
 #if (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
-	void MBSToWCSString(std::wstring &Target, const char *Buffer);
+	void MBSToWCSString(
+		std::wstring &Target, 
+		const char *Buffer);
 #endif
-size_t __fastcall CaseConvert(const bool IsLowerUpper, const PSTR Buffer, const size_t Length);
-size_t __fastcall AddressStringToBinary(const PSTR AddrString, void *pAddr, const uint16_t Protocol, SSIZE_T &ErrCode);
-uint16_t __fastcall InternetProtocolNameToPort(const std::wstring &Buffer);
-uint16_t __fastcall ServiceNameToPort(const std::wstring &Buffer);
-uint16_t __fastcall DNSClassesNameToHex(const std::wstring &Buffer);
-uint16_t __fastcall DNSTypeNameToHex(const std::wstring &Buffer);
-size_t __fastcall CharToDNSQuery(const PSTR FName, PSTR TName);
-size_t __fastcall DNSQueryToChar(const PSTR TName, PSTR FName, uint16_t &Truncated);
-bool __fastcall ValidatePacket(const PSTR Buffer, const size_t Length, const uint16_t DNS_ID);
-void __fastcall PrintSecondsInDateTime(const time_t Seconds);
-void __fastcall PrintSecondsInDateTime(const time_t Seconds, FILE *OutputFile);
-void __fastcall PrintDateTime(const time_t Time);
-void __fastcall PrintDateTime(const time_t Time, FILE *OutputFile);
+size_t __fastcall CaseConvert(
+	const bool IsLowerUpper, 
+	const PSTR Buffer, 
+	const size_t Length);
+size_t __fastcall AddressStringToBinary(
+	const PSTR AddrString, 
+	void *pAddr, 
+	const uint16_t Protocol, 
+	SSIZE_T &ErrCode);
+uint16_t __fastcall InternetProtocolNameToPort(
+	const std::wstring &Buffer);
+uint16_t __fastcall ServiceNameToPort(
+	const std::wstring &Buffer);
+uint16_t __fastcall DNSClassesNameToHex(
+	const std::wstring &Buffer);
+uint16_t __fastcall DNSTypeNameToHex(
+	const std::wstring &Buffer);
+size_t __fastcall CharToDNSQuery(
+	const PSTR FName, PSTR TName);
+size_t __fastcall DNSQueryToChar(
+	const PSTR TName, 
+	PSTR FName, 
+	uint16_t &Truncated);
+bool __fastcall ValidatePacket(
+	const PSTR Buffer, 
+	const size_t Length, 
+	const uint16_t DNS_ID);
+void __fastcall PrintSecondsInDateTime(
+	const time_t Seconds);
+void __fastcall PrintSecondsInDateTime(
+	const time_t Seconds, 
+	FILE *OutputFile);
+void __fastcall PrintDateTime(
+	const time_t Time);
+void __fastcall PrintDateTime(
+	const time_t Time, 
+	FILE *OutputFile);
 
 //Process.h
-size_t __fastcall SendProcess(const sockaddr_storage &Target, const bool LastSend);
-size_t __fastcall PrintProcess(const bool IsPacketStatistics, const bool IsTimeStatistics);
+size_t __fastcall SendProcess(
+	const sockaddr_storage &Target, 
+	const bool LastSend);
+size_t __fastcall PrintProcess(
+	const bool IsPacketStatistics, 
+	const bool IsTimeStatistics);
 void __fastcall PrintDescription(void);
 
 //Resolver.h
-void __fastcall PrintResponseHex(const PSTR Buffer, const size_t Length);
-void __fastcall PrintResponseHex(const PSTR Buffer, const size_t Length, FILE *OutputFile);
-void __fastcall PrintResponse(const PSTR Buffer, const size_t Length);
-void __fastcall PrintResponse(const PSTR Buffer, const size_t Length, FILE *OutputFile);
+void __fastcall PrintResponseHex(
+	const PSTR Buffer, 
+	const size_t Length);
+void __fastcall PrintResponseHex(
+	const PSTR Buffer, 
+	const size_t Length, 
+	FILE *OutputFile);
+void __fastcall PrintResponse(
+	const PSTR Buffer, 
+	const size_t Length);
+void __fastcall PrintResponse(
+	const PSTR Buffer, 
+	const size_t Length, 
+	FILE *OutputFile);
 
 //Console.h
 #if defined(PLATFORM_WIN)
-	BOOL __fastcall CtrlHandler(const DWORD fdwCtrlType);
+	BOOL __fastcall CtrlHandler(
+		const DWORD fdwCtrlType);
 #elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
-	void SIG_Handler(const int Signal);
+	void SIG_Handler(
+		const int Signal);
 #endif

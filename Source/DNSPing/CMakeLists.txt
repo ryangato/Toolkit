@@ -34,10 +34,7 @@ set(CMAKE_BUILD_TYPE "Release")
 set(SRC_FILES
 		"Base.h"
 		"Main.h"
-		"Process.h"
-		"Protocol.h"
 		"Resolver.h"
-		"Terminal.h"
 		"Main.cpp"
 		"Process.cpp"
 		"Protocol.cpp"

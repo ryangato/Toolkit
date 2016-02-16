@@ -17,27 +17,32 @@
 // Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 
-#include "Protocol.h"
+#include "Base.h"
+
+extern ConfigurationTable ConfigurationParameter;
 
 //Minimum supported system of Windows Version Helpers is Windows Vista.
 #if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64)) //Windows(x86)
 //Check operation system which higher than Windows 7.
-	bool __fastcall IsLowerThanWin8(void)
-	{
-		OSVERSIONINFOEX OSVI = {0};
-		OSVI.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
-		BOOL bOsVersionInfoEx = GetVersionExW((OSVERSIONINFO *)&OSVI);
+bool __fastcall IsLowerThanWin8(
+	void)
+{
+	OSVERSIONINFOEX OSVI = {0};
+	OSVI.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+	BOOL bOsVersionInfoEx = GetVersionExW((OSVERSIONINFO *)&OSVI);
 
-		if (bOsVersionInfoEx && OSVI.dwPlatformId == VER_PLATFORM_WIN32_NT && 
-			(OSVI.dwMajorVersion < 6U || OSVI.dwMajorVersion == 6U && OSVI.dwMinorVersion < 2U))
-				return true;
+	if (bOsVersionInfoEx && OSVI.dwPlatformId == VER_PLATFORM_WIN32_NT && 
+		(OSVI.dwMajorVersion < 6U || OSVI.dwMajorVersion == 6U && OSVI.dwMinorVersion < 2U))
+			return true;
 
-		return false;
-	}
+	return false;
+}
 #endif
 
 //Check empty buffer
-bool __fastcall CheckEmptyBuffer(const void *Buffer, const size_t Length)
+bool __fastcall CheckEmptyBuffer(
+	const void *Buffer, 
+	const size_t Length)
 {
 	if (Buffer == nullptr)
 		return true;
@@ -53,19 +58,24 @@ bool __fastcall CheckEmptyBuffer(const void *Buffer, const size_t Length)
 
 #if (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 //Convert multiple bytes to wide char string
-	void MBSToWCSString(std::wstring &Target, const char *Buffer)
-	{
-		std::shared_ptr<wchar_t> TargetPTR(new wchar_t[strnlen(Buffer, LARGE_PACKET_MAXSIZE) + 1U]());
-		wmemset(TargetPTR.get(), 0, strnlen(Buffer, LARGE_PACKET_MAXSIZE) + 1U);
-		mbstowcs(TargetPTR.get(), Buffer, strnlen(Buffer, LARGE_PACKET_MAXSIZE));
-		Target = TargetPTR.get();
+void MBSToWCSString(
+	std::wstring &Target, 
+	const char *Buffer)
+{
+	std::shared_ptr<wchar_t> TargetPTR(new wchar_t[strnlen(Buffer, LARGE_PACKET_MAXSIZE) + 1U]());
+	wmemset(TargetPTR.get(), 0, strnlen(Buffer, LARGE_PACKET_MAXSIZE) + 1U);
+	mbstowcs(TargetPTR.get(), Buffer, strnlen(Buffer, LARGE_PACKET_MAXSIZE));
+	Target = TargetPTR.get();
 
-		return;
-	}
+	return;
+}
 #endif
 
 //Convert lowercase/uppercase word(s) to uppercase/lowercase word(s).
-size_t __fastcall CaseConvert(const bool IsLowerUpper, const PSTR Buffer, const size_t Length)
+size_t __fastcall CaseConvert(
+	const bool IsLowerUpper, 
+	const PSTR Buffer, 
+	const size_t Length)
 {
 	for (size_t Index = 0;Index < Length;++Index)
 	{
@@ -84,7 +94,11 @@ size_t __fastcall CaseConvert(const bool IsLowerUpper, const PSTR Buffer, const 
 }
 
 //Convert address strings to binary.
-size_t __fastcall AddressStringToBinary(const PSTR AddrString, void *pAddr, const uint16_t Protocol, SSIZE_T &ErrCode)
+size_t __fastcall AddressStringToBinary(
+	const PSTR AddrString, 
+	void *pAddr, 
+	const uint16_t Protocol, 
+	SSIZE_T &ErrCode)
 {
 	SSIZE_T Result = 0;
 
@@ -196,7 +210,8 @@ size_t __fastcall AddressStringToBinary(const PSTR AddrString, void *pAddr, cons
 }
 
 //Convert protocol name to hex
-uint16_t __fastcall InternetProtocolNameToPort(const std::wstring &Buffer)
+uint16_t __fastcall InternetProtocolNameToPort(
+	const std::wstring &Buffer)
 {
 //Internet Protocol Number(Part 1)
 	if (Buffer == L"HOPOPTS" || Buffer == L"hopopts")
@@ -497,7 +512,8 @@ uint16_t __fastcall InternetProtocolNameToPort(const std::wstring &Buffer)
 }
 
 //Convert service name to port
-uint16_t __fastcall ServiceNameToPort(const std::wstring &Buffer)
+uint16_t __fastcall ServiceNameToPort(
+	const std::wstring &Buffer)
 {
 //Server name
 	if (Buffer == L"TCPMUX" || Buffer == L"tcpmux")
@@ -683,7 +699,8 @@ uint16_t __fastcall ServiceNameToPort(const std::wstring &Buffer)
 }
 
 //Convert DNS classes name to hex
-uint16_t __fastcall DNSClassesNameToHex(const std::wstring &Buffer)
+uint16_t __fastcall DNSClassesNameToHex(
+	const std::wstring &Buffer)
 {
 //DNS classes name
 	if (Buffer == L"INTERNET" || Buffer == L"internet" || Buffer == L"IN" || Buffer == L"in")
@@ -705,7 +722,8 @@ uint16_t __fastcall DNSClassesNameToHex(const std::wstring &Buffer)
 }
 
 //Convert DNS type name to hex
-uint16_t __fastcall DNSTypeNameToHex(const std::wstring &Buffer)
+uint16_t __fastcall DNSTypeNameToHex(
+	const std::wstring &Buffer)
 {
 //DNS type name
 	if (Buffer == L"A" || Buffer == L"a")
@@ -879,7 +897,9 @@ uint16_t __fastcall DNSTypeNameToHex(const std::wstring &Buffer)
 }
 
 //Convert data from char(s) to DNS query
-size_t __fastcall CharToDNSQuery(const PSTR FName, PSTR TName)
+size_t __fastcall CharToDNSQuery(
+	const PSTR FName, 
+	PSTR TName)
 {
 	int Index[] = {(int)strnlen_s(FName, DOMAIN_MAXSIZE) - 1, 0, 0};
 	Index[2U] = Index[0] + 1;
@@ -904,7 +924,10 @@ size_t __fastcall CharToDNSQuery(const PSTR FName, PSTR TName)
 }
 
 //Convert data from DNS query to char(s)
-size_t __fastcall DNSQueryToChar(const PSTR TName, PSTR FName, uint16_t &Truncated)
+size_t __fastcall DNSQueryToChar(
+	const PSTR TName, 
+	PSTR FName, 
+	uint16_t &Truncated)
 {
 //Initialization
 	size_t uIndex = 0;
@@ -944,7 +967,10 @@ size_t __fastcall DNSQueryToChar(const PSTR TName, PSTR FName, uint16_t &Truncat
 }
 
 //Validate packets
-bool __fastcall ValidatePacket(const PSTR Buffer, const size_t Length, const uint16_t DNS_ID)
+bool __fastcall ValidatePacket(
+	const PSTR Buffer, 
+	const size_t Length, 
+	const uint16_t DNS_ID)
 {
 	auto pdns_hdr = (dns_hdr *)Buffer;
 
@@ -953,7 +979,7 @@ bool __fastcall ValidatePacket(const PSTR Buffer, const size_t Length, const uin
 		return false;
 
 //EDNS0 Lable check
-	if (EDNS0)
+	if (ConfigurationParameter.EDNS0)
 	{
 		if (pdns_hdr->Additional == 0)
 		{
@@ -966,7 +992,7 @@ bool __fastcall ValidatePacket(const PSTR Buffer, const size_t Length, const uin
 				auto pdns_opt_record = (dns_opt_record *)(Buffer + Length - sizeof(dns_opt_record));
 
 			//UDP Payload Size and Z Field of DNSSEC check
-				if (pdns_opt_record->UDPPayloadSize == 0 || DNSSEC && pdns_opt_record->Z_Field == 0)
+				if (pdns_opt_record->UDPPayloadSize == 0 || ConfigurationParameter.DNSSEC && pdns_opt_record->Z_Field == 0)
 					return false;
 			}
 			else {
@@ -979,7 +1005,8 @@ bool __fastcall ValidatePacket(const PSTR Buffer, const size_t Length, const uin
 }
 
 //Print date from seconds
-void __fastcall PrintSecondsInDateTime(const time_t Seconds)
+void __fastcall PrintSecondsInDateTime(
+	const time_t Seconds)
 {
 //Less than 1 minute
 	if (Seconds < SECONDS_IN_MINUTE)
@@ -988,14 +1015,14 @@ void __fastcall PrintSecondsInDateTime(const time_t Seconds)
 //Initialization
 	auto Before = false;
 	auto DateTime = Seconds;
-	wprintf_s(L"(");
+	fwprintf_s(stderr, L"(");
 
 //Years
 	if (DateTime / SECONDS_IN_YEAR > 0)
 	{
-		wprintf_s(L"%u year", (UINT)(DateTime / SECONDS_IN_YEAR));
+		fwprintf_s(stderr, L"%u year", (UINT)(DateTime / SECONDS_IN_YEAR));
 		if (DateTime / SECONDS_IN_YEAR > 1U)
-			wprintf_s(L"s");
+			fwprintf_s(stderr, L"s");
 		DateTime %= SECONDS_IN_YEAR;
 		Before = true;
 	}
@@ -1003,10 +1030,10 @@ void __fastcall PrintSecondsInDateTime(const time_t Seconds)
 	if (DateTime / SECONDS_IN_MONTH > 0)
 	{
 		if (Before)
-			wprintf_s(L" ");
-		wprintf_s(L"%u month", (UINT)(DateTime / SECONDS_IN_MONTH));
+			fwprintf_s(stderr, L" ");
+		fwprintf_s(stderr, L"%u month", (UINT)(DateTime / SECONDS_IN_MONTH));
 		if (DateTime / SECONDS_IN_MONTH > 1U)
-			wprintf_s(L"s");
+			fwprintf_s(stderr, L"s");
 		DateTime %= SECONDS_IN_MONTH;
 		Before = true;
 	}
@@ -1014,10 +1041,10 @@ void __fastcall PrintSecondsInDateTime(const time_t Seconds)
 	if (DateTime / SECONDS_IN_DAY > 0)
 	{
 		if (Before)
-			wprintf_s(L" ");
-		wprintf_s(L"%u day", (UINT)(DateTime / SECONDS_IN_DAY));
+			fwprintf_s(stderr, L" ");
+		fwprintf_s(stderr, L"%u day", (UINT)(DateTime / SECONDS_IN_DAY));
 		if (DateTime / SECONDS_IN_DAY > 1U)
-			wprintf_s(L"s");
+			fwprintf_s(stderr, L"s");
 		DateTime %= SECONDS_IN_DAY;
 		Before = true;
 	}
@@ -1025,10 +1052,10 @@ void __fastcall PrintSecondsInDateTime(const time_t Seconds)
 	if (DateTime / SECONDS_IN_HOUR > 0)
 	{
 		if (Before)
-			wprintf_s(L" ");
-		wprintf_s(L"%u hour", (UINT)(DateTime / SECONDS_IN_HOUR));
+			fwprintf_s(stderr, L" ");
+		fwprintf_s(stderr, L"%u hour", (UINT)(DateTime / SECONDS_IN_HOUR));
 		if (DateTime / SECONDS_IN_HOUR > 1U)
-			wprintf_s(L"s");
+			fwprintf_s(stderr, L"s");
 		DateTime %= SECONDS_IN_HOUR;
 		Before = true;
 	}
@@ -1036,10 +1063,10 @@ void __fastcall PrintSecondsInDateTime(const time_t Seconds)
 	if (DateTime / SECONDS_IN_MINUTE > 0)
 	{
 		if (Before)
-			wprintf_s(L" ");
-		wprintf_s(L"%u minute", (UINT)(DateTime / SECONDS_IN_MINUTE));
+			fwprintf_s(stderr, L" ");
+		fwprintf_s(stderr, L"%u minute", (UINT)(DateTime / SECONDS_IN_MINUTE));
 		if (DateTime / SECONDS_IN_MINUTE > 1U)
-			wprintf_s(L"s");
+			fwprintf_s(stderr, L"s");
 		DateTime %= SECONDS_IN_MINUTE;
 		Before = true;
 	}
@@ -1047,18 +1074,20 @@ void __fastcall PrintSecondsInDateTime(const time_t Seconds)
 	if (DateTime > 0)
 	{
 		if (Before)
-			wprintf_s(L" ");
-		wprintf_s(L"%u second", (UINT)(DateTime));
+			fwprintf_s(stderr, L" ");
+		fwprintf_s(stderr, L"%u second", (UINT)(DateTime));
 		if (DateTime > 1U)
-			wprintf_s(L"s");
+			fwprintf_s(stderr, L"s");
 	}
 
-	wprintf_s(L")");
+	fwprintf_s(stderr, L")");
 	return;
 }
 
 //Print date from seconds to file
-void __fastcall PrintSecondsInDateTime(const time_t Seconds, FILE *OutputFile)
+void __fastcall PrintSecondsInDateTime(
+	const time_t Seconds, 
+	FILE *OutputFile)
 {
 //Less than 1 minute
 	if (Seconds < SECONDS_IN_MINUTE)
@@ -1137,23 +1166,24 @@ void __fastcall PrintSecondsInDateTime(const time_t Seconds, FILE *OutputFile)
 }
 
 //Print Date and Time with UNIX time
-void __fastcall PrintDateTime(const time_t Time)
+void __fastcall PrintDateTime(
+	const time_t Time)
 {
-	std::shared_ptr<tm> TimeStructure(new tm());
-	memset(TimeStructure.get(), 0, sizeof(tm));
-	localtime_s(TimeStructure.get(), &Time);
-	wprintf_s(L"%d-%02d-%02d %02d:%02d:%02d", TimeStructure->tm_year + 1900, TimeStructure->tm_mon + 1, TimeStructure->tm_mday, TimeStructure->tm_hour, TimeStructure->tm_min, TimeStructure->tm_sec);
+	tm TimeStructure = {0};
+	localtime_s(&TimeStructure, &Time);
+	fwprintf_s(stderr, L"%d-%02d-%02d %02d:%02d:%02d", TimeStructure.tm_year + 1900, TimeStructure.tm_mon + 1, TimeStructure.tm_mday, TimeStructure.tm_hour, TimeStructure.tm_min, TimeStructure.tm_sec);
 
 	return;
 }
 
 //Print Date and Time with UNIX time to file
-void __fastcall PrintDateTime(const time_t Time, FILE *OutputFile)
+void __fastcall PrintDateTime(
+	const time_t Time, 
+	FILE *OutputFile)
 {
-	std::shared_ptr<tm> TimeStructure(new tm());
-	memset(TimeStructure.get(), 0, sizeof(tm));
-	localtime_s(TimeStructure.get(), &Time);
-	fwprintf_s(OutputFile, L"%d-%02d-%02d %02d:%02d:%02d", TimeStructure->tm_year + 1900, TimeStructure->tm_mon + 1, TimeStructure->tm_mday, TimeStructure->tm_hour, TimeStructure->tm_min, TimeStructure->tm_sec);
+	tm TimeStructure = {0};
+	localtime_s(&TimeStructure, &Time);
+	fwprintf_s(OutputFile, L"%d-%02d-%02d %02d:%02d:%02d", TimeStructure.tm_year + 1900, TimeStructure.tm_mon + 1, TimeStructure.tm_mday, TimeStructure.tm_hour, TimeStructure.tm_min, TimeStructure.tm_sec);
 
 	return;
 }

@@ -1,6 +1,6 @@
 ﻿// This code is part of DNSPing
 // Ping with DNS requesting.
-// Copyright (C) 2014-2015 Chengr28
+// Copyright (C) 2014-2016 Chengr28
 // 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -19,11 +19,35 @@
 
 #include "Base.h"
 
-void __fastcall PrintFlags(const uint16_t Flags);
-void __fastcall PrintFlags(const uint16_t Flags, FILE *OutputFile);
-void __fastcall PrintTypeClassesName(const uint16_t Type, const uint16_t Classes);
-void __fastcall PrintTypeClassesName(const uint16_t Type, const uint16_t Classes, FILE *OutputFile);
-size_t __fastcall PrintDomainName(const PSTR Buffer, const size_t Location);
-size_t __fastcall PrintDomainName(const PSTR Buffer, const size_t Location, FILE *OutputFile);
-void __fastcall PrintResourseData(const PSTR Buffer, const size_t Location, const uint16_t Length, const uint16_t Type, const uint16_t Classes);
-void __fastcall PrintResourseData(const PSTR Buffer, const size_t Location, const uint16_t Length, const uint16_t Type, const uint16_t Classes, FILE *OutputFile);
+void __fastcall PrintFlags(
+	const uint16_t Flags);
+void __fastcall PrintFlags(
+	const uint16_t Flags, 
+	FILE *OutputFile);
+void __fastcall PrintTypeClassesName(
+	const uint16_t Type, 
+	const uint16_t Classes);
+void __fastcall PrintTypeClassesName(
+	const uint16_t Type, 
+	const uint16_t Classes, 
+	FILE *OutputFile);
+size_t __fastcall PrintDomainName(
+	const PSTR Buffer, 
+	const size_t Location);
+size_t __fastcall PrintDomainName(
+	const PSTR Buffer, 
+	const size_t Location, 
+	FILE *OutputFile);
+void __fastcall PrintResourseData(
+	const PSTR Buffer, 
+	const size_t Location, 
+	const uint16_t Length, 
+	const uint16_t Type, 
+	const uint16_t Classes);
+void __fastcall PrintResourseData(
+	const PSTR Buffer, 
+	const size_t Location, 
+	const uint16_t Length, 
+	const uint16_t Type, 
+	const uint16_t Classes, 
+	FILE *OutputFile);

@@ -19,25 +19,18 @@
 
 #include "Base.h"
 
-std::string TargetString, TestDomain, TargetDomainString;
-std::wstring wTargetString, wOutputFileName;
-#if (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
-	std::string OutputFileName;
-#endif
-long double TotalTime = 0, MaxTime = 0, MinTime = 0;
-size_t SendNum = DEFAULT_SEND_TIMES, RealSendNum = 0, RecvNum = 0, TransmissionInterval = 0, BufferSize = PACKET_MAXSIZE, RawDataLen = 0, EDNS0PayloadSize = 0;
-sockaddr_storage SockAddr = {0};
-uint16_t Protocol = 0, ServiceType = 0;
-std::shared_ptr<char> RawData;
-auto RawSocket = false, EDNS0 = false, DNSSEC = false, Validate = true, ShowResponse = false, ShowResponseHex = false;
-int IP_HopLimits = 0;
+//Global variables
+ConfigurationTable ConfigurationParameter;
+
+//Functions
+size_t __fastcall ConfigurationInitialization(
+	void);
 #if defined(PLATFORM_WIN)
-	int SocketTimeout = DEFAULT_TIME_OUT;
-	auto IPv4_DF = false;
+size_t __fastcall ReadCommands(
+	int argc, 
+	wchar_t* argv[]);
 #elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
-	timeval SocketTimeout = {DEFAULT_TIME_OUT, 0};
+size_t __fastcall ReadCommands(
+	int argc, 
+	char *argv[]);
 #endif
-dns_hdr HeaderParameter = {0};
-dns_qry QueryParameter = {0};
-dns_opt_record EDNS0Parameter = {0};
-FILE *OutputFile = nullptr;

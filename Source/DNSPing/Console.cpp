@@ -17,28 +17,29 @@
 // Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 
-#include "Console.h"
+#include "Base.h"
 
 #if defined(PLATFORM_WIN)
 //Catch Control-C exception from keyboard.
-BOOL __fastcall CtrlHandler(const DWORD fdwCtrlType)
+BOOL __fastcall CtrlHandler(
+	const DWORD fdwCtrlType)
 {
 //Handle the CTRL-C signal.
 	if (fdwCtrlType == CTRL_C_EVENT)
 	{
-		wprintf_s(L"Get Control-C.\n");
+		fwprintf_s(stderr, L"Get Control-C.\n");
 	}
 //Handle the CTRL-Break signal.
 	else if (fdwCtrlType == CTRL_BREAK_EVENT)
 	{
-		wprintf_s(L"Get Control-Break.\n");
+		fwprintf_s(stderr, L"Get Control-Break.\n");
 		PrintProcess(true, true);
 		
 		return TRUE;
 	}
 //Handle other signals.
 	else {
-		wprintf_s(L"Get closing signal.\n");
+		fwprintf_s(stderr, L"Get closing signal.\n");
 	}
 
 //Print statistics and close all file handles.

@@ -17,20 +17,23 @@
 // Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 
-#include "Terminal.h"
+#include "Base.h"
+
+extern ConfigurationTable ConfigurationParameter;
 
 #if (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 //Handle the system signal.
-	void SIG_Handler(const int Signal)
-	{
-		wprintf_s(L"Get closing signal.\n");
-		PrintProcess(true, true);
+void SIG_Handler(
+	const int Signal)
+{
+	fwprintf_s(stderr, L"Get closing signal.\n");
+	PrintProcess(true, true);
 
-	//Close file handle.
-		if (OutputFile != nullptr)
-			fclose(OutputFile);
+//Close file handle.
+	if (ConfigurationParameter.OutputFile != nullptr)
+		fclose(ConfigurationParameter.OutputFile);
 	
-		exit(EXIT_SUCCESS);
-		return;
-	}
+	exit(EXIT_SUCCESS);
+	return;
+}
 #endif
