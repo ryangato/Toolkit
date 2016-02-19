@@ -22,7 +22,7 @@
 extern ConfigurationTable ConfigurationParameter;
 
 //Minimum supported system of Windows Version Helpers is Windows Vista.
-#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64)) //Windows(x86)
+#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64))
 //Check operation system which higher than Windows 7.
 bool __fastcall IsLowerThanWin8(
 	void)
@@ -74,7 +74,7 @@ void MBSToWCSString(
 //Convert lowercase/uppercase word(s) to uppercase/lowercase word(s).
 size_t __fastcall CaseConvert(
 	const bool IsLowerUpper, 
-	const PSTR Buffer, 
+	char *Buffer, 
 	const size_t Length)
 {
 	for (size_t Index = 0;Index < Length;++Index)
@@ -85,7 +85,7 @@ size_t __fastcall CaseConvert(
 				Buffer[Index] -= ASCII_LOWER_TO_UPPER;
 		}
 		else { //Uppercase to lowercase
-			if (Buffer[Index] > ASCII_AT && Buffer[Index] < ASCII_BRACKETS_LEAD)
+			if (Buffer[Index] > ASCII_AT && Buffer[Index] < ASCII_BRACKETS_LEFT)
 				Buffer[Index] += ASCII_UPPER_TO_LOWER;
 		}
 	}
@@ -95,7 +95,7 @@ size_t __fastcall CaseConvert(
 
 //Convert address strings to binary.
 size_t __fastcall AddressStringToBinary(
-	const PSTR AddrString, 
+	const char *AddrString, 
 	void *pAddr, 
 	const uint16_t Protocol, 
 	SSIZE_T &ErrCode)
@@ -103,7 +103,7 @@ size_t __fastcall AddressStringToBinary(
 	SSIZE_T Result = 0;
 
 //inet_ntop() and inet_pton() was only support in Windows Vista and newer system. [Roy Tam]
-#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64)) //Windows(x86)
+#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64))
 	sockaddr_storage SockAddr = {0};
 	int SockLength = 0;
 #endif
@@ -132,9 +132,9 @@ size_t __fastcall AddressStringToBinary(
 		}
 
 	//Convert to binary.
-	#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64)) //Windows(x86)
+	#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64))
 		SockLength = sizeof(sockaddr_in6);
-		if (WSAStringToAddressA((PSTR)sAddrString.c_str(), AF_INET6, nullptr, (PSOCKADDR)&SockAddr, &SockLength) == SOCKET_ERROR)
+		if (WSAStringToAddressA((char *)sAddrString.c_str(), AF_INET6, nullptr, (PSOCKADDR)&SockAddr, &SockLength) == SOCKET_ERROR)
 	#else 
 		Result = inet_pton(AF_INET6, sAddrString.c_str(), pAddr);
 		if (Result == SOCKET_ERROR || Result == FALSE)
@@ -143,7 +143,7 @@ size_t __fastcall AddressStringToBinary(
 			ErrCode = WSAGetLastError();
 			return EXIT_FAILURE;
 		}
-	#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64)) //Windows(x86)
+	#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64))
 		memcpy_s(pAddr, sizeof(in6_addr), &((PSOCKADDR_IN6)&SockAddr)->sin6_addr, sizeof(in6_addr));
 	#endif
 	}
@@ -190,9 +190,9 @@ size_t __fastcall AddressStringToBinary(
 			sAddrString.append("0");
 
 	//Convert to binary.
-	#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64)) //Windows(x86)
+	#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64))
 		SockLength = sizeof(sockaddr_in);
-		if (WSAStringToAddressA((PSTR)sAddrString.c_str(), AF_INET, nullptr, (PSOCKADDR)&SockAddr, &SockLength) == SOCKET_ERROR)
+		if (WSAStringToAddressA((char *)sAddrString.c_str(), AF_INET, nullptr, (PSOCKADDR)&SockAddr, &SockLength) == SOCKET_ERROR)
 	#else 
 		Result = inet_pton(AF_INET, sAddrString.c_str(), pAddr);
 		if (Result == SOCKET_ERROR || Result == FALSE)
@@ -201,7 +201,7 @@ size_t __fastcall AddressStringToBinary(
 			ErrCode = WSAGetLastError();
 			return EXIT_FAILURE;
 		}
-	#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64)) //Windows(x86)
+	#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64))
 		memcpy_s(pAddr, sizeof(in_addr), &((PSOCKADDR_IN)&SockAddr)->sin_addr, sizeof(in_addr));
 	#endif
 	}
@@ -898,8 +898,8 @@ uint16_t __fastcall DNSTypeNameToHex(
 
 //Convert data from char(s) to DNS query
 size_t __fastcall CharToDNSQuery(
-	const PSTR FName, 
-	PSTR TName)
+	const char *FName, 
+	char *TName)
 {
 	int Index[] = {(int)strnlen_s(FName, DOMAIN_MAXSIZE) - 1, 0, 0};
 	Index[2U] = Index[0] + 1;
@@ -925,8 +925,8 @@ size_t __fastcall CharToDNSQuery(
 
 //Convert data from DNS query to char(s)
 size_t __fastcall DNSQueryToChar(
-	const PSTR TName, 
-	PSTR FName, 
+	const char *TName, 
+	char *FName, 
 	uint16_t &Truncated)
 {
 //Initialization
@@ -968,7 +968,7 @@ size_t __fastcall DNSQueryToChar(
 
 //Validate packets
 bool __fastcall ValidatePacket(
-	const PSTR Buffer, 
+	const char *Buffer, 
 	const size_t Length, 
 	const uint16_t DNS_ID)
 {
@@ -978,8 +978,8 @@ bool __fastcall ValidatePacket(
 	if (pdns_hdr->ID != DNS_ID || pdns_hdr->Questions == 0)
 		return false;
 
-//EDNS0 Lable check
-	if (ConfigurationParameter.EDNS0)
+//EDNS Label check
+	if (ConfigurationParameter.EDNS)
 	{
 		if (pdns_hdr->Additional == 0)
 		{

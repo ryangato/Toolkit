@@ -5,7 +5,7 @@
 
 
 ### Usage
-       DNSPing [Options] Test_DomainName Target
+       DNSPing [options] domain
   e.g. DNSPing -a -qt AAAA -n 5 -w 500 -edns0 www.google.com 8.8.4.4
 
 
@@ -15,18 +15,18 @@
                      To see statistics and continue type Control-Break.
                      To stop type Control-C.
    -a                Resolve addresses to host names.
-   -n Count          Set number of echo requests to send.
+   -n count          Set number of echo requests to send.
                      Count must between 1 - 0xFFFF/65535.
    -f                Set the "Don't Fragment" flag in outgoing packets(IPv4).
                      No available on Linux.
-   -i HopLimit/TTL   Specifie a Hop Limit or Time To Live for outgoing packets.
+   -i hoplimit/ttl   Specifie a Hop Limit or Time To Live for outgoing packets.
                      HopLimit/TTL must between 1 - 255.
-   -w Timeout        Set a long wait periods (in milliseconds) for a response
+   -w timeout        Set a long wait periods (in milliseconds) for a response
                      Timeout must between 500 - 0xFFFF/65535.
-   -id DNS_ID        Specifie DNS header ID.
+   -id dns_id        Specifie DNS header ID.
                      DNS ID must between 0x0001 - 0xFFFF/65535.
    -qr               Set DNS header QR flag.
-   -opcode OPCode    Specifie DNS header OPCode.
+   -opcode opcode    Specifie DNS header OPCode.
                      OPCode must between 0x0000 - 0x00FF/255.
    -aa               Set DNS header AA flag.
    -tc               Set DNS header TC flag.
@@ -34,23 +34,23 @@
    -ra               Set DNS header RA flag.
    -ad               Set DNS header AD flag.
    -cd               Set DNS header CD flag.
-   -rcode RCode      Specifie DNS header RCode.
+   -rcode rcode      Specifie DNS header RCode.
                      RCode must between 0x0000 - 0x00FF/255.
-   -qn Count         Specifie DNS header Question count.
+   -qn count         Specifie DNS header Question count.
                      Question count must between 0x0001 - 0xFFFF/65535.
-   -ann Count        Specifie DNS header Answer count.
+   -ann count        Specifie DNS header Answer count.
                      Answer count must between 0x0001 - 0xFFFF/65535.
-   -aun Count        Specifie DNS header Authority count.
+   -aun count        Specifie DNS header Authority count.
                      Authority count must between 0x0001 - 0xFFFF/65535.
-   -adn Count        Specifie DNS header Additional count.
+   -adn count        Specifie DNS header Additional count.
                      Additional count must between 0x0001 - 0xFFFF/65535.
-   -ti IntervalTime  Specifie transmission interval time(in milliseconds).
+   -ti interval_time Specifie transmission interval time(in milliseconds).
    -edns0            Send with EDNS0 Label.
-   -payload Length   Specifie EDNS0 Label UDP Payload length.
+   -payload length   Specifie EDNS0 Label UDP Payload length.
                      Payload length must between 512 - 0xFFFF/65535.
    -dnssec           Send with DNSSEC requesting.
                      EDNS0 Label will enable when DNSSEC is enable.
-   -qt Type          Specifie Query type.
+   -qt type          Specifie Query type.
                      Query type must between 0x0001 - 0xFFFF/65535.
                      Type: A|NS|MD|MF|CNAME|SOA|MB|MG|MR|NULL|WKS|PTR|HINFO|
                            MINFO|MX|TXT|RP|AFSDB|X25|ISDN|RT|NSAP|NSAPPTR|
@@ -61,10 +61,10 @@
                            SPF|UINFO|UID|GID|UNSPEC|NID|L32|L64|LP|EUI48|
                            EUI64|TKEY|TSIG|IXFR|AXFR|MAILB|MAILA|ANY|URI|
                            CAA|TA|DLV|RESERVED
-   -qc Classes       Specifie Query classes.
+   -qc classes       Specifie Query classes.
                      Query classes must between 0x0001 - 0xFFFF/65535.
                      Classes: IN|CSNET|CHAOS|HESIOD|NONE|ALL|ANY
-   -p ServiceName    Specifie UDP port/protocol(Sevice names).
+   -p service_name   Specifie UDP port/protocol(Sevice names).
                      UDP port must between 0x0001 - 0xFFFF/65535.
                      Protocol: TCPMUX|ECHO|DISCARD|SYSTAT|DAYTIME|NETSTAT|
                                QOTD|MSP|CHARGEN|FTP|SSH|TELNET|SMTP|
@@ -79,10 +79,10 @@
                                ISAKMP|BIFFUDP|WHOSERVER|SYSLOG|ROUTERSERVER|
                                NCP|COURIER|COMMERCE|RTSP|NNTP|HTTPRPCEPMAP|
                                IPP|LDAPS|MSDP|AODV|FTPSDATA|FTPS|NAS|TELNETS
-   -rawdata RAW_Data Specifie Raw data to send.
+   -rawdata raw_data Specifie Raw data to send.
                      RAW_Data is hex, but do not add "0x" before hex.
                      Length of RAW_Data must between 64 - 1500 bytes.
-   -raw ServiceName  Specifie Raw socket type.
+   -raw service_name Specifie Raw socket type.
                      Service Name: HOPOPTS|ICMP|IGMP|GGP|IPV4|ST|TCP|CBT|EGP|
                                    IGP|BBNRCCMON|NVPII|PUP|ARGUS|EMCON|XNET|
                                    CHAOS|MUX|DCN|HMP|PRM|IDP|TRUNK_1|TRUNK_2
@@ -102,18 +102,24 @@
                                    SPS|PIPE|SCTP|FC|RSVPE2E|MOBILITY|UDPLITE|
                                    MPLS|MANET|HIP|SHIM6|WESP|ROHC|TEST-1|
                                    TEST-2|RAW
-   -buf Size         Specifie receive buffer size.
-                     Buffer size must between 512 - 4096 bytes.
-   -dv               Disable packets validated.
-   -show Response    Show result or data of responses.
-                     Response: Result|Hex
-   -of FileName      Output result to file.
-                     FileName must less than 260 bytes.
-   -6                Using IPv6.
-   -4                Using IPv4.
-   Test_DomainName   A domain name which will make requesting to send
-                     to DNS server.
-   Target            Target of DNSPing, support IPv4/IPv6 address and domain.
+   -socks target            Specifie target of SOCKS server.
+                            Target is Server:Port, like [::1]:1080.
+   -socks_username username Specifie username of SOCKS server.
+                            Length of SOCKS username must between 1 - 255 bytes.
+   -socks_password password Specifie password of SOCKS server.
+                            Length of SOCKS password must between 1 - 255 bytes.
+   -buf size                Specifie receive buffer size.
+                            Buffer size must between 512 - 4096 bytes.
+   -dv                      Disable packets validated.
+   -show type               Show result or hex data of responses.
+                            Type: Result|Hex
+   -of file_name            Output result to file.
+                            FileName must less than 260 bytes.
+   -6                       Using IPv6.
+   -4                       Using IPv4.
+   domain                   A domain name which will make requesting to send
+                            to DNS server.
+   target                   Target of DNSPing, support IPv4/IPv6 address and domain.
 
 
 ### TCPing

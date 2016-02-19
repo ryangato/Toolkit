@@ -156,6 +156,7 @@
   <ItemGroup>
     <ClInclude Include="Base.h" />
     <ClInclude Include="Main.h" />
+    <ClInclude Include="Process.h" />
     <ClInclude Include="Resolver.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>

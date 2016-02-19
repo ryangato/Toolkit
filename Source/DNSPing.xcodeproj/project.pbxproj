@@ -29,6 +29,7 @@
 
 /* Begin PBXFileReference section */
 		D98B82B01C6875A0003F7018 /* DNSPing */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = DNSPing; sourceTree = BUILT_PRODUCTS_DIR; };
+		D9989D721C771EB000A5B435 /* Process.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Process.h; sourceTree = "<group>"; };
 		D9AC82AD1C68764100619942 /* Base.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Base.h; sourceTree = "<group>"; };
 		D9AC82AE1C68764100619942 /* Console.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Console.cpp; sourceTree = "<group>"; };
 		D9AC82B01C68764100619942 /* Main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Main.cpp; sourceTree = "<group>"; };
@@ -78,6 +79,7 @@
 				D9AC82B81C68764100619942 /* Terminal.cpp */,
 				D9AC82AD1C68764100619942 /* Base.h */,
 				D9AC82B11C68764100619942 /* Main.h */,
+				D9989D721C771EB000A5B435 /* Process.h */,
 				D9AC82B71C68764100619942 /* Resolver.h */,
 			);
 			path = DNSPing;

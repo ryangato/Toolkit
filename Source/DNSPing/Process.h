@@ -20,22 +20,12 @@
 #include "Base.h"
 
 //Global variables
-ConfigurationTable ConfigurationParameter;
+extern ConfigurationTable ConfigurationParameter;
 
 //Functions
-size_t __fastcall ConfigurationInitialization(
-	void);
-#if defined(PLATFORM_WIN)
-size_t __fastcall ReadCommands(
-	int argc, 
-	wchar_t* argv[]);
-#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
-size_t __fastcall ReadCommands(
-	int argc, 
-	char *argv[]);
-#endif
-size_t __fastcall OutputResultToFile(
-	void);
-void __fastcall PrintHeaderToScreen(
-	const std::wstring wTargetAddressString,
-	const std::wstring wTestDomain);
+size_t __fastcall SOCKS_UDP_ASSOCIATE(
+	sockaddr_storage &SockAddr_SOCKS_UDP, 
+	const uint16_t SOCKS_Local_Port, 
+	const SOCKET Socket_Normal, 
+	const PSOCKADDR SockAddr, 
+	const socklen_t AddrLen);

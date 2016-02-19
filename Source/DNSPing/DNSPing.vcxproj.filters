@@ -27,6 +27,9 @@
     <ClInclude Include="Main.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Process.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Terminal.cpp">

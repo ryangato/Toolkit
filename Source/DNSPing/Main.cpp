@@ -48,9 +48,9 @@ int main(
 		}
 
 	//Check parameter reading.
-		if (ConfigurationParameter.SockAddr.ss_family == AF_INET6) //IPv6
+		if (ConfigurationParameter.SockAddr_Normal.ss_family == AF_INET6) //IPv6
 		{
-			if (CheckEmptyBuffer(&((PSOCKADDR_IN6)&ConfigurationParameter.SockAddr)->sin6_addr, sizeof(in6_addr)))
+			if (CheckEmptyBuffer(&((PSOCKADDR_IN6)&ConfigurationParameter.SockAddr_Normal)->sin6_addr, sizeof(in6_addr)))
 			{
 				fwprintf_s(stderr, L"\nTarget is empty.\n");
 
@@ -62,15 +62,16 @@ int main(
 				if (ConfigurationParameter.ServiceType == 0)
 				{
 					ConfigurationParameter.ServiceType = htons(IPPORT_DNS);
-					((PSOCKADDR_IN6)&ConfigurationParameter.SockAddr)->sin6_port = htons(IPPORT_DNS);
+					((PSOCKADDR_IN6)&ConfigurationParameter.SockAddr_Normal)->sin6_port = htons(IPPORT_DNS);
 				}
 				else {
-					((PSOCKADDR_IN6)&ConfigurationParameter.SockAddr)->sin6_port = ConfigurationParameter.ServiceType;
+					((PSOCKADDR_IN6)&ConfigurationParameter.SockAddr_Normal)->sin6_port = ConfigurationParameter.ServiceType;
 				}
 			}
 		}
-		else { //IPv4
-			if (((PSOCKADDR_IN)&ConfigurationParameter.SockAddr)->sin_addr.s_addr == 0)
+		else if (ConfigurationParameter.SockAddr_Normal.ss_family == AF_INET) //IPv4
+		{
+			if (((PSOCKADDR_IN)&ConfigurationParameter.SockAddr_Normal)->sin_addr.s_addr == 0)
 			{
 				fwprintf_s(stderr, L"\nTarget is empty.\n");
 
@@ -82,11 +83,31 @@ int main(
 				if (ConfigurationParameter.ServiceType == 0)
 				{
 					ConfigurationParameter.ServiceType = htons(IPPORT_DNS);
-					((PSOCKADDR_IN)&ConfigurationParameter.SockAddr)->sin_port = htons(IPPORT_DNS);
+					((PSOCKADDR_IN)&ConfigurationParameter.SockAddr_Normal)->sin_port = htons(IPPORT_DNS);
 				}
 				else {
-					((PSOCKADDR_IN)&ConfigurationParameter.SockAddr)->sin_port = ConfigurationParameter.ServiceType;
+					((PSOCKADDR_IN)&ConfigurationParameter.SockAddr_Normal)->sin_port = ConfigurationParameter.ServiceType;
 				}
+			}
+		}
+		else { //SOCKS mode
+			if (ConfigurationParameter.SockAddr_SOCKS.ss_family == 0)
+			{
+				fwprintf_s(stderr, L"\nTarget is empty.\n");
+
+				WSACleanup();
+				return EXIT_FAILURE;
+			}
+			else {
+			//Mark port.
+				if (ConfigurationParameter.ServiceType == 0)
+				{
+					ConfigurationParameter.ServiceType = htons(IPPORT_DNS);
+/*					((PSOCKADDR_IN)&ConfigurationParameter.SockAddr_Normal)->sin_port = htons(IPPORT_DNS);
+				}
+				else {
+					((PSOCKADDR_IN)&ConfigurationParameter.SockAddr_Normal)->sin_port = ConfigurationParameter.ServiceType;
+*/				}
 			}
 		}
 
@@ -104,163 +125,88 @@ int main(
 				else if (ConfigurationParameter.SocketTimeout == TIME_OUT_MIN)
 					ConfigurationParameter.SocketTimeout = 1;
 			}
-		ConfigurationParameter.MinTime = ConfigurationParameter.SocketTimeout;
+		ConfigurationParameter.Statistics_MinTime = ConfigurationParameter.SocketTimeout;
 	#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
-		ConfigurationParameter.MinTime = ConfigurationParameter.SocketTimeout.tv_sec * SECOND_TO_MILLISECOND + ConfigurationParameter.SocketTimeout.tv_usec / MICROSECOND_TO_MILLISECOND;
+		ConfigurationParameter.Statistics_MinTime = ConfigurationParameter.SocketTimeout.tv_sec * SECOND_TO_MILLISECOND + ConfigurationParameter.SocketTimeout.tv_usec / MICROSECOND_TO_MILLISECOND;
 	#endif
 
 	//Convert multiple byte string to wide char string.
-		std::wstring wTestDomain, wTargetDomainString;
+		std::wstring wTestDomain, wTargetAddressString;
 	#if defined(PLATFORM_WIN)
-		std::shared_ptr<wchar_t> wTargetStringPTR(new wchar_t[LARGE_PACKET_MAXSIZE]());
-		wmemset(wTargetStringPTR.get(), 0, LARGE_PACKET_MAXSIZE);
-		MultiByteToWideChar(CP_ACP, 0, ConfigurationParameter.TargetString.c_str(), MBSTOWCS_NULLTERMINATE, wTargetStringPTR.get(), (int)ConfigurationParameter.TargetString.length());
-		ConfigurationParameter.wTargetString = wTargetStringPTR.get();
-		wmemset(wTargetStringPTR.get(), 0, LARGE_PACKET_MAXSIZE);
-		MultiByteToWideChar(CP_ACP, 0, ConfigurationParameter.TestDomain.c_str(), MBSTOWCS_NULLTERMINATE, wTargetStringPTR.get(), (int)ConfigurationParameter.TestDomain.length());
-		wTestDomain = wTargetStringPTR.get();
-		if (!ConfigurationParameter.TargetDomainString.empty())
+		std::shared_ptr<wchar_t> BufferTemp(new wchar_t[LARGE_PACKET_MAXSIZE]());
+		wmemset(BufferTemp.get(), 0, LARGE_PACKET_MAXSIZE);
+		MultiByteToWideChar(CP_ACP, 0, ConfigurationParameter.TargetString_Normal.c_str(), MBSTOWCS_NULLTERMINATE, BufferTemp.get(), (int)ConfigurationParameter.TargetString_Normal.length());
+		ConfigurationParameter.wTargetString = BufferTemp.get();
+		wmemset(BufferTemp.get(), 0, LARGE_PACKET_MAXSIZE);
+		MultiByteToWideChar(CP_ACP, 0, ConfigurationParameter.TestDomain.c_str(), MBSTOWCS_NULLTERMINATE, BufferTemp.get(), (int)ConfigurationParameter.TestDomain.length());
+		wTestDomain = BufferTemp.get();
+		if (!ConfigurationParameter.TargetAddressString.empty())
 		{
-			wmemset(wTargetStringPTR.get(), 0, LARGE_PACKET_MAXSIZE);
-			MultiByteToWideChar(CP_ACP, 0, ConfigurationParameter.TargetDomainString.c_str(), MBSTOWCS_NULLTERMINATE, wTargetStringPTR.get(), (int)ConfigurationParameter.TargetDomainString.length());
-			wTargetDomainString = wTargetStringPTR.get();
+			wmemset(BufferTemp.get(), 0, LARGE_PACKET_MAXSIZE);
+			MultiByteToWideChar(CP_ACP, 0, ConfigurationParameter.TargetAddressString.c_str(), MBSTOWCS_NULLTERMINATE, BufferTemp.get(), (int)ConfigurationParameter.TargetAddressString.length());
+			wTargetAddressString = BufferTemp.get();
 		}
-		wTargetStringPTR.reset();
+		BufferTemp.reset();
 	#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
-		MBSToWCSString(ConfigurationParameter.wTargetString, ConfigurationParameter.TargetString.c_str());
+		MBSToWCSString(ConfigurationParameter.wTargetString, ConfigurationParameter.TargetString_Normal.c_str());
 		MBSToWCSString(wTestDomain, ConfigurationParameter.TestDomain.c_str());
-		if (!ConfigurationParameter.TargetDomainString.empty())
-			MBSToWCSString(wTargetDomainString, ConfigurationParameter.TargetDomainString.c_str());
+		if (!ConfigurationParameter.TargetAddressString.empty())
+			MBSToWCSString(wTargetAddressString, ConfigurationParameter.TargetAddressString.c_str());
 	#endif
 
 	//Check DNS header.
-		if (ConfigurationParameter.HeaderParameter.Flags == 0)
-			ConfigurationParameter.HeaderParameter.Flags = htons(DNS_STANDARD);
-		if (ConfigurationParameter.HeaderParameter.Questions == 0)
-			ConfigurationParameter.HeaderParameter.Questions = htons(U16_NUM_ONE);
+		if (ConfigurationParameter.Parameter_Header.Flags == 0)
+			ConfigurationParameter.Parameter_Header.Flags = htons(DNS_STANDARD);
+		if (ConfigurationParameter.Parameter_Header.Questions == 0)
+			ConfigurationParameter.Parameter_Header.Questions = htons(U16_NUM_ONE);
 
 	//Check DNS query.
-		if (ConfigurationParameter.QueryParameter.Classes == 0)
-			ConfigurationParameter.QueryParameter.Classes = htons(DNS_CLASS_IN);
-		if (ConfigurationParameter.QueryParameter.Type == 0)
+		if (ConfigurationParameter.Parameter_Query.Classes == 0)
+			ConfigurationParameter.Parameter_Query.Classes = htons(DNS_CLASS_IN);
+		if (ConfigurationParameter.Parameter_Query.Type == 0)
 		{
-			if (ConfigurationParameter.SockAddr.ss_family == AF_INET6) //IPv6
-				ConfigurationParameter.QueryParameter.Type = htons(DNS_RECORD_AAAA);
+			if (ConfigurationParameter.SockAddr_Normal.ss_family == AF_INET6) //IPv6
+				ConfigurationParameter.Parameter_Query.Type = htons(DNS_RECORD_AAAA);
 			else //IPv4
-				ConfigurationParameter.QueryParameter.Type = htons(DNS_RECORD_A);
+				ConfigurationParameter.Parameter_Query.Type = htons(DNS_RECORD_A);
 		}
 
-	//Check EDNS0 Label.
+	//Check EDNS Label.
 		if (ConfigurationParameter.DNSSEC)
-			ConfigurationParameter.EDNS0 = true;
-		if (ConfigurationParameter.EDNS0)
+			ConfigurationParameter.EDNS = true;
+		if (ConfigurationParameter.EDNS)
 		{
-			ConfigurationParameter.HeaderParameter.Additional = htons(U16_NUM_ONE);
-			ConfigurationParameter.EDNS0Parameter.Type = htons(DNS_RECORD_OPT);
-			if (ConfigurationParameter.EDNS0PayloadSize == 0)
-				ConfigurationParameter.EDNS0Parameter.UDPPayloadSize = htons(EDNS0_MINSIZE);
+			ConfigurationParameter.Parameter_Header.Additional = htons(U16_NUM_ONE);
+			ConfigurationParameter.Parameter_EDNS.Type = htons(DNS_RECORD_OPT);
+			if (ConfigurationParameter.EDNSPayloadSize == 0)
+				ConfigurationParameter.Parameter_EDNS.UDPPayloadSize = htons(EDNS0_MINSIZE);
 			else 
-				ConfigurationParameter.EDNS0Parameter.UDPPayloadSize = htons((uint16_t)ConfigurationParameter.EDNS0PayloadSize);
+				ConfigurationParameter.Parameter_EDNS.UDPPayloadSize = htons((uint16_t)ConfigurationParameter.EDNSPayloadSize);
 			if (ConfigurationParameter.DNSSEC)
 			{
-				ConfigurationParameter.HeaderParameter.FlagsBits.AD = ~ConfigurationParameter.HeaderParameter.FlagsBits.AD; //Local DNSSEC Server validate
-				ConfigurationParameter.HeaderParameter.FlagsBits.CD = ~ConfigurationParameter.HeaderParameter.FlagsBits.CD; //Client validate
-				ConfigurationParameter.EDNS0Parameter.Z_Bits.DO = ~ConfigurationParameter.EDNS0Parameter.Z_Bits.DO; //Accepts DNSSEC security RRs
+				ConfigurationParameter.Parameter_Header.FlagsBits.AD = ~ConfigurationParameter.Parameter_Header.FlagsBits.AD; //Local DNSSEC Server validate
+				ConfigurationParameter.Parameter_Header.FlagsBits.CD = ~ConfigurationParameter.Parameter_Header.FlagsBits.CD; //Client validate
+				ConfigurationParameter.Parameter_EDNS.Z_Bits.DO = ~ConfigurationParameter.Parameter_EDNS.Z_Bits.DO; //Accepts DNSSEC security RRs
 			}
 		}
 
 	//Output result to file.
-		SSIZE_T Result = 0;
-		if (!ConfigurationParameter.wOutputFileName.empty())
+		if (!ConfigurationParameter.wOutputFileName.empty() && OutputResultToFile() == EXIT_FAILURE)
 		{
-		#if defined(PLATFORM_WIN)
-			Result = _wfopen_s(&ConfigurationParameter.OutputFile, ConfigurationParameter.wOutputFileName.c_str(), L"a,ccs=UTF-8");
-		#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
-			ConfigurationParameter.OutputFile = fopen(ConfigurationParameter.OutputFileName.c_str(), ("a"));
-		#endif
-			if (ConfigurationParameter.OutputFile == nullptr)
-			{
-				fwprintf_s(stderr, L"Create output result file %ls error, error code is %d.\n", ConfigurationParameter.wOutputFileName.c_str(), (int)Result);
-
-				WSACleanup();
-				return EXIT_SUCCESS;
-			}
-			else {
-				tm TimeStructure = {0};
-				time_t TimeValues = 0;
-				time(&TimeValues);
-				localtime_s(&TimeStructure, &TimeValues);
-
-				fwprintf_s(ConfigurationParameter.OutputFile, L"------------------------------ %d-%02d-%02d %02d:%02d:%02d ------------------------------\n", TimeStructure.tm_year + 1900, TimeStructure.tm_mon + 1, TimeStructure.tm_mday, TimeStructure.tm_hour, TimeStructure.tm_min, TimeStructure.tm_sec);
-			}
+			WSACleanup();
+			return EXIT_FAILURE;
 		}
 
-	//Print to screen before sending.
-		fwprintf_s(stderr, L"\n");
-		if (ConfigurationParameter.ReverseLookup)
-		{
-			if (wTargetDomainString.empty())
-			{
-				char FQDN[NI_MAXHOST + 1U] = {0};
-				if (getnameinfo((PSOCKADDR)&ConfigurationParameter.SockAddr, sizeof(sockaddr_in), FQDN, NI_MAXHOST, nullptr, 0, NI_NUMERICSERV) != 0)
-				{
-					fwprintf_s(stderr, L"\nResolve addresses to host names error, error code is %d.\n", WSAGetLastError());
-					fwprintf_s(stderr, L"DNSPing %ls:%u with %ls:\n", ConfigurationParameter.wTargetString.c_str(), ntohs(ConfigurationParameter.ServiceType), wTestDomain.c_str());
-					if (ConfigurationParameter.OutputFile != nullptr)
-						fwprintf_s(ConfigurationParameter.OutputFile, L"DNSPing %ls:%u with %ls:\n", ConfigurationParameter.wTargetString.c_str(), ntohs(ConfigurationParameter.ServiceType), wTestDomain.c_str());
-				}
-				else {
-					if (ConfigurationParameter.TargetString == FQDN)
-					{
-						fwprintf_s(stderr, L"DNSPing %ls:%u with %ls:\n", ConfigurationParameter.wTargetString.c_str(), ntohs(ConfigurationParameter.ServiceType), wTestDomain.c_str());
-						if (ConfigurationParameter.OutputFile != nullptr)
-							fwprintf_s(ConfigurationParameter.OutputFile, L"DNSPing %ls:%u with %ls:\n", ConfigurationParameter.wTargetString.c_str(), ntohs(ConfigurationParameter.ServiceType), wTestDomain.c_str());
-					}
-					else {
-						std::shared_ptr<wchar_t> wFQDN(new wchar_t[strnlen(FQDN, NI_MAXHOST) + 1U]());
-						wmemset(wFQDN.get(), 0, strnlen(FQDN, NI_MAXHOST) + 1U);
-
-					#if defined(PLATFORM_WIN)
-						MultiByteToWideChar(CP_ACP, 0, FQDN, MBSTOWCS_NULLTERMINATE, wFQDN.get(), (int)strlen(FQDN));
-					#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
-						mbstowcs(wFQDN.get(), FQDN, strlen(FQDN));
-					#endif
-
-						fwprintf_s(stderr, L"DNSPing %ls:%u [%ls] with %ls:\n", wFQDN.get(), ntohs(ConfigurationParameter.ServiceType), ConfigurationParameter.wTargetString.c_str(), wTestDomain.c_str());
-						if (ConfigurationParameter.OutputFile != nullptr)
-							fwprintf_s(ConfigurationParameter.OutputFile, L"DNSPing %ls:%u [%ls] with %ls:\n", wFQDN.get(), ntohs(ConfigurationParameter.ServiceType), ConfigurationParameter.wTargetString.c_str(), wTestDomain.c_str());
-					}
-				}
-			}
-			else {
-				fwprintf_s(stderr, L"DNSPing %ls:%u [%ls] with %ls:\n", wTargetDomainString.c_str(), ntohs(ConfigurationParameter.ServiceType), ConfigurationParameter.wTargetString.c_str(), wTestDomain.c_str());
-				if (ConfigurationParameter.OutputFile != nullptr)
-					fwprintf_s(ConfigurationParameter.OutputFile, L"DNSPing %ls:%u [%ls] with %ls:\n", wTargetDomainString.c_str(), ntohs(ConfigurationParameter.ServiceType), ConfigurationParameter.wTargetString.c_str(), wTestDomain.c_str());
-			}
-		}
-		else {
-			if (!ConfigurationParameter.TargetDomainString.empty())
-			{
-				fwprintf_s(stderr, L"DNSPing %ls:%u [%ls] with %ls:\n", wTargetDomainString.c_str(), ntohs(ConfigurationParameter.ServiceType), ConfigurationParameter.wTargetString.c_str(), wTestDomain.c_str());
-				if (ConfigurationParameter.OutputFile != nullptr)
-					fwprintf_s(ConfigurationParameter.OutputFile, L"DNSPing %ls:%u [%ls] with %ls:\n", wTargetDomainString.c_str(), ntohs(ConfigurationParameter.ServiceType), ConfigurationParameter.wTargetString.c_str(), wTestDomain.c_str());
-			}
-			else {
-				fwprintf_s(stderr, L"DNSPing %ls:%u with %ls:\n", ConfigurationParameter.wTargetString.c_str(), ntohs(ConfigurationParameter.ServiceType), wTestDomain.c_str());
-				if (ConfigurationParameter.OutputFile != nullptr)
-					fwprintf_s(ConfigurationParameter.OutputFile, L"DNSPing %ls:%u with %ls:\n", ConfigurationParameter.wTargetString.c_str(), ntohs(ConfigurationParameter.ServiceType), wTestDomain.c_str());
-			}
-		}
-
-	//Send.
-		if (ConfigurationParameter.SendNum == 0)
+	//Print to screen before sending and send request.
+		PrintHeaderToScreen(wTargetAddressString, wTestDomain);
+		if (ConfigurationParameter.Statistics_Send == 0)
 		{
 			for (;;)
 			{
-				if (ConfigurationParameter.RealSendNum <= UINT16_MAX)
+				if (ConfigurationParameter.Statistics_RealSend <= UINT16_MAX)
 				{
-					++ConfigurationParameter.RealSendNum;
-					if (SendProcess(ConfigurationParameter.SockAddr, false) == EXIT_FAILURE)
+					++ConfigurationParameter.Statistics_RealSend;
+					if (SendProcess(ConfigurationParameter.SockAddr_Normal, false) == EXIT_FAILURE)
 					{
 						WSACleanup();
 						return EXIT_FAILURE;
@@ -283,12 +229,12 @@ int main(
 		}
 		else {
 			auto LastSend = false;
-			for (size_t Index = 0;Index < ConfigurationParameter.SendNum;++Index)
+			for (size_t Index = 0;Index < ConfigurationParameter.Statistics_Send;++Index)
 			{
-				++ConfigurationParameter.RealSendNum;
-				if (Index == ConfigurationParameter.SendNum - 1U)
+				++ConfigurationParameter.Statistics_RealSend;
+				if (Index == ConfigurationParameter.Statistics_Send - 1U)
 					LastSend = true;
-				if (SendProcess(ConfigurationParameter.SockAddr, LastSend) == EXIT_FAILURE)
+				if (SendProcess(ConfigurationParameter.SockAddr_Normal, LastSend) == EXIT_FAILURE)
 				{
 				//Close file handle.
 					if (ConfigurationParameter.OutputFile != nullptr)
@@ -300,10 +246,8 @@ int main(
 			}
 		}
 
-	//Print to screen before finished.
+	//Print to screen before finished and close file handle.
 		PrintProcess(true, true);
-
-	//Close file handle.
 		if (ConfigurationParameter.OutputFile != nullptr)
 			fclose(ConfigurationParameter.OutputFile);
 	}
@@ -318,12 +262,12 @@ size_t __fastcall ConfigurationInitialization(
 {
 //Initialization
 #if defined(PLATFORM_WIN)
-	memset(&ConfigurationParameter, 0, sizeof(ConfigurationTable) - (sizeof(std::string) * 3U + sizeof(std::wstring) * 2U + sizeof(std::shared_ptr<char>)));
+	memset(&ConfigurationParameter, 0, sizeof(ConfigurationTable) - (sizeof(std::string) * 5U + sizeof(std::wstring) * 3U + sizeof(std::shared_ptr<char>)));
 #elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
-	memset(&ConfigurationParameter, 0, sizeof(ConfigurationTable) - (sizeof(std::string) * 4U + sizeof(std::wstring) * 2U + sizeof(std::shared_ptr<char>)));
+	memset(&ConfigurationParameter, 0, sizeof(ConfigurationTable) - (sizeof(std::string) * 6U + sizeof(std::wstring) * 3U + sizeof(std::shared_ptr<char>)));
 #endif
 
-	ConfigurationParameter.SendNum = DEFAULT_SEND_TIMES;
+	ConfigurationParameter.Statistics_Send = DEFAULT_SEND_TIMES;
 	ConfigurationParameter.BufferSize = PACKET_MAXSIZE;
 	ConfigurationParameter.Validate = true;
 #if defined(PLATFORM_WIN)
@@ -387,14 +331,14 @@ size_t __fastcall ReadCommands(
 		Result = 0;
 
 	//Description(Usage)
-		if (Parameter.find(L"?") != std::string::npos || Parameter == L"-H" || Parameter == L"-h")
+		if (Parameter.find(L"?") != std::string::npos || Parameter == L"-h")
 		{
 			PrintDescription();
 		}
 	//Pings the specified host until stopped. To see statistics and continue type Control-Break. To stop type Control-C.
 		else if (Parameter == L"-t")
 		{
-			ConfigurationParameter.SendNum = 0;
+			ConfigurationParameter.Statistics_Send = 0;
 		}
 	//Resolve addresses to host names.
 		else if (Parameter == L"-a")
@@ -416,10 +360,10 @@ size_t __fastcall ReadCommands(
 				Result = wcstoul(Parameter.c_str(), nullptr, 0);
 				if (Result > 0 && Result <= UINT16_MAX)
 				{
-					ConfigurationParameter.SendNum = Result;
+					ConfigurationParameter.Statistics_Send = Result;
 				}
 				else {
-					fwprintf_s(stderr, L"\nParameter [-n Count] error.\n");
+					fwprintf_s(stderr, L"\nParameter [-n count] error.\n");
 					return EXIT_FAILURE;
 				}
 			}
@@ -454,7 +398,7 @@ size_t __fastcall ReadCommands(
 					ConfigurationParameter.IP_HopLimits = (int)Result;
 				}
 				else {
-					fwprintf_s(stderr, L"\nParameter [-i HopLimit/TTL] error.\n");
+					fwprintf_s(stderr, L"\nParameter [-i hoplimit/ttl] error.\n");
 					return EXIT_FAILURE;
 				}
 			}
@@ -486,7 +430,7 @@ size_t __fastcall ReadCommands(
 				#endif
 				}
 				else {
-					fwprintf_s(stderr, L"\nParameter [-w Timeout] error.\n");
+					fwprintf_s(stderr, L"\nParameter [-w timeout] error.\n");
 					return EXIT_FAILURE;
 				}
 			}
@@ -496,7 +440,7 @@ size_t __fastcall ReadCommands(
 			}
 		}
 	//Specifie DNS header ID.
-		else if (Parameter == L"-ID" || Parameter == L"-id")
+		else if (Parameter == L"-id")
 		{
 			if (Index + 1U < (size_t)argc)
 			{
@@ -510,10 +454,10 @@ size_t __fastcall ReadCommands(
 				Result = wcstoul(Parameter.c_str(), nullptr, 0);
 				if (Result > 0 && Result <= UINT16_MAX)
 				{
-					ConfigurationParameter.HeaderParameter.ID = htons((uint16_t)Result);
+					ConfigurationParameter.Parameter_Header.ID = htons((uint16_t)Result);
 				}
 				else {
-					fwprintf_s(stderr, L"\nParameter [-id DNS_ID] error.\n");
+					fwprintf_s(stderr, L"\nParameter [-id dns_id] error.\n");
 					return EXIT_FAILURE;
 				}
 			}
@@ -523,12 +467,12 @@ size_t __fastcall ReadCommands(
 			}
 		}
 	//Set DNS header flag: QR
-		else if (Parameter == L"-QR" || Parameter == L"-qr")
+		else if (Parameter == L"-qr")
 		{
-			ConfigurationParameter.HeaderParameter.FlagsBits.QR = ~ConfigurationParameter.HeaderParameter.FlagsBits.QR;
+			ConfigurationParameter.Parameter_Header.FlagsBits.QR = ~ConfigurationParameter.Parameter_Header.FlagsBits.QR;
 		}
 	//Specifie DNS header OPCode.
-		else if (Parameter == L"-OPCode" || Parameter == L"-opcode")
+		else if (Parameter == L"-opcode")
 		{
 			if (Index + 1U < (size_t)argc)
 			{
@@ -545,15 +489,15 @@ size_t __fastcall ReadCommands(
 				#if __BYTE_ORDER == __LITTLE_ENDIAN
 					auto TempFlags = (uint16_t)Result;
 					TempFlags = htons(TempFlags << 11U);
-					ConfigurationParameter.HeaderParameter.Flags = ConfigurationParameter.HeaderParameter.Flags | TempFlags;
+					ConfigurationParameter.Parameter_Header.Flags = ConfigurationParameter.Parameter_Header.Flags | TempFlags;
 				#else //Big-Endian
 					auto TempFlags = (uint8_t)Result;
 					TempFlags = TempFlags & 15;//0x00001111
-					ConfigurationParameter.HeaderParameter.FlagsBits.OPCode = TempFlags;
+					ConfigurationParameter.Parameter_Header.FlagsBits.OPCode = TempFlags;
 				#endif
 				}
 				else {
-					fwprintf_s(stderr, L"\nParameter [-opcode OPCode] error.\n");
+					fwprintf_s(stderr, L"\nParameter [-opcode opcode] error.\n");
 					return EXIT_FAILURE;
 				}
 			}
@@ -563,37 +507,37 @@ size_t __fastcall ReadCommands(
 			}
 		}
 	//Set DNS header flag: AA
-		else if (Parameter == L"-AA" || Parameter == L"-aa")
+		else if (Parameter == L"-aa")
 		{
-			ConfigurationParameter.HeaderParameter.FlagsBits.AA = ~ConfigurationParameter.HeaderParameter.FlagsBits.AA;
+			ConfigurationParameter.Parameter_Header.FlagsBits.AA = ~ConfigurationParameter.Parameter_Header.FlagsBits.AA;
 		}
 	//Set DNS header flag: TC
-		else if (Parameter == L"-TC" || Parameter == L"-tc")
+		else if (Parameter == L"-tc")
 		{
-			ConfigurationParameter.HeaderParameter.FlagsBits.TC = ~ConfigurationParameter.HeaderParameter.FlagsBits.TC;
+			ConfigurationParameter.Parameter_Header.FlagsBits.TC = ~ConfigurationParameter.Parameter_Header.FlagsBits.TC;
 		}
 	//Set DNS header flag: RD
-		else if (Parameter == L"-RD" || Parameter == L"-rd")
+		else if (Parameter == L"-rd")
 		{
-			ConfigurationParameter.HeaderParameter.FlagsBits.RD = ~ConfigurationParameter.HeaderParameter.FlagsBits.RD;
+			ConfigurationParameter.Parameter_Header.FlagsBits.RD = ~ConfigurationParameter.Parameter_Header.FlagsBits.RD;
 		}
 	//Set DNS header flag: RA
-		else if (Parameter == L"-RA" || Parameter == L"-ra")
+		else if (Parameter == L"-ra")
 		{
-			ConfigurationParameter.HeaderParameter.FlagsBits.RA = ~ConfigurationParameter.HeaderParameter.FlagsBits.RA;
+			ConfigurationParameter.Parameter_Header.FlagsBits.RA = ~ConfigurationParameter.Parameter_Header.FlagsBits.RA;
 		}
 	//Set DNS header flag: AD
-		else if (Parameter == L"-AD" || Parameter == L"-ad")
+		else if (Parameter == L"-ad")
 		{
-			ConfigurationParameter.HeaderParameter.FlagsBits.AD = ~ConfigurationParameter.HeaderParameter.FlagsBits.AD;
+			ConfigurationParameter.Parameter_Header.FlagsBits.AD = ~ConfigurationParameter.Parameter_Header.FlagsBits.AD;
 		}
 	//Set DNS header flag: CD
-		else if (Parameter == L"-CD" || Parameter == L"-cd")
+		else if (Parameter == L"-cd")
 		{
-			ConfigurationParameter.HeaderParameter.FlagsBits.CD = ~ConfigurationParameter.HeaderParameter.FlagsBits.CD;
+			ConfigurationParameter.Parameter_Header.FlagsBits.CD = ~ConfigurationParameter.Parameter_Header.FlagsBits.CD;
 		}
 	//Specifie DNS header RCode.
-		else if (Parameter == L"-RCode" || Parameter == L"-rcode")
+		else if (Parameter == L"-rcode")
 		{
 			if (Index + 1U < (size_t)argc)
 			{
@@ -610,15 +554,15 @@ size_t __fastcall ReadCommands(
 				#if __BYTE_ORDER == __LITTLE_ENDIAN
 					auto TempFlags = (uint16_t)Result;
 					TempFlags = htons(TempFlags);
-					ConfigurationParameter.HeaderParameter.Flags = ConfigurationParameter.HeaderParameter.Flags | TempFlags;
+					ConfigurationParameter.Parameter_Header.Flags = ConfigurationParameter.Parameter_Header.Flags | TempFlags;
 				#else //Big-Endian
 					auto TempFlags = (uint8_t)Result;
 					TempFlags = TempFlags & 15; //0x00001111
-					ConfigurationParameter.HeaderParameter.FlagsBits.RCode = TempFlags;
+					ConfigurationParameter.Parameter_Header.FlagsBits.RCode = TempFlags;
 				#endif
 				}
 				else {
-					fwprintf_s(stderr, L"\nParameter [-rcode RCode] error.\n");
+					fwprintf_s(stderr, L"\nParameter [-rcode rcode] error.\n");
 					return EXIT_FAILURE;
 				}
 			}
@@ -628,7 +572,7 @@ size_t __fastcall ReadCommands(
 			}
 		}
 	//Specifie DNS header question count.
-		else if (Parameter == L"-QN" || Parameter == L"-qn")
+		else if (Parameter == L"-qn")
 		{
 			if (Index + 1U < (size_t)argc)
 			{
@@ -642,10 +586,10 @@ size_t __fastcall ReadCommands(
 				Result = wcstoul(Parameter.c_str(), nullptr, 0);
 				if (Result > 0 && Result <= UINT16_MAX)
 				{
-					ConfigurationParameter.HeaderParameter.Questions = htons((uint16_t)Result);
+					ConfigurationParameter.Parameter_Header.Questions = htons((uint16_t)Result);
 				}
 				else {
-					fwprintf_s(stderr, L"\nParameter [-qn Count] error.\n");
+					fwprintf_s(stderr, L"\nParameter [-qn count] error.\n");
 					return EXIT_FAILURE;
 				}
 			}
@@ -655,7 +599,7 @@ size_t __fastcall ReadCommands(
 			}
 		}
 	//Specifie DNS header Answer count.
-		else if (Parameter == L"-ANN" || Parameter == L"-ann")
+		else if (Parameter == L"-ann")
 		{
 			if (Index + 1U < (size_t)argc)
 			{
@@ -669,10 +613,10 @@ size_t __fastcall ReadCommands(
 				Result = wcstoul(Parameter.c_str(), nullptr, 0);
 				if (Result > 0 && Result <= UINT16_MAX)
 				{
-					ConfigurationParameter.HeaderParameter.Answer = htons((uint16_t)Result);
+					ConfigurationParameter.Parameter_Header.Answer = htons((uint16_t)Result);
 				}
 				else {
-					fwprintf_s(stderr, L"\nParameter [-ann Count] error.\n");
+					fwprintf_s(stderr, L"\nParameter [-ann count] error.\n");
 					return EXIT_FAILURE;
 				}
 			}
@@ -682,7 +626,7 @@ size_t __fastcall ReadCommands(
 			}
 		}
 	//Specifie DNS header Authority count.
-		else if (Parameter == L"-AUN" || Parameter == L"-aun")
+		else if (Parameter == L"-aun")
 		{
 			if (Index + 1U < (size_t)argc)
 			{
@@ -696,10 +640,10 @@ size_t __fastcall ReadCommands(
 				Result = wcstoul(Parameter.c_str(), nullptr, 0);
 				if (Result > 0 && Result <= UINT16_MAX)
 				{
-					ConfigurationParameter.HeaderParameter.Authority = htons((uint16_t)Result);
+					ConfigurationParameter.Parameter_Header.Authority = htons((uint16_t)Result);
 				}
 				else {
-					fwprintf_s(stderr, L"\nParameter [-aun Count] error.\n");
+					fwprintf_s(stderr, L"\nParameter [-aun count] error.\n");
 					return EXIT_FAILURE;
 				}
 			}
@@ -709,7 +653,7 @@ size_t __fastcall ReadCommands(
 			}
 		}
 	//Specifie DNS header Additional count.
-		else if (Parameter == L"-ADN" || Parameter == L"-adn")
+		else if (Parameter == L"-adn")
 		{
 			if (Index + 1U < (size_t)argc)
 			{
@@ -723,10 +667,10 @@ size_t __fastcall ReadCommands(
 				Result = wcstoul(Parameter.c_str(), nullptr, 0);
 				if (Result > 0 && Result <= UINT16_MAX)
 				{
-					ConfigurationParameter.HeaderParameter.Additional = htons((uint16_t)Result);
+					ConfigurationParameter.Parameter_Header.Additional = htons((uint16_t)Result);
 				}
 				else {
-					fwprintf_s(stderr, L"\nParameter [-adn Count] error.\n");
+					fwprintf_s(stderr, L"\nParameter [-adn count] error.\n");
 					return EXIT_FAILURE;
 				}
 			}
@@ -736,7 +680,7 @@ size_t __fastcall ReadCommands(
 			}
 		}
 	//Specifie transmission interval time(in milliseconds).
-		else if (Parameter == L"-Ti" || Parameter == L"-ti")
+		else if (Parameter == L"-ti")
 		{
 			if (Index + 1U < (size_t)argc)
 			{
@@ -757,7 +701,7 @@ size_t __fastcall ReadCommands(
 				#endif
 				}
 				else {
-					fwprintf_s(stderr, L"\nParameter [-ti IntervalTime] error.\n");
+					fwprintf_s(stderr, L"\nParameter [-ti interval_time] error.\n");
 					return EXIT_FAILURE;
 				}
 			}
@@ -766,13 +710,13 @@ size_t __fastcall ReadCommands(
 				return EXIT_FAILURE;
 			}
 		}
-	//Send with EDNS0 Label.
-		else if (Parameter == L"-EDNS0" || Parameter == L"-edns0")
+	//Send with EDNS Label.
+		else if (Parameter == L"-edns")
 		{
-			ConfigurationParameter.EDNS0 = true;
+			ConfigurationParameter.EDNS = true;
 		}
-	//Specifie EDNS0 Label UDP Payload length.
-		else if (Parameter == L"-Payload" || Parameter == L"-payload")
+	//Specifie EDNS Label UDP Payload length.
+		else if (Parameter == L"-payload")
 		{
 			if (Index + 1U < (size_t)argc)
 			{
@@ -786,10 +730,10 @@ size_t __fastcall ReadCommands(
 				Result = wcstoul(Parameter.c_str(), nullptr, 0);
 				if (Result > OLD_DNS_MAXSIZE && Result <= UINT16_MAX)
 				{
-					ConfigurationParameter.EDNS0PayloadSize = Result;
+					ConfigurationParameter.EDNSPayloadSize = Result;
 				}
 				else {
-					fwprintf_s(stderr, L"\nParameter [-payload Length] error.\n");
+					fwprintf_s(stderr, L"\nParameter [-payload length] error.\n");
 					return EXIT_FAILURE;
 				}
 			}
@@ -798,16 +742,16 @@ size_t __fastcall ReadCommands(
 				return EXIT_FAILURE;
 			}
 
-			ConfigurationParameter.EDNS0 = true;
+			ConfigurationParameter.EDNS = true;
 		}
 	//Send with DNSSEC requesting.
-		else if (Parameter == L"-DNSSEC" || Parameter == L"-dnssec")
+		else if (Parameter == L"-dnssec")
 		{
-			ConfigurationParameter.EDNS0 = true;
+			ConfigurationParameter.EDNS = true;
 			ConfigurationParameter.DNSSEC = true;
 		}
 	//Specifie Query Type.
-		else if (Parameter == L"-QT" || Parameter == L"-qt")
+		else if (Parameter == L"-qt")
 		{
 			if (Index + 1U < (size_t)argc)
 			{
@@ -826,15 +770,15 @@ size_t __fastcall ReadCommands(
 					Result = wcstoul(Parameter.c_str(), nullptr, 0);
 					if (Result > 0 && Result <= UINT16_MAX)
 					{
-						ConfigurationParameter.QueryParameter.Type = htons((uint16_t)Result);
+						ConfigurationParameter.Parameter_Query.Type = htons((uint16_t)Result);
 					}
 					else {
-						fwprintf_s(stderr, L"\nParameter [-qt Type] error.\n");
+						fwprintf_s(stderr, L"\nParameter [-qt type] error.\n");
 						return EXIT_FAILURE;
 					}
 				}
 				else {
-					ConfigurationParameter.QueryParameter.Type = (uint16_t)Result;
+					ConfigurationParameter.Parameter_Query.Type = (uint16_t)Result;
 				}
 			}
 			else {
@@ -843,7 +787,7 @@ size_t __fastcall ReadCommands(
 			}
 		}
 	//Specifie Query Classes.
-		else if (Parameter == L"-QC" || Parameter == L"-qc")
+		else if (Parameter == L"-qc")
 		{
 			if (Index + 1U < (size_t)argc)
 			{
@@ -862,15 +806,15 @@ size_t __fastcall ReadCommands(
 					Result = wcstoul(Parameter.c_str(), nullptr, 0);
 					if (Result > 0 && Result <= UINT16_MAX)
 					{
-						ConfigurationParameter.QueryParameter.Classes = htons((uint16_t)Result);
+						ConfigurationParameter.Parameter_Query.Classes = htons((uint16_t)Result);
 					}
 					else {
-						fwprintf_s(stderr, L"\nParameter [-qc Classes] error.\n");
+						fwprintf_s(stderr, L"\nParameter [-qc classes] error.\n");
 						return EXIT_FAILURE;
 					}
 				}
 				else {
-					ConfigurationParameter.QueryParameter.Classes = (uint16_t)Result;
+					ConfigurationParameter.Parameter_Query.Classes = (uint16_t)Result;
 				}
 			}
 			else {
@@ -901,7 +845,7 @@ size_t __fastcall ReadCommands(
 						ConfigurationParameter.ServiceType = htons((uint16_t)Result);
 					}
 					else {
-						fwprintf_s(stderr, L"\nParameter [-p ServiceType/Protocol] error.\n");
+						fwprintf_s(stderr, L"\nParameter [-p service_type/protocol] error.\n");
 						return EXIT_FAILURE;
 					}
 				}
@@ -915,7 +859,7 @@ size_t __fastcall ReadCommands(
 			}
 		}
 	//Specifie Raw data to send.
-		else if (Parameter == L"-RAWDATA" || Parameter == L"-rawdata")
+		else if (Parameter == L"-rawdata")
 		{
 			if (Index + 1U < (size_t)argc)
 			{
@@ -939,7 +883,7 @@ size_t __fastcall ReadCommands(
 
 				if (RawDataString.length() < PACKET_MINSIZE && RawDataString.length() > PACKET_MAXSIZE)
 				{
-					fwprintf_s(stderr, L"\nParameter [-rawdata RAW_Data] error.\n");
+					fwprintf_s(stderr, L"\nParameter [-rawdata raw_data] error.\n");
 					return EXIT_FAILURE;
 				}
 				std::shared_ptr<char> TempRawData(new char[PACKET_MAXSIZE]());
@@ -963,7 +907,7 @@ size_t __fastcall ReadCommands(
 						++ConfigurationParameter.RawDataLen;
 					}
 					else {
-						fwprintf_s(stderr, L"\nParameter [-rawdata RAW_Data] error.\n");
+						fwprintf_s(stderr, L"\nParameter [-rawdata raw_data] error.\n");
 						return EXIT_FAILURE;
 					}
 				}
@@ -974,7 +918,7 @@ size_t __fastcall ReadCommands(
 			}
 		}
 	//Send RAW data with Raw Socket.
-		else if (Parameter == L"-RAW" || Parameter == L"-raw")
+		else if (Parameter == L"-raw")
 		{
 			if (Index + 1U < (size_t)argc)
 			{
@@ -1001,7 +945,7 @@ size_t __fastcall ReadCommands(
 						ConfigurationParameter.ServiceType = (uint8_t)Result;
 					}
 					else {
-						fwprintf_s(stderr, L"\nParameter [-raw ServiceType] error.\n");
+						fwprintf_s(stderr, L"\nParameter [-raw service_type] error.\n");
 						return EXIT_FAILURE;
 					}
 				}
@@ -1018,8 +962,293 @@ size_t __fastcall ReadCommands(
 				return EXIT_FAILURE;
 			}
 		}
+	//Specifie SOCKS target.
+		else if (Parameter == L"-socks")
+		{
+			if (Index + 1U < (size_t)argc)
+			{
+			//Initialization
+				++Index;
+			#if defined(PLATFORM_WIN)
+				Parameter = argv[Index];
+			#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
+				MBSToWCSString(Parameter, argv[Index]);
+			#endif
+				std::shared_ptr<char> ParameterPTR(new char[Parameter.length() + 1U]());
+				memset(ParameterPTR.get(), 0, Parameter.length() + 1U);
+			#if defined(PLATFORM_WIN)
+				WideCharToMultiByte(CP_ACP, 0, Parameter.c_str(), (int)Parameter.length(), ParameterPTR.get(), (int)(Parameter.length() + 1U), nullptr, nullptr);
+			#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
+				wcstombs(ParameterPTR.get(), Parameter.c_str(), Parameter.length());
+			#endif
+				std::string ParameterString(ParameterPTR.get());
+				ConfigurationParameter.TargetString_SOCKS = Parameter;
+				ParameterPTR.reset();
+
+			//IPv6 address
+				if (ParameterString.find(ASCII_COLON) == std::string::npos)
+				{
+					fwprintf_s(stderr, L"\nParameter [-socks target] error.\n");
+					return EXIT_FAILURE;
+				}
+				else if (ParameterString.find(ASCII_BRACKETS_LEFT) != std::string::npos || ParameterString.find(ASCII_BRACKETS_RIGHT) != std::string::npos)
+				{
+				//Check parameter.
+					if (Parameter.length() < 6U || Parameter.length() > 47U || //IPv6 format
+						ParameterString.find("]:") == std::string::npos || ParameterString.find(ASCII_BRACKETS_RIGHT) != ParameterString.find("]:"))
+					{
+						fwprintf_s(stderr, L"\nTarget length error.\n");
+						return EXIT_FAILURE;
+					}
+					else {
+						ConfigurationParameter.SockAddr_SOCKS.ss_family = AF_INET6;
+					}
+
+				//Mark port.
+					if (Parameter.length() > Parameter.find(L"]:"))
+					{
+						std::wstring Port;
+						Port.append(Parameter, Parameter.find(L"]:") + 2U, Parameter.length() - Parameter.find(L"]:"));
+
+					//Server name
+						Result = ServiceNameToPort(Port);
+						if (Result == 0)
+						{
+						//Number port
+							Result = wcstoul(Port.c_str(), nullptr, 0);
+							if (Result > 0 && Result <= UINT16_MAX)
+							{
+								((sockaddr_in6 *)&ConfigurationParameter.SockAddr_SOCKS)->sin6_port = htons((uint16_t)Result);
+							}
+							else {
+								fwprintf_s(stderr, L"\nParameter [-socks target] error.\n");
+								return EXIT_FAILURE;
+							}
+						}
+						else {
+							((sockaddr_in6 *)&ConfigurationParameter.SockAddr_SOCKS)->sin6_port = htons((uint16_t)Result);
+						}
+
+						ParameterString.erase(0, 1U);
+						ParameterString.erase(ParameterString.find("]:"), ParameterString.length() - ParameterString.find("]:"));
+					}
+					else {
+						fwprintf_s(stderr, L"\nParameter [-socks target] error.\n");
+						return EXIT_FAILURE;
+					}
+
+				//Mark address.
+					if (AddressStringToBinary((char *)ParameterString.c_str(), &((PSOCKADDR_IN6)&ConfigurationParameter.SockAddr_SOCKS)->sin6_addr, AF_INET6, Result) == EXIT_FAILURE)
+					{
+						fwprintf_s(stderr, L"\nParameter [-socks target] error, error code is %d.\n", (int)Result);
+						return EXIT_FAILURE;
+					}
+				}
+				else {
+				//Mark port.
+					if (ParameterString.find(ASCII_COLON) != std::string::npos && Parameter.length() > Parameter.find(ASCII_COLON))
+					{
+						std::wstring Port;
+						Port.append(Parameter, Parameter.find(ASCII_COLON) + 1U, Parameter.length() - Parameter.find(ASCII_COLON));
+
+					//Server name
+						Result = ServiceNameToPort(Port);
+						if (Result == 0)
+						{
+						//Number port
+							Result = wcstoul(Port.c_str(), nullptr, 0);
+							if (Result <= 0 || Result > UINT16_MAX)
+							{
+								fwprintf_s(stderr, L"\nParameter [-socks target] error\n");
+								return EXIT_FAILURE;
+							}
+						}
+
+						ParameterString.erase(ParameterString.find(ASCII_COLON), ParameterString.length() - ParameterString.find(ASCII_COLON));
+					}
+					else {
+						fwprintf_s(stderr, L"\nParameter [-socks target] error.\n");
+						return EXIT_FAILURE;
+					}
+
+				//Mark target(Domain or IPv4 address)
+					for (auto StringIter = ParameterString.begin();StringIter != ParameterString.end();++StringIter)
+					{
+					//Domain
+						if (*StringIter < ASCII_PERIOD || *StringIter == ASCII_SLASH || *StringIter > ASCII_NINE)
+						{
+							if (Parameter.length() < DOMAIN_MINSIZE + 2U || Parameter.length() > DOMAIN_MAXSIZE + 6U)
+							{
+								fwprintf_s(stderr, L"\nParameter [-socks target] error.\n");
+								return EXIT_FAILURE;
+							}
+							else {
+							//Get address.
+								ADDRINFOA AddrInfoHints = {0}, *AddrInfo = nullptr;
+								AddrInfoHints.ai_family = ConfigurationParameter.Protocol;
+								if (getaddrinfo(ParameterString.c_str(), nullptr, &AddrInfoHints, &AddrInfo) != 0)
+								{
+									fwprintf_s(stderr, L"\nResolve domain name error, error code is %d.\n", WSAGetLastError());
+									return EXIT_FAILURE;
+								}
+
+							//Get address from result.
+								if (AddrInfo != nullptr)
+								{
+									for (auto PTR = AddrInfo;PTR != nullptr;PTR = PTR->ai_next)
+									{
+									//IPv6
+										if (PTR->ai_family == AF_INET6 && !IN6_IS_ADDR_LINKLOCAL((in6_addr *)(PTR->ai_addr)) && !(((PSOCKADDR_IN6)(PTR->ai_addr))->sin6_scope_id == 0)) //Get port from first(Main) IPv6 device
+										{
+											ConfigurationParameter.SockAddr_SOCKS.ss_family = AF_INET6;
+											((PSOCKADDR_IN6)&ConfigurationParameter.SockAddr_SOCKS)->sin6_addr = ((PSOCKADDR_IN6)(PTR->ai_addr))->sin6_addr;
+											((PSOCKADDR_IN6)&ConfigurationParameter.SockAddr_SOCKS)->sin6_port = htons((uint16_t)Result);
+
+										//Get string of address.
+											char Buffer[ADDR_STRING_MAXSIZE] = {0};
+
+										//Minimum supported system of inet_ntop() and inet_pton() is Windows Vista. [Roy Tam]
+										#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64))
+											DWORD BufferLength = ADDR_STRING_MAXSIZE;
+											WSAAddressToStringA((PSOCKADDR)&ConfigurationParameter.SockAddr_SOCKS, sizeof(sockaddr_in6), nullptr, Buffer, &BufferLength);
+										#else
+											inet_ntop(AF_INET6, &((PSOCKADDR_IN6)&ConfigurationParameter.SockAddr_SOCKS)->sin6_addr, Buffer, ADDR_STRING_MAXSIZE);
+										#endif
+
+											break;
+										}
+									//IPv4
+										else if (PTR->ai_family == AF_INET && ((PSOCKADDR_IN)(PTR->ai_addr))->sin_addr.s_addr != INADDR_LOOPBACK && ((PSOCKADDR_IN)(PTR->ai_addr))->sin_addr.s_addr != INADDR_BROADCAST)
+										{
+											ConfigurationParameter.SockAddr_SOCKS.ss_family = AF_INET;
+											((PSOCKADDR_IN)&ConfigurationParameter.SockAddr_SOCKS)->sin_addr = ((PSOCKADDR_IN)(PTR->ai_addr))->sin_addr;
+											((PSOCKADDR_IN)&ConfigurationParameter.SockAddr_SOCKS)->sin_port = htons((uint16_t)Result);
+
+										//Get string of address.
+											char Buffer[ADDR_STRING_MAXSIZE] = {0};
+
+										//Minimum supported system of inet_ntop() and inet_pton() is Windows Vista. [Roy Tam]
+										#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64))
+											DWORD BufferLength = ADDR_STRING_MAXSIZE;
+											WSAAddressToStringA((PSOCKADDR)&ConfigurationParameter.SockAddr_SOCKS, sizeof(sockaddr_in), nullptr, Buffer, &BufferLength);
+										#else
+											inet_ntop(AF_INET, &((PSOCKADDR_IN)&ConfigurationParameter.SockAddr_SOCKS)->sin_addr, Buffer, ADDR_STRING_MAXSIZE);
+										#endif
+
+											break;
+										}
+									}
+
+									freeaddrinfo(AddrInfo);
+								}
+								else {
+									fwprintf_s(stderr, L"\nResolve domain name error, error code is %d.\n", WSAGetLastError());
+									return EXIT_FAILURE;
+								}
+							}
+
+							break;
+						}
+
+					//IPv4
+						if (StringIter == ParameterString.end() - 1U)
+						{
+						//Check parameter.
+							if (Parameter.length() < 9U || Parameter.length() > 21U) //IPv4 format
+							{
+								fwprintf_s(stderr, L"\nParameter [-socks target] error.\n");
+								return EXIT_FAILURE;
+							}
+							else {
+								((PSOCKADDR_IN)&ConfigurationParameter.SockAddr_SOCKS)->sin_port = htons((uint16_t)Result);
+							}
+
+						//Mark address.
+							ConfigurationParameter.SockAddr_SOCKS.ss_family = AF_INET;
+							if (AddressStringToBinary((char *)ParameterString.c_str(), &((PSOCKADDR_IN)&ConfigurationParameter.SockAddr_SOCKS)->sin_addr, AF_INET, Result) == EXIT_FAILURE)
+							{
+								fwprintf_s(stderr, L"\nParameter [-socks target] error, error code is %d.\n", (int)Result);
+								return EXIT_FAILURE;
+							}
+						}
+					}
+				}
+			}
+			else {
+				fwprintf_s(stderr, L"\nNot enough parameters error.\n");
+				return EXIT_FAILURE;
+			}
+		}
+	//Specifie SOCKS username.
+		else if (Parameter == L"-socks_username")
+		{
+			if (Index + 1U < (size_t)argc)
+			{
+			//Initialization
+				++Index;
+			#if defined(PLATFORM_WIN)
+				Parameter = argv[Index];
+			#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
+				MBSToWCSString(Parameter, argv[Index]);
+			#endif
+				std::shared_ptr<char> ParameterPTR(new char[Parameter.length() + 1U]());
+				memset(ParameterPTR.get(), 0, Parameter.length() + 1U);
+			#if defined(PLATFORM_WIN)
+				WideCharToMultiByte(CP_ACP, 0, Parameter.c_str(), (int)Parameter.length(), ParameterPTR.get(), (int)(Parameter.length() + 1U), nullptr, nullptr);
+			#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
+				wcstombs(ParameterPTR.get(), Parameter.c_str(), Parameter.length());
+			#endif
+				ConfigurationParameter.SOCKS_Username = ParameterPTR.get();
+				ParameterPTR.reset();
+
+			//SOCKS username check
+				if (ConfigurationParameter.SOCKS_Username.length() > SOCKS_USERNAME_PASSWORD_MAXNUM)
+				{
+					fwprintf_s(stderr, L"\nParameter [-socks_username] error.\n");
+					return EXIT_FAILURE;
+				}
+			}
+			else {
+				fwprintf_s(stderr, L"\nNot enough parameters error.\n");
+				return EXIT_FAILURE;
+			}
+		}
+	//Specifie SOCKS password.
+		else if (Parameter == L"-socks_password")
+		{
+			if (Index + 1U < (size_t)argc)
+			{
+			//Initialization
+				++Index;
+			#if defined(PLATFORM_WIN)
+				Parameter = argv[Index];
+			#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
+				MBSToWCSString(Parameter, argv[Index]);
+			#endif
+				std::shared_ptr<char> ParameterPTR(new char[Parameter.length() + 1U]());
+				memset(ParameterPTR.get(), 0, Parameter.length() + 1U);
+			#if defined(PLATFORM_WIN)
+				WideCharToMultiByte(CP_ACP, 0, Parameter.c_str(), (int)Parameter.length(), ParameterPTR.get(), (int)(Parameter.length() + 1U), nullptr, nullptr);
+			#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
+				wcstombs(ParameterPTR.get(), Parameter.c_str(), Parameter.length());
+			#endif
+				ConfigurationParameter.SOCKS_Password = ParameterPTR.get();
+				ParameterPTR.reset();
+
+			//SOCKS password check
+				if (ConfigurationParameter.SOCKS_Password.length() > SOCKS_USERNAME_PASSWORD_MAXNUM)
+				{
+					fwprintf_s(stderr, L"\nParameter [-socks_password] error.\n");
+					return EXIT_FAILURE;
+				}
+			}
+			else {
+				fwprintf_s(stderr, L"\nNot enough parameters error.\n");
+				return EXIT_FAILURE;
+			}
+		}
 	//Specifie buffer size.
-		else if (Parameter == L"-Buf" || Parameter == L"-buf")
+		else if (Parameter == L"-buf")
 		{
 			if (Index + 1U < (size_t)argc)
 			{
@@ -1036,7 +1265,7 @@ size_t __fastcall ReadCommands(
 					ConfigurationParameter.BufferSize = Result;
 				}
 				else {
-					fwprintf_s(stderr, L"\nParameter [-show Response] error.\n");
+					fwprintf_s(stderr, L"\nParameter [-buf size] error.\n");
 					return EXIT_FAILURE;
 				}
 			}
@@ -1046,12 +1275,12 @@ size_t __fastcall ReadCommands(
 			}
 		}
 	//Disable packets validated.
-		else if (Parameter == L"-DV" || Parameter == L"-dv")
+		else if (Parameter == L"-dv")
 		{
 			ConfigurationParameter.Validate = false;
 		}
 	//Show response.
-		else if (Parameter == L"-SHOW" || Parameter == L"-show")
+		else if (Parameter == L"-show")
 		{
 			if (Index + 1U < (size_t)argc)
 			{
@@ -1062,16 +1291,16 @@ size_t __fastcall ReadCommands(
 				MBSToWCSString(Parameter, argv[Index]);
 			#endif
 
-				if (Parameter == L"Result" || Parameter == L"result")
+				if (Parameter == L"result")
 				{
 					ConfigurationParameter.ShowResponse = true;
 				}
-				else if (Parameter == L"Hex" || Parameter == L"hex")
+				else if (Parameter == L"hex")
 				{
 					ConfigurationParameter.ShowResponseHex = true;
 				}
 				else {
-					fwprintf_s(stderr, L"\nParameter [-buf Size] error.\n");
+					fwprintf_s(stderr, L"\nParameter [-show type] error.\n");
 					return EXIT_FAILURE;
 				}
 			}
@@ -1081,7 +1310,7 @@ size_t __fastcall ReadCommands(
 			}
 		}
 	//Output result to file.
-		else if (Parameter == L"-OF" || Parameter == L"-of")
+		else if (Parameter == L"-of")
 		{
 			if (Index + 1U < (size_t)argc)
 			{
@@ -1104,7 +1333,7 @@ size_t __fastcall ReadCommands(
 				#endif
 				}
 				else {
-					fwprintf_s(stderr, L"\nParameter [-of FileName] error.\n");
+					fwprintf_s(stderr, L"\nParameter [-of file_name] error.\n");
 					return EXIT_FAILURE;
 				}
 			}
@@ -1133,6 +1362,7 @@ size_t __fastcall ReadCommands(
 				return EXIT_FAILURE;
 			}
 
+		//Initialization
 			std::shared_ptr<char> TestDomainPTR(new char[Parameter.length() + 1U]());
 			memset(TestDomainPTR.get(), 0, Parameter.length() + 1U);
 		#if defined(PLATFORM_WIN)
@@ -1164,7 +1394,7 @@ size_t __fastcall ReadCommands(
 			std::string ParameterString(ParameterPTR.get());
 			ParameterPTR.reset();
 
-		//IPv6 address
+		//IPv6
 			if (ParameterString.find(ASCII_COLON) != std::string::npos)
 			{
 			//Check parameter.
@@ -1179,17 +1409,18 @@ size_t __fastcall ReadCommands(
 					return EXIT_FAILURE;
 				}
 
+			//Mark address.
 				ConfigurationParameter.Protocol = AF_INET6;
-				ConfigurationParameter.SockAddr.ss_family = AF_INET6;
-				if (AddressStringToBinary((PSTR)ParameterString.c_str(), &((PSOCKADDR_IN6)&ConfigurationParameter.SockAddr)->sin6_addr, AF_INET6, Result) == EXIT_FAILURE)
+				ConfigurationParameter.SockAddr_Normal.ss_family = AF_INET6;
+				if (AddressStringToBinary((char *)ParameterString.c_str(), &((PSOCKADDR_IN6)&ConfigurationParameter.SockAddr_Normal)->sin6_addr, AF_INET6, Result) == EXIT_FAILURE)
 				{
 					fwprintf_s(stderr, L"\nTarget format error, error code is %d.\n", (int)Result);
 					return EXIT_FAILURE;
 				}
 
-				ConfigurationParameter.TargetString.append("[");
-				ConfigurationParameter.TargetString.append(ParameterString);
-				ConfigurationParameter.TargetString.append("]");
+				ConfigurationParameter.TargetString_Normal.append("[");
+				ConfigurationParameter.TargetString_Normal.append(ParameterString);
+				ConfigurationParameter.TargetString_Normal.append("]");
 			}
 			else {
 				for (auto StringIter = ParameterString.begin();StringIter != ParameterString.end();++StringIter)
@@ -1204,82 +1435,82 @@ size_t __fastcall ReadCommands(
 							return EXIT_FAILURE;
 						}
 
-						ADDRINFOA AddrInfoHints = {0}, *AddrInfo = nullptr;
-					//Try with IPv6.
-						if (ConfigurationParameter.Protocol == 0)
-							ConfigurationParameter.Protocol = AF_INET6;
-						AddrInfoHints.ai_family = ConfigurationParameter.Protocol;
-						ConfigurationParameter.SockAddr.ss_family = ConfigurationParameter.Protocol;
-
-					//Get address.
-						if (getaddrinfo(ParameterString.c_str(), nullptr, &AddrInfoHints, &AddrInfo) != 0)
+					//SOCKS mode
+						if (ConfigurationParameter.SockAddr_SOCKS.ss_family > 0)
 						{
-						//Retry with IPv4.
-							ConfigurationParameter.Protocol = AF_INET;
+							ConfigurationParameter.TargetString_Normal.append(ParameterString);
+						}
+					//Normal mode
+						else {
+						//Get address.
+							ADDRINFOA AddrInfoHints = {0}, *AddrInfo = nullptr;
 							AddrInfoHints.ai_family = ConfigurationParameter.Protocol;
-							ConfigurationParameter.SockAddr.ss_family = ConfigurationParameter.Protocol;
 							if (getaddrinfo(ParameterString.c_str(), nullptr, &AddrInfoHints, &AddrInfo) != 0)
 							{
 								fwprintf_s(stderr, L"\nResolve domain name error, error code is %d.\n", WSAGetLastError());
 								return EXIT_FAILURE;
 							}
-						}
 
-					//Get address from PTR.
-						if (AddrInfo != nullptr)
-						{
-							for (auto PTR = AddrInfo;PTR != nullptr;PTR = PTR->ai_next)
+						//Get address from result.
+							if (AddrInfo != nullptr)
 							{
-							//IPv6
-								if (PTR->ai_family == AF_INET6 && ConfigurationParameter.SockAddr.ss_family == AF_INET6 &&
-									!IN6_IS_ADDR_LINKLOCAL((in6_addr *)(PTR->ai_addr)) && 
-									!(((PSOCKADDR_IN6)(PTR->ai_addr))->sin6_scope_id == 0)) //Get port from first(Main) IPv6 device
+								for (auto PTR = AddrInfo;PTR != nullptr;PTR = PTR->ai_next)
 								{
-									((PSOCKADDR_IN6)&ConfigurationParameter.SockAddr)->sin6_addr = ((PSOCKADDR_IN6)(PTR->ai_addr))->sin6_addr;
+								//IPv6
+									if (PTR->ai_family == AF_INET6 && !IN6_IS_ADDR_LINKLOCAL((in6_addr *)(PTR->ai_addr)) && !(((PSOCKADDR_IN6)(PTR->ai_addr))->sin6_scope_id == 0)) //Get port from first(Main) IPv6 device
+									{
+										ConfigurationParameter.Protocol = AF_INET6;
+										ConfigurationParameter.SockAddr_Normal.ss_family = AF_INET6;
+										((PSOCKADDR_IN6)&ConfigurationParameter.SockAddr_Normal)->sin6_addr = ((PSOCKADDR_IN6)(PTR->ai_addr))->sin6_addr;
 
-								//Get string of address.
-									ConfigurationParameter.TargetDomainString = ParameterString;
-									char Buffer[ADDR_STRING_MAXSIZE] = {0};
+									//Get string of address.
+										ConfigurationParameter.TargetAddressString = ParameterString;
+										char Buffer[ADDR_STRING_MAXSIZE] = {0};
 
-								//Minimum supported system of inet_ntop() and inet_pton() is Windows Vista. [Roy Tam]
-								#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64)) //Windows(x86)
-									DWORD BufferLength = ADDR_STRING_MAXSIZE;
-									WSAAddressToStringA((PSOCKADDR)&ConfigurationParameter.SockAddr, sizeof(sockaddr_in6), nullptr, Buffer, &BufferLength);
-								#else
-									inet_ntop(AF_INET6, &((PSOCKADDR_IN6)&ConfigurationParameter.SockAddr)->sin6_addr, Buffer, ADDR_STRING_MAXSIZE);
-								#endif
-									CaseConvert(true, Buffer, strlen(Buffer));
+									//Minimum supported system of inet_ntop() and inet_pton() is Windows Vista. [Roy Tam]
+									#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64))
+										DWORD BufferLength = ADDR_STRING_MAXSIZE;
+										WSAAddressToStringA((PSOCKADDR)&ConfigurationParameter.SockAddr_Normal, sizeof(sockaddr_in6), nullptr, Buffer, &BufferLength);
+									#else
+										inet_ntop(AF_INET6, &((PSOCKADDR_IN6)&ConfigurationParameter.SockAddr_Normal)->sin6_addr, Buffer, ADDR_STRING_MAXSIZE);
+									#endif
+										CaseConvert(true, Buffer, strlen(Buffer));
 
-									ConfigurationParameter.TargetString.append("[");
-									ConfigurationParameter.TargetString.append(Buffer);
-									ConfigurationParameter.TargetString.append("]");
-									break;
+										ConfigurationParameter.TargetString_Normal.append("[");
+										ConfigurationParameter.TargetString_Normal.append(Buffer);
+										ConfigurationParameter.TargetString_Normal.append("]");
+										break;
+									}
+								//IPv4
+									else if (PTR->ai_family == AF_INET && ((PSOCKADDR_IN)(PTR->ai_addr))->sin_addr.s_addr != INADDR_LOOPBACK && ((PSOCKADDR_IN)(PTR->ai_addr))->sin_addr.s_addr != INADDR_BROADCAST)
+									{
+										ConfigurationParameter.Protocol = AF_INET;
+										ConfigurationParameter.SockAddr_Normal.ss_family = AF_INET;
+										((PSOCKADDR_IN)&ConfigurationParameter.SockAddr_Normal)->sin_addr = ((PSOCKADDR_IN)(PTR->ai_addr))->sin_addr;
+
+									//Get string of address.
+										ConfigurationParameter.TargetAddressString = ParameterString;
+										char Buffer[ADDR_STRING_MAXSIZE] = {0};
+
+									//Minimum supported system of inet_ntop() and inet_pton() is Windows Vista. [Roy Tam]
+									#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64))
+										DWORD BufferLength = ADDR_STRING_MAXSIZE;
+										WSAAddressToStringA((PSOCKADDR)&ConfigurationParameter.SockAddr_Normal, sizeof(sockaddr_in), nullptr, Buffer, &BufferLength);
+									#else
+										inet_ntop(AF_INET, &((PSOCKADDR_IN)&ConfigurationParameter.SockAddr_Normal)->sin_addr, Buffer, ADDR_STRING_MAXSIZE);
+									#endif
+
+										ConfigurationParameter.TargetString_Normal = Buffer;
+										break;
+									}
 								}
-							//IPv4
-								else if (PTR->ai_family == AF_INET && ConfigurationParameter.SockAddr.ss_family == AF_INET &&
-									((PSOCKADDR_IN)(PTR->ai_addr))->sin_addr.s_addr != INADDR_LOOPBACK && 
-									((PSOCKADDR_IN)(PTR->ai_addr))->sin_addr.s_addr != INADDR_BROADCAST)
-								{
-									((PSOCKADDR_IN)&ConfigurationParameter.SockAddr)->sin_addr = ((PSOCKADDR_IN)(PTR->ai_addr))->sin_addr;
 
-								//Get string of address.
-									ConfigurationParameter.TargetDomainString = ParameterString;
-									char Buffer[ADDR_STRING_MAXSIZE] = {0};
-
-								//Minimum supported system of inet_ntop() and inet_pton() is Windows Vista. [Roy Tam]
-								#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64)) //Windows(x86)
-									DWORD BufferLength = ADDR_STRING_MAXSIZE;
-									WSAAddressToStringA((PSOCKADDR)&ConfigurationParameter.SockAddr, sizeof(sockaddr_in), nullptr, Buffer, &BufferLength);
-								#else
-									inet_ntop(AF_INET, &((PSOCKADDR_IN)&ConfigurationParameter.SockAddr)->sin_addr, Buffer, ADDR_STRING_MAXSIZE);
-								#endif
-
-									ConfigurationParameter.TargetString = Buffer;
-									break;
-								}
+								freeaddrinfo(AddrInfo);
 							}
-
-							freeaddrinfo(AddrInfo);
+							else {
+								fwprintf_s(stderr, L"\nResolve domain name error, error code is %d.\n", WSAGetLastError());
+								return EXIT_FAILURE;
+							}
 						}
 
 						break;
@@ -1300,15 +1531,16 @@ size_t __fastcall ReadCommands(
 							return EXIT_FAILURE;
 						}
 
+					//Mark address.
 						ConfigurationParameter.Protocol = AF_INET;
-						ConfigurationParameter.SockAddr.ss_family = AF_INET;
-						if (AddressStringToBinary((PSTR)ParameterString.c_str(), &((PSOCKADDR_IN)&ConfigurationParameter.SockAddr)->sin_addr, AF_INET, Result) == EXIT_FAILURE)
+						ConfigurationParameter.SockAddr_Normal.ss_family = AF_INET;
+						if (AddressStringToBinary((char *)ParameterString.c_str(), &((PSOCKADDR_IN)&ConfigurationParameter.SockAddr_Normal)->sin_addr, AF_INET, Result) == EXIT_FAILURE)
 						{
 							fwprintf_s(stderr, L"\nTarget format error, error code is %d.\n", (int)Result);
 							return EXIT_FAILURE;
 						}
 
-						ConfigurationParameter.TargetString = ParameterString;
+						ConfigurationParameter.TargetString_Normal = ParameterString;
 					}
 				}
 			}
@@ -1316,4 +1548,98 @@ size_t __fastcall ReadCommands(
 	}
 
 	return EXIT_SUCCESS;
+}
+
+//Output result to file
+size_t __fastcall OutputResultToFile(
+	void)
+{
+	SSIZE_T Result = 0;
+#if defined(PLATFORM_WIN)
+	Result = _wfopen_s(&ConfigurationParameter.OutputFile, ConfigurationParameter.wOutputFileName.c_str(), L"a,ccs=UTF-8");
+#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
+	ConfigurationParameter.OutputFile = fopen(ConfigurationParameter.OutputFileName.c_str(), ("a"));
+#endif
+	if (ConfigurationParameter.OutputFile == nullptr)
+	{
+		fwprintf_s(stderr, L"Create output result file %ls error, error code is %d.\n", ConfigurationParameter.wOutputFileName.c_str(), (int)Result);
+		return EXIT_FAILURE;
+	}
+	else {
+		tm TimeStructure = {0};
+		time_t TimeValues = 0;
+		time(&TimeValues);
+		localtime_s(&TimeStructure, &TimeValues);
+
+		fwprintf_s(ConfigurationParameter.OutputFile, L"------------------------------ %d-%02d-%02d %02d:%02d:%02d ------------------------------\n", TimeStructure.tm_year + 1900, TimeStructure.tm_mon + 1, TimeStructure.tm_mday, TimeStructure.tm_hour, TimeStructure.tm_min, TimeStructure.tm_sec);
+	}
+
+	return EXIT_SUCCESS;
+}
+
+//Print header to screen. 
+void __fastcall PrintHeaderToScreen(
+	const std::wstring wTargetAddressString, 
+	const std::wstring wTestDomain)
+{
+	fwprintf_s(stderr, L"\n");
+
+//Reverse lookup
+	if (ConfigurationParameter.ReverseLookup && ConfigurationParameter.SockAddr_SOCKS.ss_family == 0)
+	{
+		if (wTargetAddressString.empty())
+		{
+			char FQDN[NI_MAXHOST + 1U] = {0};
+			if (getnameinfo((PSOCKADDR)&ConfigurationParameter.SockAddr_Normal, sizeof(sockaddr_in), FQDN, NI_MAXHOST, nullptr, 0, NI_NUMERICSERV) != 0)
+			{
+				fwprintf_s(stderr, L"Resolve addresses to host names error, error code is %d.\n", WSAGetLastError());
+				fwprintf_s(stderr, L"DNSPing %ls:%u with %ls:\n", ConfigurationParameter.wTargetString.c_str(), ntohs(ConfigurationParameter.ServiceType), wTestDomain.c_str());
+				if (ConfigurationParameter.OutputFile != nullptr)
+					fwprintf_s(ConfigurationParameter.OutputFile, L"DNSPing %ls:%u with %ls:\n", ConfigurationParameter.wTargetString.c_str(), ntohs(ConfigurationParameter.ServiceType), wTestDomain.c_str());
+			}
+			else {
+				if (ConfigurationParameter.TargetString_Normal == FQDN)
+				{
+					fwprintf_s(stderr, L"DNSPing %ls:%u with %ls:\n", ConfigurationParameter.wTargetString.c_str(), ntohs(ConfigurationParameter.ServiceType), wTestDomain.c_str());
+					if (ConfigurationParameter.OutputFile != nullptr)
+						fwprintf_s(ConfigurationParameter.OutputFile, L"DNSPing %ls:%u with %ls:\n", ConfigurationParameter.wTargetString.c_str(), ntohs(ConfigurationParameter.ServiceType), wTestDomain.c_str());
+				}
+				else {
+					std::shared_ptr<wchar_t> wFQDN(new wchar_t[strnlen(FQDN, NI_MAXHOST) + 1U]());
+					wmemset(wFQDN.get(), 0, strnlen(FQDN, NI_MAXHOST) + 1U);
+
+				#if defined(PLATFORM_WIN)
+					MultiByteToWideChar(CP_ACP, 0, FQDN, MBSTOWCS_NULLTERMINATE, wFQDN.get(), (int)strlen(FQDN));
+				#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
+					mbstowcs(wFQDN.get(), FQDN, strlen(FQDN));
+				#endif
+
+					fwprintf_s(stderr, L"DNSPing %ls:%u [%ls] with %ls:\n", wFQDN.get(), ntohs(ConfigurationParameter.ServiceType), ConfigurationParameter.wTargetString.c_str(), wTestDomain.c_str());
+					if (ConfigurationParameter.OutputFile != nullptr)
+						fwprintf_s(ConfigurationParameter.OutputFile, L"DNSPing %ls:%u [%ls] with %ls:\n", wFQDN.get(), ntohs(ConfigurationParameter.ServiceType), ConfigurationParameter.wTargetString.c_str(), wTestDomain.c_str());
+				}
+			}
+		}
+		else {
+			fwprintf_s(stderr, L"DNSPing %ls:%u [%ls] with %ls:\n", wTargetAddressString.c_str(), ntohs(ConfigurationParameter.ServiceType), ConfigurationParameter.wTargetString.c_str(), wTestDomain.c_str());
+			if (ConfigurationParameter.OutputFile != nullptr)
+				fwprintf_s(ConfigurationParameter.OutputFile, L"DNSPing %ls:%u [%ls] with %ls:\n", wTargetAddressString.c_str(), ntohs(ConfigurationParameter.ServiceType), ConfigurationParameter.wTargetString.c_str(), wTestDomain.c_str());
+		}
+	}
+//Normal mode
+	else {
+		if (!ConfigurationParameter.TargetAddressString.empty())
+		{
+			fwprintf_s(stderr, L"DNSPing %ls:%u [%ls] with %ls:\n", wTargetAddressString.c_str(), ntohs(ConfigurationParameter.ServiceType), ConfigurationParameter.wTargetString.c_str(), wTestDomain.c_str());
+			if (ConfigurationParameter.OutputFile != nullptr)
+				fwprintf_s(ConfigurationParameter.OutputFile, L"DNSPing %ls:%u [%ls] with %ls:\n", wTargetAddressString.c_str(), ntohs(ConfigurationParameter.ServiceType), ConfigurationParameter.wTargetString.c_str(), wTestDomain.c_str());
+		}
+		else {
+			fwprintf_s(stderr, L"DNSPing %ls:%u with %ls:\n", ConfigurationParameter.wTargetString.c_str(), ntohs(ConfigurationParameter.ServiceType), wTestDomain.c_str());
+			if (ConfigurationParameter.OutputFile != nullptr)
+				fwprintf_s(ConfigurationParameter.OutputFile, L"DNSPing %ls:%u with %ls:\n", ConfigurationParameter.wTargetString.c_str(), ntohs(ConfigurationParameter.ServiceType), wTestDomain.c_str());
+		}
+	}
+
+	return;
 }

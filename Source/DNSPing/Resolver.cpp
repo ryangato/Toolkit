@@ -21,7 +21,7 @@
 
 //Print response hexs
 void __fastcall PrintResponseHex(
-	const PSTR Buffer, 
+	const char *Buffer, 
 	const size_t Length)
 {
 //Initialization
@@ -85,7 +85,7 @@ void __fastcall PrintResponseHex(
 
 //Print response hexs to file
 void __fastcall PrintResponseHex(
-	const PSTR Buffer, 
+	const char *Buffer, 
 	const size_t Length, 
 	FILE *OutputFile)
 {
@@ -150,7 +150,7 @@ void __fastcall PrintResponseHex(
 
 //Print response result or data
 void __fastcall PrintResponse(
-	const PSTR Buffer, 
+	const char *Buffer, 
 	const size_t Length)
 {
 //Initialization
@@ -261,7 +261,7 @@ void __fastcall PrintResponse(
 			pdns_standard_record = (dns_standard_record *)(Buffer + CurrentLength);
 			fwprintf_s(stderr, L"   Type: 0x%04x", ntohs(pdns_standard_record->Type));
 			PrintTypeClassesName(pdns_standard_record->Type, 0);
-			if (pdns_standard_record->Type == htons(DNS_RECORD_OPT)) //EDNS0 Label
+			if (pdns_standard_record->Type == htons(DNS_RECORD_OPT)) //EDNS Label
 			{
 				PrintResourseData(Buffer, CurrentLength - 1U, ntohs(pdns_standard_record->Length), pdns_standard_record->Type, pdns_standard_record->Classes);
 				CurrentLength += sizeof(dns_standard_record) + ntohs(pdns_standard_record->Length);
@@ -287,7 +287,7 @@ void __fastcall PrintResponse(
 
 //Print response result or data to file
 void __fastcall PrintResponse(
-	const PSTR Buffer, 
+	const char *Buffer, 
 	const size_t Length, 
 	FILE *OutputFile)
 {
@@ -399,7 +399,7 @@ void __fastcall PrintResponse(
 			pdns_standard_record = (dns_standard_record *)(Buffer + CurrentLength);
 			fwprintf_s(OutputFile, L"   Type: 0x%04x", ntohs(pdns_standard_record->Type));
 			PrintTypeClassesName(pdns_standard_record->Type, 0, OutputFile);
-			if (pdns_standard_record->Type == htons(DNS_RECORD_OPT)) //EDNS0 Label
+			if (pdns_standard_record->Type == htons(DNS_RECORD_OPT)) //EDNS Label
 			{
 				PrintResourseData(Buffer, CurrentLength - 1U, ntohs(pdns_standard_record->Length), pdns_standard_record->Type, pdns_standard_record->Classes, OutputFile);
 				CurrentLength += sizeof(dns_standard_record) + ntohs(pdns_standard_record->Length);
@@ -734,7 +734,7 @@ void __fastcall PrintTypeClassesName(
 		else if (Type == htons(DNS_RECORD_SINK))
 			fwprintf_s(stderr, L"(SINK Record)");
 		else if (Type == htons(DNS_RECORD_OPT))
-			fwprintf_s(stderr, L"(OPT/EDNS0 Record)");
+			fwprintf_s(stderr, L"(OPT/EDNS Record)");
 		else if (Type == htons(DNS_RECORD_APL))
 			fwprintf_s(stderr, L"(APL Record)");
 		else if (Type == htons(DNS_RECORD_DS))
@@ -976,7 +976,7 @@ void __fastcall PrintTypeClassesName(
 		else if (Type == htons(DNS_RECORD_SINK))
 			fwprintf_s(OutputFile, L"(SINK Record)");
 		else if (Type == htons(DNS_RECORD_OPT))
-			fwprintf_s(OutputFile, L"(OPT/EDNS0 Record)");
+			fwprintf_s(OutputFile, L"(OPT/EDNS Record)");
 		else if (Type == htons(DNS_RECORD_APL))
 			fwprintf_s(OutputFile, L"(APL Record)");
 		else if (Type == htons(DNS_RECORD_DS))
@@ -1067,7 +1067,7 @@ void __fastcall PrintTypeClassesName(
 
 //Print Domain Name in response
 size_t __fastcall PrintDomainName(
-	const PSTR Buffer, 
+	const char *Buffer, 
 	const size_t Location)
 {
 //Root check
@@ -1121,7 +1121,7 @@ size_t __fastcall PrintDomainName(
 
 //Print Domain Name in response to file
 size_t __fastcall PrintDomainName(
-	const PSTR Buffer, 
+	const char *Buffer, 
 	const size_t Location, 
 	FILE *OutputFile)
 {
@@ -1176,7 +1176,7 @@ size_t __fastcall PrintDomainName(
 
 //Print Resourse data
 void __fastcall PrintResourseData(
-	const PSTR Buffer, 
+	const char *Buffer, 
 	const size_t Location, 
 	const uint16_t Length, 
 	const uint16_t Type, 
@@ -1266,14 +1266,14 @@ void __fastcall PrintResourseData(
 		fwprintf_s(stderr, L"\n   Data: ");
 
 		char BufferTemp[ADDR_STRING_MAXSIZE] = {0};
-	#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64)) //Windows(x86)
+	#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64))
 		DWORD BufferLength = ADDR_STRING_MAXSIZE;
 		sockaddr_storage SockAddr = {0};
 		SockAddr.ss_family = AF_INET6;
 		((PSOCKADDR_IN6)&SockAddr)->sin6_addr = *(in6_addr *)(Buffer + Location);
 		WSAAddressToStringA((PSOCKADDR)&SockAddr, sizeof(sockaddr_in6), nullptr, BufferTemp, &BufferLength);
 	#else
-		inet_ntop(AF_INET6, Buffer + Location, BufferTemp, ADDR_STRING_MAXSIZE);
+		inet_ntop(AF_INET6, (char *)(Buffer + Location), BufferTemp, ADDR_STRING_MAXSIZE);
 	#endif
 		CaseConvert(true, BufferTemp, strnlen_s(BufferTemp, PACKET_MAXSIZE));
 
@@ -1292,7 +1292,7 @@ void __fastcall PrintResourseData(
 		fwprintf_s(stderr, L"\n         Target: ");
 		PrintDomainName(Buffer, Location + sizeof(dns_srv_record));
 	}
-//OPT/EDNS0 Record(Extension Mechanisms for Domain Name System)
+//OPT/EDNS Record(Extension Mechanisms for Domain Name System)
 	else if (Type == htons(DNS_RECORD_OPT))
 	{
 		fwprintf_s(stderr, L"   Data: ");
@@ -1300,17 +1300,17 @@ void __fastcall PrintResourseData(
 		auto pdns_opt_record = (dns_opt_record *)(Buffer + Location);
 		fwprintf_s(stderr, L"UDP Playload Size: %u", ntohs(pdns_opt_record->UDPPayloadSize));
 		fwprintf_s(stderr, L"\n         Extended RCode: %x", pdns_opt_record->Extended_RCode);
-		fwprintf_s(stderr, L"\n         EDNS0 Version: %u", pdns_opt_record->Version);
+		fwprintf_s(stderr, L"\n         EDNS Version: %u", pdns_opt_record->Version);
 		if (ntohs(pdns_opt_record->Z_Field) >> HIGHEST_MOVE_BIT_U16 == 0)
 			fwprintf_s(stderr, L"\n         Server cannot handle DNSSEC security RRs.");
 		else 
 			fwprintf_s(stderr, L"\n         Server can handle DNSSEC security RRs.");
 
-	//EDNS0 Option
+	//EDNS Option
 		if (Length >= sizeof(dns_edns0_option))
 		{
 			auto pdns_edns0_option = (dns_edns0_option *)(Buffer + Location + sizeof(dns_opt_record));
-			fwprintf_s(stderr, L"\n         EDNS0 Option:\n                         Code: ");
+			fwprintf_s(stderr, L"\n         EDNS Option:\n                         Code: ");
 			if (pdns_edns0_option->Code == htons(EDNS0_CODE_LLQ))
 				fwprintf_s(stderr, L"LLQ");
 			else if (pdns_edns0_option->Code == htons(EDNS0_CODE_UL))
@@ -1443,7 +1443,7 @@ void __fastcall PrintResourseData(
 
 //Print Resourse data to file
 void __fastcall PrintResourseData(
-	const PSTR Buffer, 
+	const char *Buffer, 
 	const size_t Location, 
 	const uint16_t Length, 
 	const uint16_t Type, 
@@ -1522,14 +1522,14 @@ void __fastcall PrintResourseData(
 		fwprintf_s(OutputFile, L"\n   Data: ");
 
 		char BufferTemp[ADDR_STRING_MAXSIZE] = {0};
-	#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64)) //Windows(x86)
+	#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64))
 		DWORD BufferLength = ADDR_STRING_MAXSIZE;
 		sockaddr_storage SockAddr = {0};
 		SockAddr.ss_family = AF_INET6;
 		((PSOCKADDR_IN6)&SockAddr)->sin6_addr = *(in6_addr *)(Buffer + Location);
 		WSAAddressToStringA((PSOCKADDR)&SockAddr, sizeof(sockaddr_in6), nullptr, BufferTemp, &BufferLength);
 	#else
-		inet_ntop(AF_INET6, Buffer + Location, BufferTemp, ADDR_STRING_MAXSIZE);
+		inet_ntop(AF_INET6, (char *)(Buffer + Location), BufferTemp, ADDR_STRING_MAXSIZE);
 	#endif
 		CaseConvert(true, BufferTemp, strnlen_s(BufferTemp, ADDR_STRING_MAXSIZE));
 
@@ -1548,7 +1548,7 @@ void __fastcall PrintResourseData(
 		fwprintf_s(OutputFile, L"\n         Target: ");
 		PrintDomainName(Buffer, Location + sizeof(dns_srv_record), OutputFile);
 	}
-//OPT/EDNS0 Record(Extension Mechanisms for Domain Name System)
+//OPT/EDNS Record(Extension Mechanisms for Domain Name System)
 	else if (Type == htons(DNS_RECORD_OPT))
 	{
 		fwprintf_s(OutputFile, L"   Data: ");
@@ -1556,17 +1556,17 @@ void __fastcall PrintResourseData(
 		auto pdns_opt_record = (dns_opt_record *)(Buffer + Location);
 		fwprintf_s(OutputFile, L"UDP Playload Size: %u", ntohs(pdns_opt_record->UDPPayloadSize));
 		fwprintf_s(OutputFile, L"\n         Extended RCode: %x", pdns_opt_record->Extended_RCode);
-		fwprintf_s(OutputFile, L"\n         EDNS0 Version: %u", pdns_opt_record->Version);
+		fwprintf_s(OutputFile, L"\n         EDNS Version: %u", pdns_opt_record->Version);
 		if (ntohs(pdns_opt_record->Z_Field) >> HIGHEST_MOVE_BIT_U16 == 0)
 			fwprintf_s(OutputFile, L"\n         Server cannot handle DNSSEC security RRs.");
 		else
 			fwprintf_s(OutputFile, L"\n         Server can handle DNSSEC security RRs.");
 
-	//EDNS0 Option
+	//EDNS Option
 		if (Length >= sizeof(dns_edns0_option))
 		{
 			auto pdns_edns0_option = (dns_edns0_option *)(Buffer + Location + sizeof(dns_opt_record));
-			fwprintf_s(OutputFile, L"\n         EDNS0 Option:\n                         Code: ");
+			fwprintf_s(OutputFile, L"\n         EDNS Option:\n                         Code: ");
 			if (pdns_edns0_option->Code == htons(EDNS0_CODE_LLQ))
 				fwprintf_s(OutputFile, L"LLQ");
 			else if (pdns_edns0_option->Code == htons(EDNS0_CODE_UL))

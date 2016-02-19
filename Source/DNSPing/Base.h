@@ -173,8 +173,8 @@
 //C Standard Library and C++ Standard Template Library/STL Headers
 #include <cstring>
 #include <ctime>
-#include <string>
 #include <memory>
+#include <string>
 
 #if defined(PLATFORM_WIN)
 //Windows API Headers
@@ -200,25 +200,24 @@
 	#include <cstdio>                 //File Input/Output
 	#include <cstdlib>                //C Standard Library
 	#include <climits>                //Limits
+	#include <netdb.h>                //Network database operations
 	#include <pthread.h>              //Threads
 	#include <signal.h>               //Signals
 	#include <unistd.h>               //Standard library API
-	#include <netdb.h>                //Network database operations
 	#include <sys/time.h>             //Date and time
 	#include <arpa/inet.h>            //Internet operations
 
 //Windows compatible
 	#define FALSE                    0
-	#define SOCKET_ERROR             (-1)
 	#define INVALID_SOCKET           (-1)
-	#define MAX_PATH                 PATH_MAX
+	#define SOCKET_ERROR             (-1)
 	#define in_addr                  in_addr_Windows
-	typedef char                     *PSTR;
+	#define MAX_PATH                 PATH_MAX
+	typedef int                      SOCKET;
 	typedef unsigned char            UCHAR;
 	typedef unsigned int             UINT;
 	typedef unsigned long            ULONG, DWORD;
 	typedef ssize_t                  SSIZE_T;
-	typedef int                      SOCKET;
 	typedef sockaddr                 *PSOCKADDR;
 	typedef sockaddr_in              *PSOCKADDR_IN;
 	typedef sockaddr_in6             *PSOCKADDR_IN6;
@@ -228,16 +227,18 @@
 	typedef struct _in_addr_windows_
 	{
 		union {
-			struct {
-				uint8_t s_b1, s_b2, s_b3, s_b4;
-			}S_un_b;
-			struct {
-				uint16_t s_w1, s_w2;
-			}S_un_w;
-			uint32_t S_addr;
-		}S_un;
+			union {
+				struct {
+					uint8_t    s_b1, s_b2, s_b3, s_b4;
+				}S_un_b;
+				struct {
+					uint16_t   s_w1, s_w2;
+				}S_un_w;
+				uint32_t       S_addr;
+			}S_un;
+			uint32_t           s_addr;
+		};
 	}in_addr_Windows;
-
 	#define s_host                                  S_un.S_un_b.s_b2
 	#define s_net                                   S_un.S_un_b.s_b1
 	#define s_imp                                   S_un.S_un_w.s_w2
@@ -261,7 +262,8 @@
 #define ASCII_AT                  64                   //"@"
 #define ASCII_UPPERCASE_A         65                   //"A"
 #define ASCII_UPPERCASE_F         70                   //"F"
-#define ASCII_BRACKETS_LEAD       91                   //"["
+#define ASCII_BRACKETS_LEFT       91                   //"["
+#define ASCII_BRACKETS_RIGHT      93                   //"]"
 #define ASCII_ACCENT              96                   //"`"
 #define ASCII_LOWERCASE_A         97                   //"a"
 #define ASCII_LOWERCASE_F         102                   //"f"
@@ -1402,7 +1404,7 @@ typedef struct _dns_srv_
 //	PUCHAR               Target;
 }dns_srv_record;
 
-// Option/OPT Resource Record(Extension Mechanisms for Domain Name System/EDNS, EDNS0 Label)
+// Option/OPT Resource Record(Extension Mechanisms for Domain Name System/EDNS, EDNS Label)
 #define EDNS0_CODE_LLQ                 0x0001   //Long-lived query
 #define EDNS0_CODE_UL                  0x0002   //Update lease
 #define EDNS0_CODE_NSID                0x0003   //Name Server Identifier (RFC 5001)
@@ -1724,20 +1726,25 @@ typedef struct _socks_udp_relay_request_
 }socks_udp_relay_request, *psocks_udp_relay_request;
 
 
-
 //////////////////////////////////////////////////
 // Function defines
 #if (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 	#define __fastcall
-	#define strnlen_s                               strnlen
-	#define wcsnlen_s                               wcsnlen
-	#define memcpy_s(Dst, DstSize, Src, Size)       memcpy(Dst, Src, Size)
-	#define fwprintf_s                              fwprintf
-	#define GetLastError()                          errno
-	#define WSAGetLastError()                       GetLastError()
 	#define WSACleanup()
-	#define GetCurrentProcessId()                   pthread_self()
-	#define localtime_s(TimeStructure, TimeValue)   localtime_r(TimeValue, TimeStructure)
+	#define closesocket                                                      close
+	#define fwprintf_s                                                       fwprintf
+	#define GetCurrentProcessId                                              pthread_self
+	#define GetLastError()                                                   errno
+	#define strnlen_s                                                        strnlen
+	#define wcsnlen_s                                                        wcsnlen
+	#define WSAGetLastError                                                  GetLastError
+	#define localtime_s(TimeStructure, TimeValue)                            localtime_r(TimeValue, TimeStructure)
+	#define memcpy_s(Dst, DstSize, Src, Size)                                memcpy(Dst, Src, Size)
+	#define memmove_s(Dst, DstSize, Src, Size)                               memmove(Dst, Src, Size)
+	#if defined(PLATFORM_LINUX)
+		#define send(Socket, Buffer, Length, Signal)                         send(Socket, Buffer, Length, Signal|MSG_NOSIGNAL)
+		#define sendto(Socket, Buffer, Length, Signal, SockAddr, AddrLen)    sendto(Socket, Buffer, Length, Signal|MSG_NOSIGNAL, SockAddr, AddrLen)
+	#endif
 #endif
 
 
@@ -1775,28 +1782,23 @@ typedef struct _socks_udp_relay_request_
 #define SECONDS_IN_MINUTE            60U         //60 seconds in a minute
 #define DOMAIN_MAXSIZE               256U        //Maximum size of whole level domain is 256 bytes(Section 2.3.1 in RFC 1035).
 #define DOMAIN_MINSIZE               2U          //Minimum size of whole level domain is 3 bytes(Section 2.3.1 in RFC 1035).
+#define DNS_PACKET_MINSIZE           (sizeof(dns_hdr) + 4U + sizeof(dns_qry))   //Minimum DNS packet size(DNS Header + Minimum Domain + DNS Query)
 
 //Structure definitions
 struct ConfigurationTable
 {
-//C-Syle types
 	FILE *OutputFile;
-	size_t SendNum;
-	size_t RealSendNum;
-	size_t RecvNum;
+
+//C-Syle type parameter block
 	size_t TransmissionInterval;
 	size_t BufferSize;
 	size_t RawDataLen;
-	size_t EDNS0PayloadSize;
-	long double TotalTime;
-	long double MaxTime;
-	long double MinTime;
-	sockaddr_storage SockAddr;
+	size_t EDNSPayloadSize;
 	uint16_t Protocol;
 	uint16_t ServiceType;
 	bool ReverseLookup;
 	bool RawSocket;
-	bool EDNS0;
+	bool EDNS;
 	bool DNSSEC;
 	bool Validate;
 	bool ShowResponse;
@@ -1808,15 +1810,28 @@ struct ConfigurationTable
 #elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 	timeval SocketTimeout;
 #endif
-	dns_hdr HeaderParameter;
-	dns_qry QueryParameter;
-	dns_opt_record EDNS0Parameter;
+	sockaddr_storage SockAddr_Normal;
+	sockaddr_storage SockAddr_SOCKS;
+	dns_hdr Parameter_Header;
+	dns_qry Parameter_Query;
+	dns_opt_record Parameter_EDNS;
 
-//STL types
-	std::string TargetString;
+//C-Syle type result block
+	size_t Statistics_Send;
+	size_t Statistics_RealSend;
+	size_t Statistics_RecvNum;
+	long double Statistics_TotalTime;
+	long double Statistics_MaxTime;
+	long double Statistics_MinTime;
+
+//C++ STL type block
 	std::string TestDomain;
-	std::string TargetDomainString;
+	std::string TargetString_Normal;
+	std::string TargetAddressString;
+	std::string SOCKS_Username;
+	std::string SOCKS_Password;
 	std::wstring wTargetString;
+	std::wstring TargetString_SOCKS;
 	std::wstring wOutputFileName;
 #if (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 	std::string OutputFileName;
@@ -1826,7 +1841,7 @@ struct ConfigurationTable
 
 //Protocol.h
 //Minimum supported system of Windows Version Helpers is Windows Vista.
-#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64)) //Windows(x86)
+#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64))
 	bool __fastcall IsLowerThanWin8(
 		void);
 #endif
@@ -1841,10 +1856,10 @@ bool __fastcall CheckEmptyBuffer(
 #endif
 size_t __fastcall CaseConvert(
 	const bool IsLowerUpper, 
-	const PSTR Buffer, 
+	char *Buffer, 
 	const size_t Length);
 size_t __fastcall AddressStringToBinary(
-	const PSTR AddrString, 
+	const char *AddrString, 
 	void *pAddr, 
 	const uint16_t Protocol, 
 	SSIZE_T &ErrCode);
@@ -1857,13 +1872,13 @@ uint16_t __fastcall DNSClassesNameToHex(
 uint16_t __fastcall DNSTypeNameToHex(
 	const std::wstring &Buffer);
 size_t __fastcall CharToDNSQuery(
-	const PSTR FName, PSTR TName);
+	const char *FName, char *TName);
 size_t __fastcall DNSQueryToChar(
-	const PSTR TName, 
-	PSTR FName, 
+	const char *TName, 
+	char *FName, 
 	uint16_t &Truncated);
 bool __fastcall ValidatePacket(
-	const PSTR Buffer, 
+	const char *Buffer, 
 	const size_t Length, 
 	const uint16_t DNS_ID);
 void __fastcall PrintSecondsInDateTime(
@@ -1888,17 +1903,17 @@ void __fastcall PrintDescription(void);
 
 //Resolver.h
 void __fastcall PrintResponseHex(
-	const PSTR Buffer, 
+	const char *Buffer, 
 	const size_t Length);
 void __fastcall PrintResponseHex(
-	const PSTR Buffer, 
+	const char *Buffer, 
 	const size_t Length, 
 	FILE *OutputFile);
 void __fastcall PrintResponse(
-	const PSTR Buffer, 
+	const char *Buffer, 
 	const size_t Length);
 void __fastcall PrintResponse(
-	const PSTR Buffer, 
+	const char *Buffer, 
 	const size_t Length, 
 	FILE *OutputFile);
 

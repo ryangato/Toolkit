@@ -32,20 +32,20 @@ void __fastcall PrintTypeClassesName(
 	const uint16_t Classes, 
 	FILE *OutputFile);
 size_t __fastcall PrintDomainName(
-	const PSTR Buffer, 
+	const char *Buffer, 
 	const size_t Location);
 size_t __fastcall PrintDomainName(
-	const PSTR Buffer, 
+	const char *Buffer, 
 	const size_t Location, 
 	FILE *OutputFile);
 void __fastcall PrintResourseData(
-	const PSTR Buffer, 
+	const char *Buffer, 
 	const size_t Location, 
 	const uint16_t Length, 
 	const uint16_t Type, 
 	const uint16_t Classes);
 void __fastcall PrintResourseData(
-	const PSTR Buffer, 
+	const char *Buffer, 
 	const size_t Location, 
 	const uint16_t Length, 
 	const uint16_t Type, 
