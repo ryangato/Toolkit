@@ -3,7 +3,7 @@
 Ping with DNS requesting.
 
 ### Updated
-**0.2.0.0**
+**0.2.1.0**
 
 ### Usage
 Please see https://github.com/chengr28/DNSPing/tree/master/Documents

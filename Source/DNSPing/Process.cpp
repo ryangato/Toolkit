@@ -206,10 +206,16 @@ size_t __fastcall SendProcess(
 		if (SockAddr_SOCKS_UDP.ss_family == AF_INET6)
 		{
 			((PSOCKADDR_IN6)&SockAddr_SOCKS_UDP)->sin6_addr = ((PSOCKADDR_IN6)&ConfigurationParameter.SockAddr_SOCKS)->sin6_addr;
+		#if defined(PLATFORM_MACX)
+			((PSOCKADDR_IN6)&SockAddr_SOCKS_UDP)->sin6_port = ((PSOCKADDR_IN6)&ConfigurationParameter.SockAddr_SOCKS)->sin6_port;
+		#endif
 			AddrLen_SOCKS = sizeof(sockaddr_in6);
 		}
 		else {
 			((PSOCKADDR_IN)&SockAddr_SOCKS_UDP)->sin_addr = ((PSOCKADDR_IN)&ConfigurationParameter.SockAddr_SOCKS)->sin_addr;
+		#if defined(PLATFORM_MACX)
+			((PSOCKADDR_IN)&SockAddr_SOCKS_UDP)->sin_port = ((PSOCKADDR_IN)&ConfigurationParameter.SockAddr_SOCKS)->sin_port;
+		#endif
 			AddrLen_SOCKS = sizeof(sockaddr_in);
 		}
 
@@ -735,19 +741,21 @@ size_t __fastcall SOCKS_UDP_ASSOCIATE(
 		//Mark server connection messages.
 			if (SockAddr_SOCKS_UDP.ss_family == AF_INET6 && ((psocks5_server_command_reply)Buffer.get())->Bind_Address_Type == SOCKS5_ADDRESS_IPV6)
 			{
-				auto Addr = *(in6_addr *)(Buffer.get() + sizeof(socks5_server_command_reply));
+//				auto Addr = *(in6_addr *)(Buffer.get() + sizeof(socks5_server_command_reply));
 				auto Port = *(uint16_t *)(Buffer.get() + sizeof(socks5_server_command_reply) + sizeof(in6_addr));
-				if (!CheckEmptyBuffer(&Addr, sizeof(in6_addr)))
-					((PSOCKADDR_IN6)&SockAddr_SOCKS_UDP)->sin6_addr = Addr;
+//				if (!CheckEmptyBuffer(&Addr, sizeof(in6_addr)))
+//					((PSOCKADDR_IN6)&SockAddr_SOCKS_UDP)->sin6_addr = Addr;
+				((PSOCKADDR_IN6)&SockAddr_SOCKS_UDP)->sin6_addr = ((PSOCKADDR_IN6)SockAddr)->sin6_addr;
 				if (Port > 0)
 					((PSOCKADDR_IN6)&SockAddr_SOCKS_UDP)->sin6_port = Port;
 			}
 			else if (SockAddr_SOCKS_UDP.ss_family == AF_INET && ((psocks5_server_command_reply)Buffer.get())->Bind_Address_Type == SOCKS5_ADDRESS_IPV4)
 			{
-				auto Addr = *(in_addr *)(Buffer.get() + sizeof(socks5_server_command_reply));
+//				auto Addr = *(in_addr *)(Buffer.get() + sizeof(socks5_server_command_reply));
 				auto Port = *(uint16_t *)(Buffer.get() + sizeof(socks5_server_command_reply) + sizeof(in_addr));
-				if (Addr.s_addr > 0)
-					((PSOCKADDR_IN)&SockAddr_SOCKS_UDP)->sin_addr.s_addr = Addr.s_addr;
+//				if (Addr.s_addr > 0)
+//					((PSOCKADDR_IN)&SockAddr_SOCKS_UDP)->sin_addr.s_addr = Addr.s_addr;
+				((PSOCKADDR_IN)&SockAddr_SOCKS_UDP)->sin_addr.s_addr = ((PSOCKADDR_IN)SockAddr)->sin_addr.s_addr;
 				if (Port > 0)
 					((PSOCKADDR_IN)&SockAddr_SOCKS_UDP)->sin_port = Port;
 			}
@@ -843,8 +851,12 @@ size_t __fastcall PrintProcess(
 	#endif
 	}
 
+#if (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
+	fwprintf_s(stderr, L"\n");
 	if (ConfigurationParameter.OutputFile != nullptr)
 		fwprintf_s(ConfigurationParameter.OutputFile, L"\n");
+#endif
+
 	return EXIT_SUCCESS;
 }
 
@@ -857,11 +869,11 @@ void __fastcall PrintDescription(
 //Description
 	fwprintf_s(stderr, L"--------------------------------------------------\n");
 #if defined(PLATFORM_WIN)
-	fwprintf_s(stderr, L"DNSPing v0.2(Windows)\n");
+	fwprintf_s(stderr, L"DNSPing v0.2.1(Windows)\n");
 #elif defined(PLATFORM_LINUX)
-	fwprintf(stderr, L"DNSPing v0.2(Linux)\n");
+	fwprintf(stderr, L"DNSPing v0.2.1(Linux)\n");
 #elif defined(PLATFORM_MACX)
-	fwprintf(stderr, L"DNSPing v0.2(Mac)\n");
+	fwprintf(stderr, L"DNSPing v0.2.1(Mac)\n");
 #endif
 	fwprintf_s(stderr, L"Ping with DNS requesting.\n");
 	fwprintf_s(stderr, L"Copyright (C) 2014-2016 Chengr28\n");

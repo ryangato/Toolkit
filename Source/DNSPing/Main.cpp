@@ -331,22 +331,22 @@ size_t __fastcall ReadCommands(
 		Result = 0;
 
 	//Description(Usage)
-		if (Parameter.find(L"?") != std::string::npos || Parameter == L"-h")
+		if (Parameter.find(L"?") != std::string::npos || Parameter == L"-h" || Parameter == L"--help")
 		{
 			PrintDescription();
 		}
 	//Pings the specified host until stopped. To see statistics and continue type Control-Break. To stop type Control-C.
-		else if (Parameter == L"-t")
+		else if (Parameter == L"-t" || Parameter == L"--until-break")
 		{
 			ConfigurationParameter.Statistics_Send = 0;
 		}
 	//Resolve addresses to host names.
-		else if (Parameter == L"-a")
+		else if (Parameter == L"-a" || Parameter == L"--reverse-lookup")
 		{
 			ConfigurationParameter.ReverseLookup = true;
 		}
 	//Set number of echo requests to send.
-		else if (Parameter == L"-n")
+		else if (Parameter == L"-n" || Parameter == L"--number")
 		{
 			if (Index + 1U < (size_t)argc)
 			{
@@ -375,13 +375,13 @@ size_t __fastcall ReadCommands(
 	//Set the "Don't Fragment" flag in outgoing packets.
 	//All Non-SOCK_STREAM will set "Don't Fragment" flag(Linux).
 	#if defined(PLATFORM_WIN)
-		else if (Parameter == L"-f")
+		else if (Parameter == L"-f" || Parameter == L"--do-not-fragment")
 		{
 			ConfigurationParameter.IPv4_DF = true;
 		}
 	#endif
 	//Specifie a Time To Live for outgoing packets.
-		else if (Parameter == L"-i")
+		else if (Parameter == L"-i" || Parameter == L"--hop-limits")
 		{
 			if (Index + 1U < (size_t)argc)
 			{
@@ -408,7 +408,7 @@ size_t __fastcall ReadCommands(
 			}
 		}
 	//Set a long wait periods (in milliseconds) for a response.
-		else if (Parameter == L"-w")
+		else if (Parameter == L"-w" || Parameter == L"--waiting-time")
 		{
 			if (Index + 1U < (size_t)argc)
 			{
@@ -440,7 +440,7 @@ size_t __fastcall ReadCommands(
 			}
 		}
 	//Specifie DNS header ID.
-		else if (Parameter == L"-id")
+		else if (Parameter == L"-id" || Parameter == L"--dns-id")
 		{
 			if (Index + 1U < (size_t)argc)
 			{
@@ -467,12 +467,12 @@ size_t __fastcall ReadCommands(
 			}
 		}
 	//Set DNS header flag: QR
-		else if (Parameter == L"-qr")
+		else if (Parameter == L"-qr" || Parameter == L"--flags-qr")
 		{
 			ConfigurationParameter.Parameter_Header.FlagsBits.QR = ~ConfigurationParameter.Parameter_Header.FlagsBits.QR;
 		}
 	//Specifie DNS header OPCode.
-		else if (Parameter == L"-opcode")
+		else if (Parameter == L"-opcode" || Parameter == L"--flags-opcode")
 		{
 			if (Index + 1U < (size_t)argc)
 			{
@@ -507,37 +507,37 @@ size_t __fastcall ReadCommands(
 			}
 		}
 	//Set DNS header flag: AA
-		else if (Parameter == L"-aa")
+		else if (Parameter == L"-aa" || Parameter == L"--flags-aa")
 		{
 			ConfigurationParameter.Parameter_Header.FlagsBits.AA = ~ConfigurationParameter.Parameter_Header.FlagsBits.AA;
 		}
 	//Set DNS header flag: TC
-		else if (Parameter == L"-tc")
+		else if (Parameter == L"-tc" || Parameter == L"--flags-tc")
 		{
 			ConfigurationParameter.Parameter_Header.FlagsBits.TC = ~ConfigurationParameter.Parameter_Header.FlagsBits.TC;
 		}
 	//Set DNS header flag: RD
-		else if (Parameter == L"-rd")
+		else if (Parameter == L"-rd" || Parameter == L"--flags-rd")
 		{
 			ConfigurationParameter.Parameter_Header.FlagsBits.RD = ~ConfigurationParameter.Parameter_Header.FlagsBits.RD;
 		}
 	//Set DNS header flag: RA
-		else if (Parameter == L"-ra")
+		else if (Parameter == L"-ra" || Parameter == L"--flags-ra")
 		{
 			ConfigurationParameter.Parameter_Header.FlagsBits.RA = ~ConfigurationParameter.Parameter_Header.FlagsBits.RA;
 		}
 	//Set DNS header flag: AD
-		else if (Parameter == L"-ad")
+		else if (Parameter == L"-ad" || Parameter == L"--flags-ad")
 		{
 			ConfigurationParameter.Parameter_Header.FlagsBits.AD = ~ConfigurationParameter.Parameter_Header.FlagsBits.AD;
 		}
 	//Set DNS header flag: CD
-		else if (Parameter == L"-cd")
+		else if (Parameter == L"-cd" || Parameter == L"--flags-cd")
 		{
 			ConfigurationParameter.Parameter_Header.FlagsBits.CD = ~ConfigurationParameter.Parameter_Header.FlagsBits.CD;
 		}
 	//Specifie DNS header RCode.
-		else if (Parameter == L"-rcode")
+		else if (Parameter == L"-rcode" || Parameter == L"--flags-rcode")
 		{
 			if (Index + 1U < (size_t)argc)
 			{
@@ -572,7 +572,7 @@ size_t __fastcall ReadCommands(
 			}
 		}
 	//Specifie DNS header question count.
-		else if (Parameter == L"-qn")
+		else if (Parameter == L"-qn" || Parameter == L"--dns-qn")
 		{
 			if (Index + 1U < (size_t)argc)
 			{
@@ -599,7 +599,7 @@ size_t __fastcall ReadCommands(
 			}
 		}
 	//Specifie DNS header Answer count.
-		else if (Parameter == L"-ann")
+		else if (Parameter == L"-ann" || Parameter == L"--dns-ann")
 		{
 			if (Index + 1U < (size_t)argc)
 			{
@@ -626,7 +626,7 @@ size_t __fastcall ReadCommands(
 			}
 		}
 	//Specifie DNS header Authority count.
-		else if (Parameter == L"-aun")
+		else if (Parameter == L"-aun" || Parameter == L"--dns-aun")
 		{
 			if (Index + 1U < (size_t)argc)
 			{
@@ -653,7 +653,7 @@ size_t __fastcall ReadCommands(
 			}
 		}
 	//Specifie DNS header Additional count.
-		else if (Parameter == L"-adn")
+		else if (Parameter == L"-adn" || Parameter == L"--dns-adn")
 		{
 			if (Index + 1U < (size_t)argc)
 			{
@@ -680,7 +680,7 @@ size_t __fastcall ReadCommands(
 			}
 		}
 	//Specifie transmission interval time(in milliseconds).
-		else if (Parameter == L"-ti")
+		else if (Parameter == L"-ti" || Parameter == L"--transmission-interval")
 		{
 			if (Index + 1U < (size_t)argc)
 			{
@@ -751,7 +751,7 @@ size_t __fastcall ReadCommands(
 			ConfigurationParameter.DNSSEC = true;
 		}
 	//Specifie Query Type.
-		else if (Parameter == L"-qt")
+		else if (Parameter == L"-qt" || Parameter == L"--query-type")
 		{
 			if (Index + 1U < (size_t)argc)
 			{
@@ -787,7 +787,7 @@ size_t __fastcall ReadCommands(
 			}
 		}
 	//Specifie Query Classes.
-		else if (Parameter == L"-qc")
+		else if (Parameter == L"-qc" || Parameter == L"--query-classes")
 		{
 			if (Index + 1U < (size_t)argc)
 			{
@@ -823,7 +823,7 @@ size_t __fastcall ReadCommands(
 			}
 		}
 	//Specifie requesting server name or port.
-		else if (Parameter == L"-p")
+		else if (Parameter == L"-p" || Parameter == L"--port")
 		{
 			if (Index + 1U < (size_t)argc)
 			{
@@ -1248,7 +1248,7 @@ size_t __fastcall ReadCommands(
 			}
 		}
 	//Specifie buffer size.
-		else if (Parameter == L"-buf")
+		else if (Parameter == L"-buf" || Parameter == L"--buffer-size")
 		{
 			if (Index + 1U < (size_t)argc)
 			{
@@ -1275,12 +1275,12 @@ size_t __fastcall ReadCommands(
 			}
 		}
 	//Disable packets validated.
-		else if (Parameter == L"-dv")
+		else if (Parameter == L"-dv" || Parameter == L"--disable-validate")
 		{
 			ConfigurationParameter.Validate = false;
 		}
 	//Show response.
-		else if (Parameter == L"-show")
+		else if (Parameter == L"-show" || Parameter == L"--show-response")
 		{
 			if (Index + 1U < (size_t)argc)
 			{
@@ -1295,7 +1295,7 @@ size_t __fastcall ReadCommands(
 				{
 					ConfigurationParameter.ShowResponse = true;
 				}
-				else if (Parameter == L"hex")
+				else if (Parameter == L"hex" || Parameter == L"hexadecimal")
 				{
 					ConfigurationParameter.ShowResponseHex = true;
 				}
@@ -1310,7 +1310,7 @@ size_t __fastcall ReadCommands(
 			}
 		}
 	//Output result to file.
-		else if (Parameter == L"-of")
+		else if (Parameter == L"-of" || Parameter == L"--output-file")
 		{
 			if (Index + 1U < (size_t)argc)
 			{
@@ -1343,12 +1343,12 @@ size_t __fastcall ReadCommands(
 			}
 		}
 	//Using IPv6.
-		else if (Parameter == L"-6")
+		else if (Parameter == L"-6" || Parameter == L"--ipv6")
 		{
 			ConfigurationParameter.Protocol = AF_INET6;
 		}
 	//Using IPv4.
-		else if (Parameter == L"-4")
+		else if (Parameter == L"-4" || Parameter == L"--ipv4")
 		{
 			ConfigurationParameter.Protocol = AF_INET;
 		}
