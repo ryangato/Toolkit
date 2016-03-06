@@ -24,14 +24,12 @@ ELSE(PLATFORM_OPENWRT)
 	cmake_minimum_required(VERSION 3.0.2)
 ENDIF(PLATFORM_OPENWRT)
 
-# Project name
+# Project name and build type
 project(DNSPing)
-
-# Release version
 set(CMAKE_BUILD_TYPE "Release")
 
 # All source files
-set(SRC_FILES
+set(MAIN_SRC_FILES
 		"Base.h"
 		"Main.h"
 		"Process.h"
@@ -43,14 +41,27 @@ set(SRC_FILES
 		"Terminal.cpp")
 
 # Compiling and linking flags
-IF(PLATFORM_OPENWRT)
+## C++ 11 standard definitions
+IF(CMAKE_VERSION VERSION_LESS "3.1")
 	add_definitions(-std=c++11)
+ELSE(CMAKE_VERSION VERSION_LESS "3.1")
+	set(CMAKE_CXX_STANDARD 11)
+ENDIF(CMAKE_VERSION VERSION_LESS "3.1")
+## Platform definitions
+IF(PLATFORM_OPENWRT)
+	add_definitions(-DPLATFORM_OPENWRT)
 ELSE(PLATFORM_OPENWRT)
-	add_definitions(-std=c++11 -fpic)
+	add_definitions(-fpic)
 ENDIF(PLATFORM_OPENWRT)
 
+# Link to static libraries if needed
+IF(STATIC_LIB)
+	SET(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
+	SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static -pthread -Wl,--whole-archive -lpthread -Wl,--no-whole-archive")
+ENDIF(STATIC_LIB)
+
 # Executable file name
-add_executable(DNSPing ${SRC_FILES})
+add_executable(DNSPing ${MAIN_SRC_FILES})
 IF(PLATFORM_OPENWRT)
 	INSTALL(TARGETS DNSPing RUNTIME DESTINATION sbin)
 ENDIF(PLATFORM_OPENWRT)

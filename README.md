@@ -6,7 +6,8 @@ Ping with DNS requesting.
 **0.2.1.0**
 
 ### Usage
-Please see https://github.com/chengr28/DNSPing/tree/master/Documents
+* Windows/Linux/Mac - Please visit [ReadMe documents](https://github.com/chengr28/DNSPing/tree/master/Documents).
+* OpenWrt - Please visit [openwrt-DNSPing project](https://github.com/wongsyrone/openwrt-DNSPing).
 
 ### Thanks
 * [tcping.exe - Ping over a tcp connection.](http://www.elifulkerson.com/projects/tcping.php)

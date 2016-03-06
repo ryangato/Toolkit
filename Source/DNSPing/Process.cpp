@@ -868,15 +868,19 @@ void __fastcall PrintDescription(
 
 //Description
 	fwprintf_s(stderr, L"--------------------------------------------------\n");
+	fwprintf_s(stderr, L"DNSPing ");
+	fwprintf_s(stderr, FULL_VERSION);
 #if defined(PLATFORM_WIN)
-	fwprintf_s(stderr, L"DNSPing v0.2.1(Windows)\n");
+	fwprintf_s(stderr, L"(Windows)\n");
+#elif defined(PLATFORM_OPENWRT)
+	fwprintf(stderr, L"(OpenWrt)\n");
 #elif defined(PLATFORM_LINUX)
-	fwprintf(stderr, L"DNSPing v0.2.1(Linux)\n");
+	fwprintf(stderr, L"(Linux)\n");
 #elif defined(PLATFORM_MACX)
-	fwprintf(stderr, L"DNSPing v0.2.1(Mac)\n");
+	fwprintf(stderr, L"(Mac)\n");
 #endif
 	fwprintf_s(stderr, L"Ping with DNS requesting.\n");
-	fwprintf_s(stderr, L"Copyright (C) 2014-2016 Chengr28\n");
+	fwprintf_s(stderr, COPYRIGHT_MESSAGE);
 	fwprintf_s(stderr, L"--------------------------------------------------\n");
 
 //Usage
@@ -893,7 +897,7 @@ void __fastcall PrintDescription(
 	fwprintf_s(stderr, L"   -n count          Set number of echo requests to send.\n");
 	fwprintf_s(stderr, L"                     Count must between 1 - 0xFFFF/65535.\n");
 	fwprintf_s(stderr, L"   -f                Set the \"Don't Fragment\" flag in outgoing packets(IPv4).\n");
-	fwprintf_s(stderr, L"                     No available on Linux.\n");
+	fwprintf_s(stderr, L"                     No available in Linux.\n");
 	fwprintf_s(stderr, L"   -i hoplimit/ttl   Specifie a Hop Limit or Time To Live for outgoing packets.\n");
 	fwprintf_s(stderr, L"                     HopLimit/TTL must between 1 - 255.\n");
 	fwprintf_s(stderr, L"   -w timeout        Set a long wait periods (in milliseconds) for a response.\n");

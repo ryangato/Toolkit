@@ -18,7 +18,7 @@
    -n count          Set number of echo requests to send.
                      Count must between 1 - 0xFFFF/65535.
    -f                Set the "Don't Fragment" flag in outgoing packets(IPv4).
-                     No available on Linux.
+                     No available in Linux.
    -i hoplimit/ttl   Specifie a Hop Limit or Time To Live for outgoing packets.
                      HopLimit/TTL must between 1 - 255.
    -w timeout        Set a long wait periods (in milliseconds) for a response
