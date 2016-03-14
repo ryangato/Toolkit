@@ -54,12 +54,6 @@ ELSE(PLATFORM_OPENWRT)
 	add_definitions(-fpic)
 ENDIF(PLATFORM_OPENWRT)
 
-# Link to static libraries if needed
-IF(STATIC_LIB)
-	SET(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
-	SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static -pthread -Wl,--whole-archive -lpthread -Wl,--no-whole-archive")
-ENDIF(STATIC_LIB)
-
 # Executable file name
 add_executable(DNSPing ${MAIN_SRC_FILES})
 IF(PLATFORM_OPENWRT)

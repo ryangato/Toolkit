@@ -1785,7 +1785,7 @@ typedef struct _socks_udp_relay_request_
 #define DNS_PACKET_MINSIZE           (sizeof(dns_hdr) + 4U + sizeof(dns_qry))   //Minimum DNS packet size(DNS Header + Minimum Domain + DNS Query)
 
 //Version definitions
-#define FULL_VERSION                                  L"0.2.1.0"
+#define FULL_VERSION                                  L"0.2.2.0"
 #define COPYRIGHT_MESSAGE                             L"Copyright (C) 2014-2016 Chengr28"
 
 //Structure definitions
