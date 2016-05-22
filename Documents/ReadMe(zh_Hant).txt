@@ -18,7 +18,7 @@
    -n count          發送 Ping 的數量
                      Count 必須介乎于 1 - 0xFFFF/65535
    -f                設定 Ping 資料包的不分片選項（只適用于IPv4）
-                     不適用於 Linux 平台
+                     不適用於 Mac OS X 系統
    -i hoplimit/ttl   設定 Ping 資料包的跳數限制/存留時間
                      HopLimit/TTL 必須介乎于 1 - 255
    -w timeout        設定超時時間（單位：毫秒）

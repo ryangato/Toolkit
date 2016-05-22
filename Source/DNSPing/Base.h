@@ -1727,28 +1727,6 @@ typedef struct _socks_udp_relay_request_
 
 
 //////////////////////////////////////////////////
-// Function defines
-#if (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
-	#define __fastcall
-	#define WSACleanup()
-	#define closesocket                                                      close
-	#define fwprintf_s                                                       fwprintf
-	#define GetCurrentProcessId                                              pthread_self
-	#define GetLastError()                                                   errno
-	#define strnlen_s                                                        strnlen
-	#define wcsnlen_s                                                        wcsnlen
-	#define WSAGetLastError                                                  GetLastError
-	#define localtime_s(TimeStructure, TimeValue)                            localtime_r(TimeValue, TimeStructure)
-	#define memcpy_s(Dst, DstSize, Src, Size)                                memcpy(Dst, Src, Size)
-	#define memmove_s(Dst, DstSize, Src, Size)                               memmove(Dst, Src, Size)
-	#if defined(PLATFORM_LINUX)
-		#define send(Socket, Buffer, Length, Signal)                         send(Socket, Buffer, Length, Signal|MSG_NOSIGNAL)
-		#define sendto(Socket, Buffer, Length, Signal, SockAddr, AddrLen)    sendto(Socket, Buffer, Length, Signal|MSG_NOSIGNAL, SockAddr, AddrLen)
-	#endif
-#endif
-
-
-//////////////////////////////////////////////////
 // Main header
 // 
 #if defined(PLATFORM_WIN)
@@ -1785,10 +1763,37 @@ typedef struct _socks_udp_relay_request_
 #define DNS_PACKET_MINSIZE           (sizeof(dns_hdr) + 4U + sizeof(dns_qry))   //Minimum DNS packet size(DNS Header + Minimum Domain + DNS Query)
 
 //Version definitions
-#define FULL_VERSION                                  L"0.2.2.0"
+#define FULL_VERSION                                  L"0.2.3.0"
 #define COPYRIGHT_MESSAGE                             L"Copyright (C) 2014-2016 Chengr28"
 
-//Structure definitions
+
+//////////////////////////////////////////////////
+// Linux and Mac OS X compatible
+#if (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
+	#define SD_BOTH                                                          SHUT_RDWR
+	#define SD_RECV                                                          SHUT_RD
+	#define SD_SEND                                                          SHUT_WR
+	#define __fastcall
+	#define WSACleanup()
+	#define closesocket                                                      close
+	#define fwprintf_s                                                       fwprintf
+	#define GetCurrentProcessId                                              pthread_self
+	#define GetLastError()                                                   errno
+	#define strnlen_s                                                        strnlen
+	#define wcsnlen_s                                                        wcsnlen
+	#define WSAGetLastError                                                  GetLastError
+	#define localtime_s(TimeStructure, TimeValue)                            localtime_r(TimeValue, TimeStructure)
+	#define memcpy_s(Dst, DstSize, Src, Size)                                memcpy(Dst, Src, Size)
+	#define memmove_s(Dst, DstSize, Src, Size)                               memmove(Dst, Src, Size)
+	#if defined(PLATFORM_LINUX)
+		#define send(Socket, Buffer, Length, Signal)                         send(Socket, Buffer, Length, Signal|MSG_NOSIGNAL)
+		#define sendto(Socket, Buffer, Length, Signal, SockAddr, AddrLen)    sendto(Socket, Buffer, Length, Signal|MSG_NOSIGNAL, SockAddr, AddrLen)
+	#endif
+#endif
+
+
+//////////////////////////////////////////////////
+// Structure definitions
 struct ConfigurationTable
 {
 	FILE *OutputFile;
@@ -1810,10 +1815,10 @@ struct ConfigurationTable
 	int IP_HopLimits;
 #if defined(PLATFORM_WIN)
 	int SocketTimeout;
-	bool IPv4_DF;
 #elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 	timeval SocketTimeout;
 #endif
+	bool IPv4_DF;
 	sockaddr_storage SockAddr_Normal;
 	sockaddr_storage SockAddr_SOCKS;
 	dns_hdr Parameter_Header;
@@ -1867,13 +1872,13 @@ size_t __fastcall AddressStringToBinary(
 	void *pAddr, 
 	const uint16_t Protocol, 
 	SSIZE_T &ErrCode);
-uint16_t __fastcall InternetProtocolNameToPort(
+uint16_t __fastcall ProtocolNameToPort(
 	const std::wstring &Buffer);
 uint16_t __fastcall ServiceNameToPort(
 	const std::wstring &Buffer);
-uint16_t __fastcall DNSClassesNameToHex(
+uint16_t __fastcall DNSClassesNameToBinary(
 	const std::wstring &Buffer);
-uint16_t __fastcall DNSTypeNameToHex(
+uint16_t __fastcall DNSTypeNameToBinary(
 	const std::wstring &Buffer);
 size_t __fastcall CharToDNSQuery(
 	const char *FName, char *TName);

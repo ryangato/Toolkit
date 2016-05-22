@@ -32,7 +32,7 @@ bool __fastcall IsLowerThanWin8(
 	BOOL bOsVersionInfoEx = GetVersionExW((OSVERSIONINFO *)&OSVI);
 
 	if (bOsVersionInfoEx && OSVI.dwPlatformId == VER_PLATFORM_WIN32_NT && 
-		(OSVI.dwMajorVersion < 6U || OSVI.dwMajorVersion == 6U && OSVI.dwMinorVersion < 2U))
+		(OSVI.dwMajorVersion < 6U || (OSVI.dwMajorVersion == 6U && OSVI.dwMinorVersion < 2U)))
 			return true;
 
 	return false;
@@ -114,7 +114,7 @@ size_t __fastcall AddressStringToBinary(
 	//Check IPv6 addresses
 		for (Result = 0;Result < (SSIZE_T)strlen(AddrString);++Result)
 		{
-			if (AddrString[Result] < ASCII_ZERO || AddrString[Result] > ASCII_COLON && AddrString[Result] < ASCII_UPPERCASE_A || AddrString[Result] > ASCII_UPPERCASE_F && AddrString[Result] < ASCII_LOWERCASE_A || AddrString[Result] > ASCII_LOWERCASE_F)
+			if (AddrString[Result] < ASCII_ZERO || (AddrString[Result] > ASCII_COLON && AddrString[Result] < ASCII_UPPERCASE_A) || (AddrString[Result] > ASCII_UPPERCASE_F && AddrString[Result] < ASCII_LOWERCASE_A) || AddrString[Result] > ASCII_LOWERCASE_F)
 				break;
 		}
 
@@ -152,7 +152,7 @@ size_t __fastcall AddressStringToBinary(
 		size_t CommaNum = 0;
 		for (Result = 0;Result < (SSIZE_T)strlen(AddrString);++Result)
 		{
-			if (AddrString[Result] != ASCII_PERIOD && AddrString[Result] < ASCII_ZERO || AddrString[Result] > ASCII_NINE)
+			if ((AddrString[Result] != ASCII_PERIOD && AddrString[Result] < ASCII_ZERO) || AddrString[Result] > ASCII_NINE)
 				return EXIT_FAILURE;
 			else if (AddrString[Result] == ASCII_PERIOD)
 				++CommaNum;
@@ -210,7 +210,7 @@ size_t __fastcall AddressStringToBinary(
 }
 
 //Convert protocol name to hex
-uint16_t __fastcall InternetProtocolNameToPort(
+uint16_t __fastcall ProtocolNameToPort(
 	const std::wstring &Buffer)
 {
 //Internet Protocol Number(Part 1)
@@ -699,7 +699,7 @@ uint16_t __fastcall ServiceNameToPort(
 }
 
 //Convert DNS classes name to hex
-uint16_t __fastcall DNSClassesNameToHex(
+uint16_t __fastcall DNSClassesNameToBinary(
 	const std::wstring &Buffer)
 {
 //DNS classes name
@@ -722,7 +722,7 @@ uint16_t __fastcall DNSClassesNameToHex(
 }
 
 //Convert DNS type name to hex
-uint16_t __fastcall DNSTypeNameToHex(
+uint16_t __fastcall DNSTypeNameToBinary(
 	const std::wstring &Buffer)
 {
 //DNS type name
@@ -992,7 +992,7 @@ bool __fastcall ValidatePacket(
 				auto pdns_opt_record = (dns_opt_record *)(Buffer + Length - sizeof(dns_opt_record));
 
 			//UDP Payload Size and Z Field of DNSSEC check
-				if (pdns_opt_record->UDPPayloadSize == 0 || ConfigurationParameter.DNSSEC && pdns_opt_record->Z_Field == 0)
+				if (pdns_opt_record->UDPPayloadSize == 0 || (ConfigurationParameter.DNSSEC && pdns_opt_record->Z_Field == 0))
 					return false;
 			}
 			else {

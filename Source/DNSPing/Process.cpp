@@ -53,7 +53,7 @@ size_t __fastcall SendProcess(
 		}
 
 	//Socket check
-		if (Socket_Normal == INVALID_SOCKET || ConfigurationParameter.SockAddr_SOCKS.ss_family > 0 && Socket_SOCKS == INVALID_SOCKET)
+		if (Socket_Normal == INVALID_SOCKET || (ConfigurationParameter.SockAddr_SOCKS.ss_family > 0 && Socket_SOCKS == INVALID_SOCKET))
 		{
 			fwprintf_s(stderr, L"Socket initialization error, error code is %d.\n", WSAGetLastError());
 			return EXIT_FAILURE;
@@ -82,7 +82,7 @@ size_t __fastcall SendProcess(
 		}
 
 	//Socket check
-		if (Socket_Normal == INVALID_SOCKET || ConfigurationParameter.SockAddr_SOCKS.ss_family > 0 && Socket_SOCKS == INVALID_SOCKET)
+		if (Socket_Normal == INVALID_SOCKET || (ConfigurationParameter.SockAddr_SOCKS.ss_family > 0 && Socket_SOCKS == INVALID_SOCKET))
 		{
 			fwprintf_s(stderr, L"Socket initialization error, error code is %d.\n", WSAGetLastError());
 			return EXIT_FAILURE;
@@ -100,6 +100,8 @@ size_t __fastcall SendProcess(
 	{
 		fwprintf_s(stderr, L"Set UDP socket timeout error, error code is %d.\n", WSAGetLastError());
 
+		shutdown(Socket_Normal, SD_BOTH);
+		shutdown(Socket_SOCKS, SD_BOTH);
 		closesocket(Socket_Normal);
 		closesocket(Socket_SOCKS);
 		return EXIT_FAILURE;
@@ -116,6 +118,8 @@ size_t __fastcall SendProcess(
 		{
 			fwprintf_s(stderr, L"Set HopLimit or TTL flag error, error code is %d.\n", WSAGetLastError());
 
+			shutdown(Socket_Normal, SD_BOTH);
+			shutdown(Socket_SOCKS, SD_BOTH);
 			closesocket(Socket_Normal);
 			closesocket(Socket_SOCKS);
 			return EXIT_FAILURE;
@@ -130,24 +134,30 @@ size_t __fastcall SendProcess(
 		{
 			fwprintf_s(stderr, L"Set HopLimit or TTL flag error, error code is %d.\n", WSAGetLastError());
 
+			shutdown(Socket_Normal, SD_BOTH);
+			shutdown(Socket_SOCKS, SD_BOTH);
 			closesocket(Socket_Normal);
 			closesocket(Socket_SOCKS);
 			return EXIT_FAILURE;
 		}
 
-	//Set "Don't Fragment" flag.
-	//All Non-SOCK_STREAM will set "Don't Fragment" flag(Linux).
+	//Set "Do Not Fragment" flag.
 	#if defined(PLATFORM_WIN)
-		int iIPv4_DF = 1;
-		if (ConfigurationParameter.IPv4_DF && setsockopt(*Socket_Exchange, IPPROTO_IP, IP_DONTFRAGMENT, (char *)&iIPv4_DF, sizeof(int)) == SOCKET_ERROR)
+		int DoNotFragment = 1;
+		if (ConfigurationParameter.IPv4_DF && setsockopt(*Socket_Exchange, IPPROTO_IP, IP_DONTFRAGMENT, (char *)&DoNotFragment, sizeof(int)) == SOCKET_ERROR)
+	#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
+		int DoNotFragment = IP_PMTUDISC_DO;
+		if (ConfigurationParameter.IPv4_DF && setsockopt(*Socket_Exchange, IPPROTO_IP, IP_MTU_DISCOVER, &DoNotFragment, sizeof(int)) == SOCKET_ERROR)
+	#endif
 		{
-			fwprintf_s(stderr, L"Set \"Don't Fragment\" flag error, error code is %d.\n", WSAGetLastError());
+			fwprintf_s(stderr, L"Set \"Do Not Fragment\" flag error, error code is %d.\n", WSAGetLastError());
 
+			shutdown(Socket_Normal, SD_BOTH);
+			shutdown(Socket_SOCKS, SD_BOTH);
 			closesocket(Socket_Normal);
 			closesocket(Socket_SOCKS);
 			return EXIT_FAILURE;
 		}
-	#endif
 	}
 
 //Initialization(Part 2)
@@ -227,6 +237,8 @@ size_t __fastcall SendProcess(
 		{
 			fwprintf_s(stderr, L"Connecting error, error code is %d.\n", WSAGetLastError());
 
+			shutdown(Socket_Normal, SD_BOTH);
+			shutdown(Socket_SOCKS, SD_BOTH);
 			closesocket(Socket_Normal);
 			closesocket(Socket_SOCKS);
 			return EXIT_FAILURE;
@@ -241,14 +253,19 @@ size_t __fastcall SendProcess(
 	//SOCKS UDP-ASSOCIATE process
 		if (SOCKS_UDP_ASSOCIATE(SockAddr_SOCKS_UDP, SOCKS_Local_Port, Socket_Normal, (PSOCKADDR)&ConfigurationParameter.SockAddr_SOCKS, AddrLen_Normal) == EXIT_FAILURE)
 		{
+			shutdown(Socket_Normal, SD_BOTH);
+			shutdown(Socket_SOCKS, SD_BOTH);
 			closesocket(Socket_Normal);
 			closesocket(Socket_SOCKS);
+
 			return EXIT_FAILURE;
 		}
 		else if (connect(Socket_SOCKS, (PSOCKADDR)&SockAddr_SOCKS_UDP, AddrLen_SOCKS) == SOCKET_ERROR)
 		{
 			fwprintf_s(stderr, L"Connecting error, error code is %d.\n", WSAGetLastError());
 
+			shutdown(Socket_Normal, SD_BOTH);
+			shutdown(Socket_SOCKS, SD_BOTH);
 			closesocket(Socket_Normal);
 			closesocket(Socket_SOCKS);
 			return EXIT_FAILURE;
@@ -286,6 +303,8 @@ size_t __fastcall SendProcess(
 		else {
 			fwprintf_s(stderr, L"Make SOCKS packet header error.\n");
 
+			shutdown(Socket_Normal, SD_BOTH);
+			shutdown(Socket_SOCKS, SD_BOTH);
 			closesocket(Socket_Normal);
 			closesocket(Socket_SOCKS);
 			return EXIT_FAILURE;
@@ -297,6 +316,8 @@ size_t __fastcall SendProcess(
 		{
 			fwprintf_s(stderr, L"Connecting error, error code is %d.\n", WSAGetLastError());
 
+			shutdown(Socket_Normal, SD_BOTH);
+			shutdown(Socket_SOCKS, SD_BOTH);
 			closesocket(Socket_Normal);
 			closesocket(Socket_SOCKS);
 			return EXIT_FAILURE;
@@ -313,6 +334,9 @@ size_t __fastcall SendProcess(
 	{
 		fwprintf(stderr, L"Get current time error, error code is %d.\n", errno);
 #endif
+
+		shutdown(Socket_Normal, SD_BOTH);
+		shutdown(Socket_SOCKS, SD_BOTH);
 		closesocket(Socket_Normal);
 		closesocket(Socket_SOCKS);
 		return EXIT_FAILURE;
@@ -321,6 +345,8 @@ size_t __fastcall SendProcess(
 	{
 		fwprintf_s(stderr, L"Send packet error, error code is %d.\n", (int)WSAGetLastError());
 
+		shutdown(Socket_Normal, SD_BOTH);
+		shutdown(Socket_SOCKS, SD_BOTH);
 		closesocket(Socket_Normal);
 		closesocket(Socket_SOCKS);
 		return EXIT_FAILURE;
@@ -344,6 +370,8 @@ size_t __fastcall SendProcess(
 		fwprintf(stderr, L"Get current time error, error code is %d.\n", errno);
 #endif
 
+		shutdown(Socket_Normal, SD_BOTH);
+		shutdown(Socket_SOCKS, SD_BOTH);
 		closesocket(Socket_Normal);
 		closesocket(Socket_SOCKS);
 		return EXIT_FAILURE;
@@ -372,6 +400,8 @@ size_t __fastcall SendProcess(
 			{
 				fwprintf_s(stderr, L"SOCKS receive data format error.\n");
 
+				shutdown(Socket_Normal, SD_BOTH);
+				shutdown(Socket_SOCKS, SD_BOTH);
 				closesocket(Socket_Normal);
 				closesocket(Socket_SOCKS);
 				return EXIT_FAILURE;
@@ -390,6 +420,8 @@ size_t __fastcall SendProcess(
 				else {
 					fwprintf_s(stderr, L"SOCKS receive data format error.\n");
 
+					shutdown(Socket_Normal, SD_BOTH);
+					shutdown(Socket_SOCKS, SD_BOTH);
 					closesocket(Socket_Normal);
 					closesocket(Socket_SOCKS);
 					return EXIT_FAILURE;
@@ -441,6 +473,8 @@ size_t __fastcall SendProcess(
 					{
 						fwprintf_s(stderr, L"Get current time from High Precision Event Timer/HPET error, error code is %d.\n", (int)GetLastError());
 
+						shutdown(Socket_Normal, SD_BOTH);
+						shutdown(Socket_SOCKS, SD_BOTH);
 						closesocket(Socket_Normal);
 						closesocket(Socket_SOCKS);
 						return EXIT_FAILURE;
@@ -503,6 +537,8 @@ size_t __fastcall SendProcess(
 						fwprintf(ConfigurationParameter.OutputFile, L"Receive error: %d(%d), waiting correct answers timeout(%Lf ms).\n", (int)DataLength, errno, Result);
 				#endif
 
+					shutdown(Socket_Normal, SD_BOTH);
+					shutdown(Socket_SOCKS, SD_BOTH);
 					closesocket(Socket_Normal);
 					closesocket(Socket_SOCKS);
 					return EXIT_SUCCESS;
@@ -595,6 +631,8 @@ size_t __fastcall SendProcess(
 	#endif
 	}
 
+	shutdown(Socket_Normal, SD_BOTH);
+	shutdown(Socket_SOCKS, SD_BOTH);
 	closesocket(Socket_Normal);
 	closesocket(Socket_SOCKS);
 	return EXIT_SUCCESS;
@@ -896,8 +934,7 @@ void __fastcall PrintDescription(
 	fwprintf_s(stderr, L"   -a                Resolve addresses to host names.\n");
 	fwprintf_s(stderr, L"   -n count          Set number of echo requests to send.\n");
 	fwprintf_s(stderr, L"                     Count must between 1 - 0xFFFF/65535.\n");
-	fwprintf_s(stderr, L"   -f                Set the \"Don't Fragment\" flag in outgoing packets(IPv4).\n");
-	fwprintf_s(stderr, L"                     No available in Linux.\n");
+	fwprintf_s(stderr, L"   -f                Set the \"Do Not Fragment\" flag in outgoing packets(IPv4).\n");
 	fwprintf_s(stderr, L"   -i hoplimit/ttl   Specifie a Hop Limit or Time To Live for outgoing packets.\n");
 	fwprintf_s(stderr, L"                     HopLimit/TTL must between 1 - 255.\n");
 	fwprintf_s(stderr, L"   -w timeout        Set a long wait periods (in milliseconds) for a response.\n");

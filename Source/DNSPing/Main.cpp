@@ -285,7 +285,8 @@ size_t __fastcall ConfigurationInitialization(
 	}
 
 //Winsock initialization
-	WSAData WSAInitialization = {0};
+	WSAData WSAInitialization;
+	memset(&WSAInitialization, 0, sizeof(WSAData));
 	if (WSAStartup(MAKEWORD(2, 2), &WSAInitialization) != 0 || LOBYTE(WSAInitialization.wVersion) != 2 || HIBYTE(WSAInitialization.wVersion) != 2)
 	{
 		fwprintf_s(stderr, L"\nWinsock initialization error, error code is %d.\n", WSAGetLastError());
@@ -295,7 +296,10 @@ size_t __fastcall ConfigurationInitialization(
 	}
 #elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 //Handle the system signal.
-	if (signal(SIGHUP, SIG_Handler) == SIG_ERR || signal(SIGINT, SIG_Handler) == SIG_ERR || signal(SIGQUIT, SIG_Handler) == SIG_ERR || signal(SIGTERM, SIG_Handler) == SIG_ERR)
+	if (signal(SIGHUP, SIG_Handler) == SIG_ERR || 
+		signal(SIGINT, SIG_Handler) == SIG_ERR || 
+		signal(SIGQUIT, SIG_Handler) == SIG_ERR || 
+		signal(SIGTERM, SIG_Handler) == SIG_ERR)
 	{
 		fwprintf(stderr, L"Handle the system signal error, error code is %d.\n", errno);
 		return EXIT_FAILURE;
@@ -372,14 +376,11 @@ size_t __fastcall ReadCommands(
 				return EXIT_FAILURE;
 			}
 		}
-	//Set the "Don't Fragment" flag in outgoing packets.
-	//All Non-SOCK_STREAM will set "Don't Fragment" flag(Linux).
-	#if defined(PLATFORM_WIN)
+	//Set the "Do Not Fragment" flag in outgoing packets.
 		else if (Parameter == L"-f" || Parameter == L"--do-not-fragment")
 		{
 			ConfigurationParameter.IPv4_DF = true;
 		}
-	#endif
 	//Specifie a Time To Live for outgoing packets.
 		else if (Parameter == L"-i" || Parameter == L"--hop-limits")
 		{
@@ -763,7 +764,7 @@ size_t __fastcall ReadCommands(
 			#endif
 
 			//Type name
-				Result = DNSTypeNameToHex(Parameter);
+				Result = DNSTypeNameToBinary(Parameter);
 				if (Result == 0)
 				{
 			//Type number
@@ -799,7 +800,7 @@ size_t __fastcall ReadCommands(
 			#endif
 
 			//Classes name
-				Result = DNSClassesNameToHex(Parameter);
+				Result = DNSClassesNameToBinary(Parameter);
 				if (Result == 0)
 				{
 			//Classes number
@@ -890,7 +891,8 @@ size_t __fastcall ReadCommands(
 				memset(TempRawData.get(), 0, PACKET_MAXSIZE);
 				ConfigurationParameter.RawData.swap(TempRawData);
 				TempRawData.reset();
-				char TempString[5U] = {0};
+				char TempString[5U];
+				memset(TempString, 0, 5U);
 				TempString[0] = ASCII_ZERO;
 				TempString[1U] = 120; //"x"
 
@@ -931,7 +933,7 @@ size_t __fastcall ReadCommands(
 			#endif
 
 			//Protocol name
-				Result = InternetProtocolNameToPort(Parameter);
+				Result = ProtocolNameToPort(Parameter);
 				if (Result == 0)
 				{
 			//Protocol number
@@ -1084,7 +1086,8 @@ size_t __fastcall ReadCommands(
 							}
 							else {
 							//Get address.
-								ADDRINFOA AddrInfoHints = {0}, *AddrInfo = nullptr;
+								ADDRINFOA AddrInfoHints, *AddrInfo = nullptr;
+								memset(&AddrInfoHints, 0, sizeof(ADDRINFOA));
 								AddrInfoHints.ai_family = ConfigurationParameter.Protocol;
 								if (getaddrinfo(ParameterString.c_str(), nullptr, &AddrInfoHints, &AddrInfo) != 0)
 								{
@@ -1105,7 +1108,8 @@ size_t __fastcall ReadCommands(
 											((PSOCKADDR_IN6)&ConfigurationParameter.SockAddr_SOCKS)->sin6_port = htons((uint16_t)Result);
 
 										//Get string of address.
-											char Buffer[ADDR_STRING_MAXSIZE] = {0};
+											char Buffer[ADDR_STRING_MAXSIZE];
+											memset(Buffer, 0, ADDR_STRING_MAXSIZE);
 
 										//Minimum supported system of inet_ntop() and inet_pton() is Windows Vista. [Roy Tam]
 										#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64))
@@ -1125,7 +1129,8 @@ size_t __fastcall ReadCommands(
 											((PSOCKADDR_IN)&ConfigurationParameter.SockAddr_SOCKS)->sin_port = htons((uint16_t)Result);
 
 										//Get string of address.
-											char Buffer[ADDR_STRING_MAXSIZE] = {0};
+											char Buffer[ADDR_STRING_MAXSIZE];
+											memset(Buffer, 0, ADDR_STRING_MAXSIZE);
 
 										//Minimum supported system of inet_ntop() and inet_pton() is Windows Vista. [Roy Tam]
 										#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64))
@@ -1443,7 +1448,8 @@ size_t __fastcall ReadCommands(
 					//Normal mode
 						else {
 						//Get address.
-							ADDRINFOA AddrInfoHints = {0}, *AddrInfo = nullptr;
+							ADDRINFOA AddrInfoHints, *AddrInfo = nullptr;
+							memset(&AddrInfoHints, 0, sizeof(ADDRINFOA));
 							AddrInfoHints.ai_family = ConfigurationParameter.Protocol;
 							if (getaddrinfo(ParameterString.c_str(), nullptr, &AddrInfoHints, &AddrInfo) != 0)
 							{
@@ -1465,7 +1471,8 @@ size_t __fastcall ReadCommands(
 
 									//Get string of address.
 										ConfigurationParameter.TargetAddressString = ParameterString;
-										char Buffer[ADDR_STRING_MAXSIZE] = {0};
+										char Buffer[ADDR_STRING_MAXSIZE];
+										memset(Buffer, 0, ADDR_STRING_MAXSIZE);
 
 									//Minimum supported system of inet_ntop() and inet_pton() is Windows Vista. [Roy Tam]
 									#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64))
@@ -1490,7 +1497,8 @@ size_t __fastcall ReadCommands(
 
 									//Get string of address.
 										ConfigurationParameter.TargetAddressString = ParameterString;
-										char Buffer[ADDR_STRING_MAXSIZE] = {0};
+										char Buffer[ADDR_STRING_MAXSIZE];
+										memset(Buffer, 0, ADDR_STRING_MAXSIZE);
 
 									//Minimum supported system of inet_ntop() and inet_pton() is Windows Vista. [Roy Tam]
 									#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64))
@@ -1566,7 +1574,8 @@ size_t __fastcall OutputResultToFile(
 		return EXIT_FAILURE;
 	}
 	else {
-		tm TimeStructure = {0};
+		tm TimeStructure;
+		memset(&TimeStructure, 0, sizeof(tm));
 		time_t TimeValues = 0;
 		time(&TimeValues);
 		localtime_s(&TimeStructure, &TimeValues);
@@ -1589,7 +1598,8 @@ void __fastcall PrintHeaderToScreen(
 	{
 		if (wTargetAddressString.empty())
 		{
-			char FQDN[NI_MAXHOST + 1U] = {0};
+			char FQDN[NI_MAXHOST + 1U];
+			memset(FQDN, 0, NI_MAXHOST + 1U);
 			if (getnameinfo((PSOCKADDR)&ConfigurationParameter.SockAddr_Normal, sizeof(sockaddr_in), FQDN, NI_MAXHOST, nullptr, 0, NI_NUMERICSERV) != 0)
 			{
 				fwprintf_s(stderr, L"Resolve addresses to host names error, error code is %d.\n", WSAGetLastError());

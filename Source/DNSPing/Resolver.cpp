@@ -1183,7 +1183,7 @@ void __fastcall PrintResourseData(
 	const uint16_t Classes)
 {
 //Length and Type check
-	if (Length == 0 && Type != htons(DNS_RECORD_OPT) || Classes == 0)
+	if ((Length == 0 && Type != htons(DNS_RECORD_OPT)) || Classes == 0)
 		return;
 
 //Initialization
@@ -1451,7 +1451,7 @@ void __fastcall PrintResourseData(
 	FILE *OutputFile)
 {
 //Length and Type check
-	if (Length == 0 && Type != htons(DNS_RECORD_OPT) || Classes == 0)
+	if ((Length == 0 && Type != htons(DNS_RECORD_OPT)) || Classes == 0)
 		return;
 	size_t Index = 0, CurrentLength = 0;
 
