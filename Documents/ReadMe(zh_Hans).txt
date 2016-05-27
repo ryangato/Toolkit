@@ -1,6 +1,6 @@
 ﻿### Linux 用法
-* 打开终端，并进入源代码的 DNSPing 目录内
-* 先运行 cmake . 生成 Makefile 文件，再运行 make 进行编译
+* 打开终端，并进入源代码的 DNSPing 目录
+* 运行 cmake . 生成 Makefile 文件，再运行 make 进行编译
 * 所有编译完成后当前目录内将出现编译好的二进制文件
 
 

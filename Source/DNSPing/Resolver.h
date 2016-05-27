@@ -20,34 +20,20 @@
 #include "Base.h"
 
 void __fastcall PrintFlags(
-	const uint16_t Flags);
-void __fastcall PrintFlags(
 	const uint16_t Flags, 
-	FILE *OutputFile);
-void __fastcall PrintTypeClassesName(
-	const uint16_t Type, 
-	const uint16_t Classes);
+	FILE *FileHandle);
 void __fastcall PrintTypeClassesName(
 	const uint16_t Type, 
 	const uint16_t Classes, 
-	FILE *OutputFile);
-size_t __fastcall PrintDomainName(
-	const char *Buffer, 
-	const size_t Location);
+	FILE *FileHandle);
 size_t __fastcall PrintDomainName(
 	const char *Buffer, 
 	const size_t Location, 
-	FILE *OutputFile);
-void __fastcall PrintResourseData(
-	const char *Buffer, 
-	const size_t Location, 
-	const uint16_t Length, 
-	const uint16_t Type, 
-	const uint16_t Classes);
+	FILE *FileHandle);
 void __fastcall PrintResourseData(
 	const char *Buffer, 
 	const size_t Location, 
 	const uint16_t Length, 
 	const uint16_t Type, 
 	const uint16_t Classes, 
-	FILE *OutputFile);
+	FILE *FileHandle);

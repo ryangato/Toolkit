@@ -3,7 +3,7 @@
 Ping with DNS requesting.
 
 ### Updated
-**0.2.3.0**
+**0.2.4.0**
 
 ### Usage
 * Windows/Linux/Mac - Please visit [ReadMe documents](https://github.com/chengr28/DNSPing/tree/master/Documents).

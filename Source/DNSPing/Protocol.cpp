@@ -17,9 +17,7 @@
 // Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 
-#include "Base.h"
-
-extern ConfigurationTable ConfigurationParameter;
+#include "Protocol.h"
 
 //Minimum supported system of Windows Version Helpers is Windows Vista.
 #if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64))
@@ -27,7 +25,8 @@ extern ConfigurationTable ConfigurationParameter;
 bool __fastcall IsLowerThanWin8(
 	void)
 {
-	OSVERSIONINFOEX OSVI = {0};
+	OSVERSIONINFOEX OSVI;
+	memset(&OSVI, 0, sizeof(OSVERSIONINFOEX));
 	OSVI.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
 	BOOL bOsVersionInfoEx = GetVersionExW((OSVERSIONINFO *)&OSVI);
 
@@ -44,9 +43,11 @@ bool __fastcall CheckEmptyBuffer(
 	const void *Buffer, 
 	const size_t Length)
 {
+//Null pointer
 	if (Buffer == nullptr)
 		return true;
 
+//Empty buffer
 	for (size_t Index = 0;Index < Length;++Index)
 	{
 		if (((uint8_t *)Buffer)[Index] != 0)
@@ -79,12 +80,14 @@ size_t __fastcall CaseConvert(
 {
 	for (size_t Index = 0;Index < Length;++Index)
 	{
-		if (IsLowerUpper) //Lowercase to uppercase
+	//Lowercase to uppercase
+		if (IsLowerUpper)
 		{
 			if (Buffer[Index] > ASCII_ACCENT && Buffer[Index] < ASCII_BRACES_LEAD)
 				Buffer[Index] -= ASCII_LOWER_TO_UPPER;
 		}
-		else { //Uppercase to lowercase
+	//Uppercase to lowercase
+		else {
 			if (Buffer[Index] > ASCII_AT && Buffer[Index] < ASCII_BRACKETS_LEFT)
 				Buffer[Index] += ASCII_UPPER_TO_LOWER;
 		}
@@ -104,7 +107,8 @@ size_t __fastcall AddressStringToBinary(
 
 //inet_ntop() and inet_pton() was only support in Windows Vista and newer system. [Roy Tam]
 #if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64))
-	sockaddr_storage SockAddr = {0};
+	sockaddr_storage SockAddr;
+	memset(&SockAddr, 0, sizeof(sockaddr_storage));
 	int SockLength = 0;
 #endif
 
@@ -1004,90 +1008,10 @@ bool __fastcall ValidatePacket(
 	return true;
 }
 
-//Print date from seconds
-void __fastcall PrintSecondsInDateTime(
-	const time_t Seconds)
-{
-//Less than 1 minute
-	if (Seconds < SECONDS_IN_MINUTE)
-		return;
-
-//Initialization
-	auto Before = false;
-	auto DateTime = Seconds;
-	fwprintf_s(stderr, L"(");
-
-//Years
-	if (DateTime / SECONDS_IN_YEAR > 0)
-	{
-		fwprintf_s(stderr, L"%u year", (UINT)(DateTime / SECONDS_IN_YEAR));
-		if (DateTime / SECONDS_IN_YEAR > 1U)
-			fwprintf_s(stderr, L"s");
-		DateTime %= SECONDS_IN_YEAR;
-		Before = true;
-	}
-//Months
-	if (DateTime / SECONDS_IN_MONTH > 0)
-	{
-		if (Before)
-			fwprintf_s(stderr, L" ");
-		fwprintf_s(stderr, L"%u month", (UINT)(DateTime / SECONDS_IN_MONTH));
-		if (DateTime / SECONDS_IN_MONTH > 1U)
-			fwprintf_s(stderr, L"s");
-		DateTime %= SECONDS_IN_MONTH;
-		Before = true;
-	}
-//Days
-	if (DateTime / SECONDS_IN_DAY > 0)
-	{
-		if (Before)
-			fwprintf_s(stderr, L" ");
-		fwprintf_s(stderr, L"%u day", (UINT)(DateTime / SECONDS_IN_DAY));
-		if (DateTime / SECONDS_IN_DAY > 1U)
-			fwprintf_s(stderr, L"s");
-		DateTime %= SECONDS_IN_DAY;
-		Before = true;
-	}
-//Hours
-	if (DateTime / SECONDS_IN_HOUR > 0)
-	{
-		if (Before)
-			fwprintf_s(stderr, L" ");
-		fwprintf_s(stderr, L"%u hour", (UINT)(DateTime / SECONDS_IN_HOUR));
-		if (DateTime / SECONDS_IN_HOUR > 1U)
-			fwprintf_s(stderr, L"s");
-		DateTime %= SECONDS_IN_HOUR;
-		Before = true;
-	}
-//Minutes
-	if (DateTime / SECONDS_IN_MINUTE > 0)
-	{
-		if (Before)
-			fwprintf_s(stderr, L" ");
-		fwprintf_s(stderr, L"%u minute", (UINT)(DateTime / SECONDS_IN_MINUTE));
-		if (DateTime / SECONDS_IN_MINUTE > 1U)
-			fwprintf_s(stderr, L"s");
-		DateTime %= SECONDS_IN_MINUTE;
-		Before = true;
-	}
-//Seconds
-	if (DateTime > 0)
-	{
-		if (Before)
-			fwprintf_s(stderr, L" ");
-		fwprintf_s(stderr, L"%u second", (UINT)(DateTime));
-		if (DateTime > 1U)
-			fwprintf_s(stderr, L"s");
-	}
-
-	fwprintf_s(stderr, L")");
-	return;
-}
-
 //Print date from seconds to file
 void __fastcall PrintSecondsInDateTime(
 	const time_t Seconds, 
-	FILE *OutputFile)
+	FILE *FileHandle)
 {
 //Less than 1 minute
 	if (Seconds < SECONDS_IN_MINUTE)
@@ -1096,14 +1020,14 @@ void __fastcall PrintSecondsInDateTime(
 //Initialization
 	auto Before = false;
 	auto DateTime = Seconds;
-	fwprintf_s(OutputFile, L"(");
+	fwprintf_s(FileHandle, L"(");
 
 //Years
 	if (DateTime / SECONDS_IN_YEAR > 0)
 	{
-		fwprintf_s(OutputFile, L"%u year", (UINT)(DateTime / SECONDS_IN_YEAR));
+		fwprintf_s(FileHandle, L"%u year", (UINT)(DateTime / SECONDS_IN_YEAR));
 		if (DateTime / SECONDS_IN_YEAR > 1U)
-			fwprintf_s(OutputFile, L"s");
+			fwprintf_s(FileHandle, L"s");
 		DateTime %= SECONDS_IN_YEAR;
 		Before = true;
 	}
@@ -1111,10 +1035,10 @@ void __fastcall PrintSecondsInDateTime(
 	if (DateTime / SECONDS_IN_MONTH > 0)
 	{
 		if (Before)
-			fwprintf_s(OutputFile, L" ");
-		fwprintf_s(OutputFile, L"%u month", (UINT)(DateTime / SECONDS_IN_MONTH));
+			fwprintf_s(FileHandle, L" ");
+		fwprintf_s(FileHandle, L"%u month", (UINT)(DateTime / SECONDS_IN_MONTH));
 		if (DateTime / SECONDS_IN_MONTH > 1U)
-			fwprintf_s(OutputFile, L"s");
+			fwprintf_s(FileHandle, L"s");
 		DateTime %= SECONDS_IN_MONTH;
 		Before = true;
 	}
@@ -1122,10 +1046,10 @@ void __fastcall PrintSecondsInDateTime(
 	if (DateTime / SECONDS_IN_DAY > 0)
 	{
 		if (Before)
-			fwprintf_s(OutputFile, L" ");
-		fwprintf_s(OutputFile, L"%u day", (UINT)(DateTime / SECONDS_IN_DAY));
+			fwprintf_s(FileHandle, L" ");
+		fwprintf_s(FileHandle, L"%u day", (UINT)(DateTime / SECONDS_IN_DAY));
 		if (DateTime / SECONDS_IN_DAY > 1U)
-			fwprintf_s(OutputFile, L"s");
+			fwprintf_s(FileHandle, L"s");
 		DateTime %= SECONDS_IN_DAY;
 		Before = true;
 	}
@@ -1133,10 +1057,10 @@ void __fastcall PrintSecondsInDateTime(
 	if (DateTime / SECONDS_IN_HOUR > 0)
 	{
 		if (Before)
-			fwprintf_s(OutputFile, L" ");
-		fwprintf_s(OutputFile, L"%u hour", (UINT)(DateTime / SECONDS_IN_HOUR));
+			fwprintf_s(FileHandle, L" ");
+		fwprintf_s(FileHandle, L"%u hour", (UINT)(DateTime / SECONDS_IN_HOUR));
 		if (DateTime / SECONDS_IN_HOUR > 1U)
-			fwprintf_s(OutputFile, L"s");
+			fwprintf_s(FileHandle, L"s");
 		DateTime %= SECONDS_IN_HOUR;
 		Before = true;
 	}
@@ -1144,10 +1068,10 @@ void __fastcall PrintSecondsInDateTime(
 	if (DateTime / SECONDS_IN_MINUTE > 0)
 	{
 		if (Before)
-			fwprintf_s(OutputFile, L" ");
-		fwprintf_s(OutputFile, L"%u minute", (UINT)(DateTime / SECONDS_IN_MINUTE));
+			fwprintf_s(FileHandle, L" ");
+		fwprintf_s(FileHandle, L"%u minute", (UINT)(DateTime / SECONDS_IN_MINUTE));
 		if (DateTime / SECONDS_IN_MINUTE > 1U)
-			fwprintf_s(OutputFile, L"s");
+			fwprintf_s(FileHandle, L"s");
 		DateTime %= SECONDS_IN_MINUTE;
 		Before = true;
 	}
@@ -1155,35 +1079,25 @@ void __fastcall PrintSecondsInDateTime(
 	if (DateTime > 0)
 	{
 		if (Before)
-			fwprintf_s(OutputFile, L" ");
-		fwprintf_s(OutputFile, L"%u second", (UINT)(DateTime));
+			fwprintf_s(FileHandle, L" ");
+		fwprintf_s(FileHandle, L"%u second", (UINT)(DateTime));
 		if (DateTime > 1U)
-			fwprintf_s(OutputFile, L"s");
+			fwprintf_s(FileHandle, L"s");
 	}
 
-	fwprintf_s(OutputFile, L")");
-	return;
-}
-
-//Print Date and Time with UNIX time
-void __fastcall PrintDateTime(
-	const time_t Time)
-{
-	tm TimeStructure = {0};
-	localtime_s(&TimeStructure, &Time);
-	fwprintf_s(stderr, L"%d-%02d-%02d %02d:%02d:%02d", TimeStructure.tm_year + 1900, TimeStructure.tm_mon + 1, TimeStructure.tm_mday, TimeStructure.tm_hour, TimeStructure.tm_min, TimeStructure.tm_sec);
-
+	fwprintf_s(FileHandle, L")");
 	return;
 }
 
 //Print Date and Time with UNIX time to file
 void __fastcall PrintDateTime(
 	const time_t Time, 
-	FILE *OutputFile)
+	FILE *FileHandle)
 {
-	tm TimeStructure = {0};
+	tm TimeStructure;
+	memset(&TimeStructure, 0, sizeof(tm));
 	localtime_s(&TimeStructure, &Time);
-	fwprintf_s(OutputFile, L"%d-%02d-%02d %02d:%02d:%02d", TimeStructure.tm_year + 1900, TimeStructure.tm_mon + 1, TimeStructure.tm_mday, TimeStructure.tm_hour, TimeStructure.tm_min, TimeStructure.tm_sec);
+	fwprintf_s(FileHandle, L"%d-%02d-%02d %02d:%02d:%02d", TimeStructure.tm_year + 1900, TimeStructure.tm_mon + 1, TimeStructure.tm_mday, TimeStructure.tm_hour, TimeStructure.tm_min, TimeStructure.tm_sec);
 
 	return;
 }

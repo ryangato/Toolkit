@@ -39,6 +39,8 @@
 		D9AC82B61C68764100619942 /* Resolver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Resolver.cpp; sourceTree = "<group>"; };
 		D9AC82B71C68764100619942 /* Resolver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Resolver.h; sourceTree = "<group>"; };
 		D9AC82B81C68764100619942 /* Terminal.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Terminal.cpp; sourceTree = "<group>"; };
+		D9AFAEAB1CF8AB1E00A2C1B6 /* Protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Protocol.h; sourceTree = "<group>"; };
+		D9AFAEAC1CF8AB2B00A2C1B6 /* Structures.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Structures.h; sourceTree = "<group>"; };
 		D9EDE1D41CF19260001B6121 /* ReadMe.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ReadMe.txt; path = Documents/ReadMe.txt; sourceTree = "<group>"; };
 		D9EDE1D51CF19260001B6121 /* ReadMe(zh_Hans).txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "ReadMe(zh_Hans).txt"; path = "Documents/ReadMe(zh_Hans).txt"; sourceTree = "<group>"; };
 		D9EDE1D61CF19260001B6121 /* ReadMe(zh_Hant).txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "ReadMe(zh_Hant).txt"; path = "Documents/ReadMe(zh_Hant).txt"; sourceTree = "<group>"; };
@@ -85,7 +87,9 @@
 				D9AC82AD1C68764100619942 /* Base.h */,
 				D9AC82B11C68764100619942 /* Main.h */,
 				D9989D721C771EB000A5B435 /* Process.h */,
+				D9AFAEAB1CF8AB1E00A2C1B6 /* Protocol.h */,
 				D9AC82B71C68764100619942 /* Resolver.h */,
+				D9AFAEAC1CF8AB2B00A2C1B6 /* Structures.h */,
 				D9EDE1D71CF1926F001B6121 /* CMakeLists.txt */,
 			);
 			path = DNSPing;

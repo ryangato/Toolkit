@@ -37,5 +37,5 @@ size_t __fastcall ReadCommands(
 size_t __fastcall OutputResultToFile(
 	void);
 void __fastcall PrintHeaderToScreen(
-	const std::wstring wTargetAddressString,
+	const std::wstring wTargetAddressString, 
 	const std::wstring wTestDomain);

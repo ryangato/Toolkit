@@ -107,7 +107,8 @@ int main(
 				}
 				else {
 					((PSOCKADDR_IN)&ConfigurationParameter.SockAddr_Normal)->sin_port = ConfigurationParameter.ServiceType;
-*/				}
+*/
+				}
 			}
 		}
 
@@ -377,10 +378,12 @@ size_t __fastcall ReadCommands(
 			}
 		}
 	//Set the "Do Not Fragment" flag in outgoing packets.
+	#if (defined(PLATFORM_WIN) || defined(PLATFORM_LINUX))
 		else if (Parameter == L"-f" || Parameter == L"--do-not-fragment")
 		{
 			ConfigurationParameter.IPv4_DF = true;
 		}
+	#endif
 	//Specifie a Time To Live for outgoing packets.
 		else if (Parameter == L"-i" || Parameter == L"--hop-limits")
 		{

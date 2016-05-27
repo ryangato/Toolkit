@@ -1,13 +1,14 @@
-# Newline in Windows(CR-LF)
+# Newline format in Windows(CR-LF)
 *.filters text eol=crlf
 *.rc text eol=crlf
 *.sln text eol=crlf
 *.vcxproj text eol=crlf
 Documents/* text eol=crlf
 
-# Newline in Linux/Mac(LF)
+# Newline format in Linux/Mac(LF)
 Source/DNSPing/CMakeLists.txt text eol=lf
 Source/DNSPing.xcodeproj/* eol=lf
 
 # Binary files
+*.exe binary
 Release/* binary

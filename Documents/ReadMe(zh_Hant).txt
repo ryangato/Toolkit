@@ -1,6 +1,6 @@
 ﻿### Linux 用法
-* 打開終端，並進入原始程式碼的 DNSPing 目錄內
-* 先運行 cmake . 生成 Makefile 檔，再運行 make 進行編譯
+* 打開終端，並進入原始程式碼的 DNSPing 目錄
+* 運行 cmake . 生成 Makefile 檔，再運行 make 進行編譯
 * 所有編譯完成後目前的目錄內將出現編譯好的二進位檔案
 
 

@@ -26,7 +26,8 @@ size_t __fastcall SendProcess(
 {
 //Initialization(Part 1)
 	SOCKET Socket_Normal = 0, Socket_SOCKS = 0, *Socket_Exchange = nullptr;
-	sockaddr_storage SockAddr_SOCKS_UDP = {0};
+	sockaddr_storage SockAddr_SOCKS_UDP;
+	memset(&SockAddr_SOCKS_UDP, 0, sizeof(sockaddr_storage));
 	socklen_t AddrLen_Normal = 0, AddrLen_SOCKS = 0;
 
 //IPv6
@@ -142,13 +143,14 @@ size_t __fastcall SendProcess(
 		}
 
 	//Set "Do Not Fragment" flag.
-	#if defined(PLATFORM_WIN)
-		int DoNotFragment = 1;
-		if (ConfigurationParameter.IPv4_DF && setsockopt(*Socket_Exchange, IPPROTO_IP, IP_DONTFRAGMENT, (char *)&DoNotFragment, sizeof(int)) == SOCKET_ERROR)
-	#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
-		int DoNotFragment = IP_PMTUDISC_DO;
-		if (ConfigurationParameter.IPv4_DF && setsockopt(*Socket_Exchange, IPPROTO_IP, IP_MTU_DISCOVER, &DoNotFragment, sizeof(int)) == SOCKET_ERROR)
-	#endif
+	#if (defined(PLATFORM_WIN) || defined(PLATFORM_LINUX))
+		#if defined(PLATFORM_WIN)
+			int DoNotFragment = 1;
+			if (ConfigurationParameter.IPv4_DF && setsockopt(*Socket_Exchange, IPPROTO_IP, IP_DONTFRAGMENT, (char *)&DoNotFragment, sizeof(int)) == SOCKET_ERROR)
+		#elif defined(PLATFORM_LINUX)
+			int DoNotFragment = IP_PMTUDISC_DO;
+			if (ConfigurationParameter.IPv4_DF && setsockopt(*Socket_Exchange, IPPROTO_IP, IP_MTU_DISCOVER, &DoNotFragment, sizeof(int)) == SOCKET_ERROR)
+		#endif
 		{
 			fwprintf_s(stderr, L"Set \"Do Not Fragment\" flag error, error code is %d.\n", WSAGetLastError());
 
@@ -158,6 +160,7 @@ size_t __fastcall SendProcess(
 			closesocket(Socket_SOCKS);
 			return EXIT_FAILURE;
 		}
+	#endif
 	}
 
 //Initialization(Part 2)
@@ -166,9 +169,14 @@ size_t __fastcall SendProcess(
 	memset(RecvBuffer.get(), 0, ConfigurationParameter.BufferSize);
 	SSIZE_T DataLength = 0;
 #if defined(PLATFORM_WIN)
-	LARGE_INTEGER CPUFrequency = {0}, BeforeTime = {0}, AfterTime = {0};
+	LARGE_INTEGER CPUFrequency, BeforeTime, AfterTime;
+	memset(&CPUFrequency, 0, sizeof(LARGE_INTEGER));
+	memset(&AfterTime, 0, sizeof(LARGE_INTEGER));
+	memset(&AfterTime, 0, sizeof(LARGE_INTEGER));
 #elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
-	timeval BeforeTime = {0}, AfterTime = {0};
+	timeval BeforeTime, AfterTime;
+	memset(&BeforeTime, 0, sizeof(timeval));
+	memset(&AfterTime, 0, sizeof(timeval));
 #endif
 
 //Make standard packet.
@@ -230,7 +238,8 @@ size_t __fastcall SendProcess(
 		}
 
 	//SOCKS Local UDP socket connecting and get UDP socket infomation.
-		sockaddr_storage SockAddr_SOCKS_Local = {0};
+		sockaddr_storage SockAddr_SOCKS_Local;
+		memset(&SockAddr_SOCKS_Local, 0, sizeof(sockaddr_storage));
 		uint16_t SOCKS_Local_Port = 0;
 		if (connect(Socket_SOCKS, (PSOCKADDR)&SockAddr_SOCKS_UDP, AddrLen_SOCKS) == SOCKET_ERROR || 
 			getsockname(Socket_SOCKS, (PSOCKADDR)&SockAddr_SOCKS_Local, &AddrLen_SOCKS) == SOCKET_ERROR)
@@ -573,13 +582,13 @@ size_t __fastcall SendProcess(
 	//Print response result or data.
 		if (ConfigurationParameter.ShowResponse)
 		{
-			PrintResponse(RecvBuffer.get(), DataLength);
+			PrintResponse(RecvBuffer.get(), DataLength, stderr);
 			if (ConfigurationParameter.OutputFile != nullptr)
 				PrintResponse(RecvBuffer.get(), DataLength, ConfigurationParameter.OutputFile);
 		}
 		if (ConfigurationParameter.ShowResponseHex)
 		{
-			PrintResponseHex(RecvBuffer.get(), DataLength);
+			PrintResponseHex(RecvBuffer.get(), DataLength, stderr);
 			if (ConfigurationParameter.OutputFile != nullptr)
 				PrintResponseHex(RecvBuffer.get(), DataLength, ConfigurationParameter.OutputFile);
 		}
@@ -935,6 +944,7 @@ void __fastcall PrintDescription(
 	fwprintf_s(stderr, L"   -n count          Set number of echo requests to send.\n");
 	fwprintf_s(stderr, L"                     Count must between 1 - 0xFFFF/65535.\n");
 	fwprintf_s(stderr, L"   -f                Set the \"Do Not Fragment\" flag in outgoing packets(IPv4).\n");
+	fwprintf_s(stderr, L"                     No available in Mac OS X.\n");
 	fwprintf_s(stderr, L"   -i hoplimit/ttl   Specifie a Hop Limit or Time To Live for outgoing packets.\n");
 	fwprintf_s(stderr, L"                     HopLimit/TTL must between 1 - 255.\n");
 	fwprintf_s(stderr, L"   -w timeout        Set a long wait periods (in milliseconds) for a response.\n");

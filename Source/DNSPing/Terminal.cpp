@@ -19,14 +19,14 @@
 
 #include "Base.h"
 
+#if (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 extern ConfigurationTable ConfigurationParameter;
 
-#if (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 //Handle the system signal.
 void SIG_Handler(
 	const int Signal)
 {
-	fwprintf_s(stderr, L"Get closing signal.\n");
+	fwprintf(stderr, L"Get closing signal.\n");
 	PrintProcess(true, true);
 
 //Close file handle.
