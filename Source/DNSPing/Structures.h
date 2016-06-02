@@ -182,10 +182,11 @@
 	#include <winsock2.h>              //WinSock 2.0+(MUST be including before windows.h)
 	#include <ws2tcpip.h>              //WinSock 2.0+ Extension for TCP/IP protocols
 //Minimum supported system of Windows Version Helpers is Windows Vista.
-	#if defined(PLATFORM_WIN64)
-//		#include <windows.h>               //Master include file
+//	#include <windows.h>               //Master include file
+	#if !defined(PLATFORM_WIN_XP)
 		#include <VersionHelpers.h>        //Windows Version Helpers
 	#endif
+
 
 //Static libraries
 	#pragma comment(lib, "ws2_32.lib")            //WinSock 2.0+

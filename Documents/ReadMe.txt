@@ -1,12 +1,12 @@
-﻿### Linux Usage
+﻿### Usage
+       DNSPing [options] domain
+  e.g. DNSPing -a -qt AAAA -n 5 -w 500 -edns0 www.google.com 8.8.4.4
+
+
+### Linux Usage
 * Run terminal and enter to DNSPing directory of source directory.
 * Run "cmake ." to build a Makefile and run "make" to compile.
 * After all processes finished, the binary is in current directory.
-
-
-### Usage
-       DNSPing [options] domain
-  e.g. DNSPing -a -qt AAAA -n 5 -w 500 -edns0 www.google.com 8.8.4.4
 
 
 ### Options
@@ -122,10 +122,15 @@
    target                   Target of DNSPing, support IPv4/IPv6 address and domain.
 
 
-### TCPing
-* DNSPing server which using UDP protocol.
-* TCPing 53 port of server if you want to using TCP protocol.
+### Advanced Ping
+* TCPing: TCPing 53 port of server if you want to using TCP protocol.
+* TraceTCP: TCP traceroute 53 port of server if you want to using TCP protocol.
 
 
-### TraceTCP
-* TCP traceroute 53 port of server if you want to using TCP protocol.
+### Release Hash[SHA-3(256)]
+* Windows
+  * DNSPing.exe: 3AC9ADAC60A7CFFA77F6A22EEB0AB12CECFD01796E635A04DC4100A676368242
+  * DNSPing_x86.exe: A5E8FEF5F66A320257BFFD5F6EF054705E47C6D7D8027CD586CB5C65921D075C
+  * DNSPing_XP.exe: BAC6AD8227B6C60D21770004CCAE0551E07F6AB2C42CFCA8FBFACE8E7AD26F5D
+* Mac
+  * DNSPing: 9C49D881D8A52B11444FF3F9CDFBCD997CE28CA3959D38979FBDFE2534AC7A75

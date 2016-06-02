@@ -6,9 +6,14 @@
 Documents/* text eol=crlf
 
 # Newline format in Linux/Mac(LF)
+*.pbxproj text eol=lf
+*.plist text eol=lf
+*.xcscheme text eol=lf
+*.xcworkspacedata text eol=lf
 Source/DNSPing/CMakeLists.txt text eol=lf
 Source/DNSPing.xcodeproj/* eol=lf
 
 # Binary files
 *.exe binary
+*.xcuserstate binary
 Release/* binary

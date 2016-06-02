@@ -56,7 +56,7 @@
 #define DNS_PACKET_MINSIZE           (sizeof(dns_hdr) + 4U + sizeof(dns_qry))   //Minimum DNS packet size(DNS Header + Minimum Domain + DNS Query)
 
 //Version definitions
-#define FULL_VERSION                                  L"0.2.3.0"
+#define FULL_VERSION                                  L"0.2.5.0"
 #define COPYRIGHT_MESSAGE                             L"Copyright (C) 2014-2016 Chengr28"
 
 
@@ -144,11 +144,13 @@ struct ConfigurationTable
 };
 
 //Protocol.h
+/* Old version(2016-06-02)
 //Minimum supported system of Windows Version Helpers is Windows Vista.
-#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64))
-	bool __fastcall IsLowerThanWin8(
-		void);
+#if defined(PLATFORM_WIN_XP)
+bool __fastcall IsLowerThanWin8(
+	void);
 #endif
+*/
 bool __fastcall CheckEmptyBuffer(
 	const void *Buffer, 
 	const size_t Length);

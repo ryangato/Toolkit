@@ -681,7 +681,7 @@ void __fastcall PrintResourseData(
 
 		char BufferTemp[ADDR_STRING_MAXSIZE];
 		memset(BufferTemp, 0, ADDR_STRING_MAXSIZE);
-	#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64))
+	#if defined(PLATFORM_WIN_XP)
 		DWORD BufferLength = ADDR_STRING_MAXSIZE;
 		sockaddr_storage SockAddr;
 		memset(&SockAddr, 0, sizeof(sockaddr_storage));

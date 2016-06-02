@@ -1,12 +1,12 @@
-﻿### Linux 用法
+﻿### 用法
+       DNSPing [-options] domain target
+  e.g. DNSPing -a -qt AAAA -n 5 -w 500 -edns0 www.google.com 8.8.4.4
+
+
+### Linux 用法
 * 打開終端，並進入原始程式碼的 DNSPing 目錄
 * 運行 cmake . 生成 Makefile 檔，再運行 make 進行編譯
 * 所有編譯完成後目前的目錄內將出現編譯好的二進位檔案
-
-
-### 用法
-       DNSPing [-options] domain target
-  e.g. DNSPing -a -qt AAAA -n 5 -w 500 -edns0 www.google.com 8.8.4.4
 
 
 ### 选项
@@ -121,10 +121,15 @@
    target                          Ping 的目標，支援 IPv4/IPv6 位址和功能變數名稱
 
 
-### TCPing
-DNSPing 使用的是 UDP 協定，TCP 協定不需要特製的程式進行 Ping
-直接使用 TCPing 對目標伺服器的 53 埠進行 Ping 即可
+### 高級 Ping
+* TCPing：直接使用 TCPing 對目標伺服器的 53 埠進行 Ping 即可
+* TraceTCP：直接使用 TraceTCP 對目標伺服器的 53 埠進行路由追蹤即可
 
 
-### TraceTCP
-直接使用 TraceTCP 對目標伺服器的 53 埠進行路由追蹤即可
+### Release Hash[SHA-3(256)]
+* Windows
+  * DNSPing.exe: 3AC9ADAC60A7CFFA77F6A22EEB0AB12CECFD01796E635A04DC4100A676368242
+  * DNSPing_x86.exe: A5E8FEF5F66A320257BFFD5F6EF054705E47C6D7D8027CD586CB5C65921D075C
+  * DNSPing_XP.exe: BAC6AD8227B6C60D21770004CCAE0551E07F6AB2C42CFCA8FBFACE8E7AD26F5D
+* Mac
+  * DNSPing: 9C49D881D8A52B11444FF3F9CDFBCD997CE28CA3959D38979FBDFE2534AC7A75

@@ -115,10 +115,8 @@ int main(
 	//Check parameter.
 	//Minimum supported system of Windows Version Helpers is Windows Vista.
 	#if defined(PLATFORM_WIN)
-		#if defined(PLATFORM_WIN64)
+		#if !defined(PLATFORM_WIN_XP)
 			if (!IsWindows8OrGreater())
-		#elif defined(PLATFORM_WIN32)
-			if (IsLowerThanWin8())
 		#endif
 			{
 				if (ConfigurationParameter.SocketTimeout > TIME_OUT_MIN)
@@ -126,6 +124,8 @@ int main(
 				else if (ConfigurationParameter.SocketTimeout == TIME_OUT_MIN)
 					ConfigurationParameter.SocketTimeout = 1;
 			}
+
+
 		ConfigurationParameter.Statistics_MinTime = ConfigurationParameter.SocketTimeout;
 	#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 		ConfigurationParameter.Statistics_MinTime = ConfigurationParameter.SocketTimeout.tv_sec * SECOND_TO_MILLISECOND + ConfigurationParameter.SocketTimeout.tv_usec / MICROSECOND_TO_MILLISECOND;
@@ -1114,8 +1114,8 @@ size_t __fastcall ReadCommands(
 											char Buffer[ADDR_STRING_MAXSIZE];
 											memset(Buffer, 0, ADDR_STRING_MAXSIZE);
 
-										//Minimum supported system of inet_ntop() and inet_pton() is Windows Vista. [Roy Tam]
-										#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64))
+										//Minimum supported system of inet_ntop and inet_pton functions is Windows Vista. [Roy Tam]
+										#if defined(PLATFORM_WIN_XP)
 											DWORD BufferLength = ADDR_STRING_MAXSIZE;
 											WSAAddressToStringA((PSOCKADDR)&ConfigurationParameter.SockAddr_SOCKS, sizeof(sockaddr_in6), nullptr, Buffer, &BufferLength);
 										#else
@@ -1135,8 +1135,8 @@ size_t __fastcall ReadCommands(
 											char Buffer[ADDR_STRING_MAXSIZE];
 											memset(Buffer, 0, ADDR_STRING_MAXSIZE);
 
-										//Minimum supported system of inet_ntop() and inet_pton() is Windows Vista. [Roy Tam]
-										#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64))
+										//Minimum supported system of inet_ntop and inet_pton functions is Windows Vista. [Roy Tam]
+										#if defined(PLATFORM_WIN_XP)
 											DWORD BufferLength = ADDR_STRING_MAXSIZE;
 											WSAAddressToStringA((PSOCKADDR)&ConfigurationParameter.SockAddr_SOCKS, sizeof(sockaddr_in), nullptr, Buffer, &BufferLength);
 										#else
@@ -1477,8 +1477,8 @@ size_t __fastcall ReadCommands(
 										char Buffer[ADDR_STRING_MAXSIZE];
 										memset(Buffer, 0, ADDR_STRING_MAXSIZE);
 
-									//Minimum supported system of inet_ntop() and inet_pton() is Windows Vista. [Roy Tam]
-									#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64))
+									//Minimum supported system of inet_ntop and inet_pton functions is Windows Vista. [Roy Tam]
+									#if defined(PLATFORM_WIN_XP)
 										DWORD BufferLength = ADDR_STRING_MAXSIZE;
 										WSAAddressToStringA((PSOCKADDR)&ConfigurationParameter.SockAddr_Normal, sizeof(sockaddr_in6), nullptr, Buffer, &BufferLength);
 									#else
@@ -1503,8 +1503,8 @@ size_t __fastcall ReadCommands(
 										char Buffer[ADDR_STRING_MAXSIZE];
 										memset(Buffer, 0, ADDR_STRING_MAXSIZE);
 
-									//Minimum supported system of inet_ntop() and inet_pton() is Windows Vista. [Roy Tam]
-									#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64))
+									//Minimum supported system of inet_ntop and inet_pton functions is Windows Vista. [Roy Tam]
+									#if defined(PLATFORM_WIN_XP)
 										DWORD BufferLength = ADDR_STRING_MAXSIZE;
 										WSAAddressToStringA((PSOCKADDR)&ConfigurationParameter.SockAddr_Normal, sizeof(sockaddr_in), nullptr, Buffer, &BufferLength);
 									#else

@@ -20,7 +20,7 @@
 #include "Protocol.h"
 
 //Minimum supported system of Windows Version Helpers is Windows Vista.
-#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64))
+#if defined(PLATFORM_WIN_XP)
 //Check operation system which higher than Windows 7.
 bool __fastcall IsLowerThanWin8(
 	void)
@@ -105,8 +105,8 @@ size_t __fastcall AddressStringToBinary(
 {
 	SSIZE_T Result = 0;
 
-//inet_ntop() and inet_pton() was only support in Windows Vista and newer system. [Roy Tam]
-#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64))
+//Minimum supported system of inet_ntop and inet_pton functions is Windows Vista. [Roy Tam]
+#if defined(PLATFORM_WIN_XP)
 	sockaddr_storage SockAddr;
 	memset(&SockAddr, 0, sizeof(sockaddr_storage));
 	int SockLength = 0;
@@ -136,7 +136,7 @@ size_t __fastcall AddressStringToBinary(
 		}
 
 	//Convert to binary.
-	#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64))
+	#if defined(PLATFORM_WIN_XP)
 		SockLength = sizeof(sockaddr_in6);
 		if (WSAStringToAddressA((char *)sAddrString.c_str(), AF_INET6, nullptr, (PSOCKADDR)&SockAddr, &SockLength) == SOCKET_ERROR)
 	#else 
@@ -147,7 +147,7 @@ size_t __fastcall AddressStringToBinary(
 			ErrCode = WSAGetLastError();
 			return EXIT_FAILURE;
 		}
-	#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64))
+	#if defined(PLATFORM_WIN_XP)
 		memcpy_s(pAddr, sizeof(in6_addr), &((PSOCKADDR_IN6)&SockAddr)->sin6_addr, sizeof(in6_addr));
 	#endif
 	}
@@ -194,7 +194,7 @@ size_t __fastcall AddressStringToBinary(
 			sAddrString.append("0");
 
 	//Convert to binary.
-	#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64))
+	#if defined(PLATFORM_WIN_XP)
 		SockLength = sizeof(sockaddr_in);
 		if (WSAStringToAddressA((char *)sAddrString.c_str(), AF_INET, nullptr, (PSOCKADDR)&SockAddr, &SockLength) == SOCKET_ERROR)
 	#else 
@@ -205,7 +205,7 @@ size_t __fastcall AddressStringToBinary(
 			ErrCode = WSAGetLastError();
 			return EXIT_FAILURE;
 		}
-	#if (defined(PLATFORM_WIN32) && !defined(PLATFORM_WIN64))
+	#if defined(PLATFORM_WIN_XP)
 		memcpy_s(pAddr, sizeof(in_addr), &((PSOCKADDR_IN)&SockAddr)->sin_addr, sizeof(in_addr));
 	#endif
 	}
