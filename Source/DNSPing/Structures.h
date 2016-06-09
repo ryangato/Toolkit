@@ -189,12 +189,9 @@
 
 
 //Static libraries
-	#pragma comment(lib, "ws2_32.lib")            //WinSock 2.0+
-//	#pragma comment(lib, "iphlpapi.lib"))        //IP Stack for MIB-II and related functionality
-
-	#define __LITTLE_ENDIAN           1U                 //Little Endian
-//	#define __BIG_ENDIAN              2U                 //Big Endian
-	#define __BYTE_ORDER              __LITTLE_ENDIAN    //x86 and x86-64/x64
+	#pragma comment(lib, "ws2_32.lib")                      //WinSock 2.0+
+	#define __LITTLE_ENDIAN              1U                 //Little Endian
+	#define __BYTE_ORDER                 __LITTLE_ENDIAN    //x86 and x86-64/x64
 #elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 //Portable Operating System Interface/POSIX and Unix system header
 	#include <cerrno>                 //Error report
@@ -251,7 +248,7 @@
 //////////////////////////////////////////////////
 // Base defines
 // 
-#pragma pack(1)                                      //Memory alignment: 1 bytes/8 bits
+#pragma pack(1)                                        //Memory alignment: 1 bytes/8 bits
 
 //ASCII values definitions
 #define ASCII_SPACE               32                   //" "
@@ -358,13 +355,13 @@ RFC 7314(https://tools.ietf.org/html/rfc7314), Extension Mechanisms for DNS (EDN
 //About this list, see https://www.iana.org/assignments/dns-parameters/dns-parameters.xhtml
 //Port and Flags definitions
 #ifndef IPPORT_DNS
-	#define IPPORT_DNS                    53U        //Standard DNS(TCP and UDP) Port
+	#define IPPORT_DNS              53U        //Standard DNS(TCP and UDP) Port
 #endif
 #ifndef IPPORT_MDNS
-	#define IPPORT_MDNS                   5353U      //Multicast Domain Name System/mDNS Port
+	#define IPPORT_MDNS             5353U      //Multicast Domain Name System/mDNS Port
 #endif
 #ifndef IPPORT_LLMNR
-	#define IPPORT_LLMNR                  5355U      //Link-Local Multicast Name Resolution/LLMNR Port
+	#define IPPORT_LLMNR            5355U      //Link-Local Multicast Name Resolution/LLMNR Port
 #endif
 #define DNS_STANDARD            0x0100   //System Standard query
 #define DNS_SQR_NE              0x8180   //Standard query response and no error.
@@ -568,7 +565,7 @@ typedef struct _dns_hdr_
 */
 typedef struct _dns_qry_
 {
-//	PUCHAR                Name;
+//	uint8_t               *Name;
 	uint16_t              Type;
 	uint16_t              Classes;
 }dns_qry;
@@ -594,12 +591,12 @@ typedef struct _dns_qry_
 */
 typedef struct _dns_standard_
 {
-//	PUCHAR                Name;
+//	uint8_t               *Name;
 	uint16_t              Type;
 	uint16_t              Classes;
 	uint32_t              TTL;
 	uint16_t              Length;
-//	PUCHAR                Data;
+//	uint8_t               *Data;
 }dns_standard_record;
 
 /* Start Of a zone of Authority/SOA Resource Record
@@ -629,8 +626,8 @@ typedef struct _dns_standard_
 */
 typedef struct _dns_soa_
 {
-//	PUCHAR                PrimaryName;
-//	PUCHAR                MailboxName;
+//	uint8_t               *PrimaryName;
+//	uint8_t               *MailboxName;
 	uint32_t              Serial;
 	uint32_t              RefreshInterval;
 	uint32_t              RetryInterval;
@@ -654,7 +651,7 @@ typedef struct _dns_soa_
 typedef struct _dns_mx_
 {
 	uint16_t              Preference;
-//	PUCHAR                MailExchangeName;
+//	uint8_t               *MailExchangeName;
 }dns_mx_record;
 
 /* Text strings/TXT Resource Record
@@ -673,7 +670,7 @@ typedef struct _dns_mx_
 typedef struct _dns_txt_
 {
 	uint8_t              Length;
-//	PUCHAR               TXT;
+//	uint8_t              *TXT;
 
 }dns_txt_record;
 
@@ -697,7 +694,7 @@ typedef struct _dns_srv_
 	uint16_t             Priority;
 	uint16_t             Weight;
 	uint16_t             Port;
-//	PUCHAR               Target;
+//	uint8_t              *Target;
 }dns_srv_record;
 
 // Option/OPT Resource Record(Extension Mechanisms for Domain Name System/EDNS, EDNS Label)
@@ -771,7 +768,7 @@ typedef struct _dns_edns0_option_
 {
 	uint16_t              Code;
 	uint16_t              Length;
-//	PUCHAR                Data;
+//	uint8_t               *Data;
 }dns_edns0_option;
 
 // RRSIG Record(Resource Record Digital Signature)
@@ -823,8 +820,8 @@ typedef struct _dns_rrsig_
 	uint32_t              Expiration;
 	uint32_t              Inception;
 	uint16_t              KeyTag;
-//	PUCHAR                SignerName;
-//	PUCHAR                Signature;
+//	uint8_t               *SignerName;
+//	uint8_t               *Signature;
 }dns_rrsig_record;
 
 /* Certification Authority Authorization/CAA Resource Record
@@ -847,8 +844,8 @@ typedef struct _dns_caa_
 {
 	uint8_t              Flags;
 	uint8_t              Length;
-//	PUCHAR               Tag;
-//	PUCHAR               Value;
+//	uint8_t              *Tag;
+//	uint8_t              *Value;
 }dns_caa_record;
 
 

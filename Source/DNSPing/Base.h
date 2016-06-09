@@ -88,9 +88,10 @@
 
 
 //////////////////////////////////////////////////
-// Structure definitions
-struct ConfigurationTable
+// Class and structure definitions
+class ConfigurationTable
 {
+public:
 //Global status
 	FILE *OutputFile;
 #if defined(PLATFORM_WIN)
@@ -149,18 +150,13 @@ struct ConfigurationTable
 	std::shared_ptr<char> RawData;
 
 //Member functions
+	ConfigurationTable(
+		void);
 	~ConfigurationTable(
 		void);
 };
 
 //Protocol.h
-/* Old version(2016-06-02)
-//Minimum supported system of Windows Version Helpers is Windows Vista.
-#if defined(PLATFORM_WIN_XP)
-bool __fastcall IsLowerThanWin8(
-	void);
-#endif
-*/
 bool __fastcall CheckEmptyBuffer(
 	const void *Buffer, 
 	const size_t Length);

@@ -19,7 +19,27 @@
 
 #include "Base.h"
 
-extern ConfigurationTable ConfigurationParameter;
+//GlobalStatus class constructor
+ConfigurationTable::ConfigurationTable(
+	void)
+{
+#if defined(PLATFORM_WIN)
+	memset(this, 0, sizeof(ConfigurationTable) - (sizeof(std::string) * 5U + sizeof(std::wstring) * 3U + sizeof(std::shared_ptr<char>)));
+#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
+	memset(this, 0, sizeof(ConfigurationTable) - (sizeof(std::string) * 6U + sizeof(std::wstring) * 3U + sizeof(std::shared_ptr<char>)));
+#endif
+
+	Statistics_Send = DEFAULT_SEND_TIMES;
+	BufferSize = PACKET_MAXSIZE;
+	Validate = true;
+#if defined(PLATFORM_WIN)
+	SocketTimeout = DEFAULT_TIME_OUT;
+#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
+	SocketTimeout.tv_sec = DEFAULT_TIME_OUT;
+#endif
+
+	return;
+}
 
 //GlobalStatus class destructor
 ConfigurationTable::~ConfigurationTable(
@@ -29,7 +49,7 @@ ConfigurationTable::~ConfigurationTable(
 #if (defined(PLATFORM_WIN) || defined(PLATFORM_LINUX))
 	_fcloseall();
 	#if defined(PLATFORM_WIN)
-		if (ConfigurationParameter.Initialization_WinSock)
+		if (Initialization_WinSock)
 			WSACleanup();
 	#endif
 #endif

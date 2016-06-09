@@ -19,6 +19,7 @@
 
 #include "Base.h"
 
+//Global variables
 extern ConfigurationTable ConfigurationParameter;
 
 //Internet Protocol Numbers

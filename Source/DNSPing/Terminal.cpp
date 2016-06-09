@@ -20,6 +20,7 @@
 #include "Base.h"
 
 #if (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
+//Global variables
 extern ConfigurationTable ConfigurationParameter;
 
 //Handle the system signal.

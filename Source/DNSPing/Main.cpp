@@ -88,14 +88,7 @@ int main(
 			else {
 			//Mark port.
 				if (ConfigurationParameter.ServiceType == 0)
-				{
 					ConfigurationParameter.ServiceType = htons(IPPORT_DNS);
-/*					((PSOCKADDR_IN)&ConfigurationParameter.SockAddr_Normal)->sin_port = htons(IPPORT_DNS);
-				}
-				else {
-					((PSOCKADDR_IN)&ConfigurationParameter.SockAddr_Normal)->sin_port = ConfigurationParameter.ServiceType;
-*/
-				}
 			}
 		}
 
@@ -239,22 +232,6 @@ int main(
 size_t __fastcall ConfigurationInitialization(
 	void)
 {
-//Initialization
-#if defined(PLATFORM_WIN)
-	memset(&ConfigurationParameter, 0, sizeof(ConfigurationTable) - (sizeof(std::string) * 5U + sizeof(std::wstring) * 3U + sizeof(std::shared_ptr<char>)));
-#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
-	memset(&ConfigurationParameter, 0, sizeof(ConfigurationTable) - (sizeof(std::string) * 6U + sizeof(std::wstring) * 3U + sizeof(std::shared_ptr<char>)));
-#endif
-
-	ConfigurationParameter.Statistics_Send = DEFAULT_SEND_TIMES;
-	ConfigurationParameter.BufferSize = PACKET_MAXSIZE;
-	ConfigurationParameter.Validate = true;
-#if defined(PLATFORM_WIN)
-	ConfigurationParameter.SocketTimeout = DEFAULT_TIME_OUT;
-#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
-	ConfigurationParameter.SocketTimeout.tv_sec = DEFAULT_TIME_OUT;
-#endif
-
 #if defined(PLATFORM_WIN)
 //Handle the system signal.
 	if (SetConsoleCtrlHandler((PHANDLER_ROUTINE)CtrlHandler, TRUE) == false)
