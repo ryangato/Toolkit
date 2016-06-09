@@ -271,6 +271,9 @@ size_t __fastcall ConfigurationInitialization(
 		fwprintf_s(stderr, L"\nWinsock initialization error, error code is %d.\n", WSAGetLastError());
 		return EXIT_FAILURE;
 	}
+	else {
+		ConfigurationParameter.Initialization_WinSock = true;
+	}
 #elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
 //Handle the system signal.
 	if (signal(SIGHUP, SIG_Handler) == SIG_ERR || 

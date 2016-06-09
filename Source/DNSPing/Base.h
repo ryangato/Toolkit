@@ -68,6 +68,9 @@
 	#define SD_SEND                                                          SHUT_WR
 	#define __fastcall
 	#define closesocket                                                      close
+	#if defined(PLATFORM_LINUX)
+		#define _fcloseall                                                       fcloseall
+	#endif
 	#define fwprintf_s                                                       fwprintf
 	#define GetCurrentProcessId                                              pthread_self
 	#define GetLastError()                                                   errno
@@ -88,7 +91,11 @@
 // Structure definitions
 struct ConfigurationTable
 {
+//Global status
 	FILE *OutputFile;
+#if defined(PLATFORM_WIN)
+	bool Initialization_WinSock;
+#endif
 
 //C-Syle type parameter block
 	size_t TransmissionInterval;
@@ -141,11 +148,9 @@ struct ConfigurationTable
 #endif
 	std::shared_ptr<char> RawData;
 
-#if defined(PLATFORM_WIN)
 //Member functions
 	~ConfigurationTable(
 		void);
-#endif
 };
 
 //Protocol.h

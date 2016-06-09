@@ -19,15 +19,20 @@
 
 #include "Base.h"
 
-#if defined(PLATFORM_WIN)
+extern ConfigurationTable ConfigurationParameter;
+
 //GlobalStatus class destructor
 ConfigurationTable::~ConfigurationTable(
 	void)
 {
 //Close all file and network handles.
+#if (defined(PLATFORM_WIN) || defined(PLATFORM_LINUX))
 	_fcloseall();
-	WSACleanup();
+	#if defined(PLATFORM_WIN)
+		if (ConfigurationParameter.Initialization_WinSock)
+			WSACleanup();
+	#endif
+#endif
 
 	return;
 }
-#endif
