@@ -19,13 +19,15 @@
 
 #include "Base.h"
 
-//Global variables
-extern ConfigurationTable ConfigurationParameter;
+#if defined(PLATFORM_WIN)
+//GlobalStatus class destructor
+ConfigurationTable::~ConfigurationTable(
+	void)
+{
+//Close all file and network handles.
+	_fcloseall();
+	WSACleanup();
 
-//Functions
-size_t __fastcall SOCKS_UDP_ASSOCIATE(
-	sockaddr_storage &SockAddr_SOCKS_UDP, 
-	const uint16_t SOCKS_Local_Port, 
-	const SOCKET Socket_Normal, 
-	const PSOCKADDR SockAddr, 
-	const socklen_t AddrLen);
+	return;
+}
+#endif

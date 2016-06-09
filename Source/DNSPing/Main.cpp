@@ -1,5 +1,5 @@
 ﻿// This code is part of DNSPing
-// Ping with DNS requesting.
+// Ping with DNS request.
 // Copyright (C) 2014-2016 Chengr28
 // 
 // This program is free software; you can redistribute it and/or
@@ -37,15 +37,8 @@ int main(
 	}
 	else {
 	//Initialization and read commands.
-		if (ConfigurationInitialization() == EXIT_FAILURE)
-		{
+		if (ConfigurationInitialization() == EXIT_FAILURE || ReadCommands(argc, argv) == EXIT_FAILURE)
 			return EXIT_FAILURE;
-		}
-		else if (ReadCommands(argc, argv) == EXIT_FAILURE)
-		{
-			WSACleanup();
-			return EXIT_FAILURE;
-		}
 
 	//Check parameter reading.
 		if (ConfigurationParameter.SockAddr_Normal.ss_family == AF_INET6) //IPv6
@@ -53,8 +46,6 @@ int main(
 			if (CheckEmptyBuffer(&((PSOCKADDR_IN6)&ConfigurationParameter.SockAddr_Normal)->sin6_addr, sizeof(in6_addr)))
 			{
 				fwprintf_s(stderr, L"\nTarget is empty.\n");
-
-				WSACleanup();
 				return EXIT_FAILURE;
 			}
 			else {
@@ -74,8 +65,6 @@ int main(
 			if (((PSOCKADDR_IN)&ConfigurationParameter.SockAddr_Normal)->sin_addr.s_addr == 0)
 			{
 				fwprintf_s(stderr, L"\nTarget is empty.\n");
-
-				WSACleanup();
 				return EXIT_FAILURE;
 			}
 			else {
@@ -94,8 +83,6 @@ int main(
 			if (ConfigurationParameter.SockAddr_SOCKS.ss_family == 0)
 			{
 				fwprintf_s(stderr, L"\nTarget is empty.\n");
-
-				WSACleanup();
 				return EXIT_FAILURE;
 			}
 			else {
@@ -193,10 +180,7 @@ int main(
 
 	//Output result to file.
 		if (!ConfigurationParameter.wOutputFileName.empty() && OutputResultToFile() == EXIT_FAILURE)
-		{
-			WSACleanup();
 			return EXIT_FAILURE;
-		}
 
 	//Print to screen before sending and send request.
 		PrintHeaderToScreen(wTargetAddressString, wTestDomain);
@@ -208,10 +192,7 @@ int main(
 				{
 					++ConfigurationParameter.Statistics_RealSend;
 					if (SendProcess(ConfigurationParameter.SockAddr_Normal, false) == EXIT_FAILURE)
-					{
-						WSACleanup();
 						return EXIT_FAILURE;
-					}
 				}
 				else {
 					fwprintf_s(stderr, L"\nStatistics is full.\n");
@@ -223,7 +204,6 @@ int main(
 					if (ConfigurationParameter.OutputFile != nullptr)
 						fclose(ConfigurationParameter.OutputFile);
 
-					WSACleanup();
 					return EXIT_SUCCESS;
 				}
 			}
@@ -241,7 +221,6 @@ int main(
 					if (ConfigurationParameter.OutputFile != nullptr)
 						fclose(ConfigurationParameter.OutputFile);
 
-					WSACleanup();
 					return EXIT_FAILURE;
 				}
 			}
@@ -253,7 +232,6 @@ int main(
 			fclose(ConfigurationParameter.OutputFile);
 	}
 
-	WSACleanup();
 	return EXIT_SUCCESS;
 }
 
@@ -291,8 +269,6 @@ size_t __fastcall ConfigurationInitialization(
 	if (WSAStartup(MAKEWORD(2, 2), &WSAInitialization) != 0 || LOBYTE(WSAInitialization.wVersion) != 2 || HIBYTE(WSAInitialization.wVersion) != 2)
 	{
 		fwprintf_s(stderr, L"\nWinsock initialization error, error code is %d.\n", WSAGetLastError());
-
-		WSACleanup();
 		return EXIT_FAILURE;
 	}
 #elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
@@ -748,7 +724,7 @@ size_t __fastcall ReadCommands(
 
 			ConfigurationParameter.EDNS = true;
 		}
-	//Send with DNSSEC requesting.
+	//Send with DNSSEC request.
 		else if (Parameter == L"-dnssec")
 		{
 			ConfigurationParameter.EDNS = true;
@@ -826,7 +802,7 @@ size_t __fastcall ReadCommands(
 				return EXIT_FAILURE;
 			}
 		}
-	//Specifie requesting server name or port.
+	//Specifie request server name or port.
 		else if (Parameter == L"-p" || Parameter == L"--port")
 		{
 			if (Index + 1U < (size_t)argc)

@@ -1,5 +1,5 @@
 ﻿// This code is part of DNSPing
-// Ping with DNS requesting.
+// Ping with DNS request.
 // Copyright (C) 2014-2016 Chengr28
 // 
 // This program is free software; you can redistribute it and/or
@@ -42,11 +42,8 @@ BOOL __fastcall CtrlHandler(
 		fwprintf_s(stderr, L"Get closing signal.\n");
 	}
 
-//Print statistics and close all file handles.
+//Print statistics.
 	PrintProcess(true, true);
-	_fcloseall();
-
-	WSACleanup();
 	return FALSE;
 }
 #endif

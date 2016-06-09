@@ -1,5 +1,5 @@
 ﻿// This code is part of DNSPing
-// Ping with DNS requesting.
+// Ping with DNS request.
 // Copyright (C) 2014-2016 Chengr28
 // 
 // This program is free software; you can redistribute it and/or
@@ -267,7 +267,7 @@
 #define ASCII_BRACKETS_RIGHT      93                   //"]"
 #define ASCII_ACCENT              96                   //"`"
 #define ASCII_LOWERCASE_A         97                   //"a"
-#define ASCII_LOWERCASE_F         102                   //"f"
+#define ASCII_LOWERCASE_F         102                  //"f"
 #define ASCII_BRACES_LEAD         123                  //"{"
 #define ASCII_TILDE               126                  //"~"
 #define ASCII_UPPER_TO_LOWER      32U                  //Uppercase to lowercase

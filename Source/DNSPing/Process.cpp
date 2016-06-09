@@ -1,5 +1,5 @@
 ﻿// This code is part of DNSPing
-// Ping with DNS requesting.
+// Ping with DNS request.
 // Copyright (C) 2014-2016 Chengr28
 // 
 // This program is free software; you can redistribute it and/or
@@ -19,7 +19,7 @@
 
 #include "Process.h"
 
-//Send DNS requesting process
+//Send DNS request process
 size_t __fastcall SendProcess(
 	const sockaddr_storage &Target, 
 	const bool LastSend)
@@ -194,7 +194,7 @@ size_t __fastcall SendProcess(
 		}
 	}
 	else {
-	//DNS requesting
+	//DNS request
 		memcpy_s(Buffer.get() + DataLength, ConfigurationParameter.BufferSize - DataLength, &ConfigurationParameter.Parameter_Header, sizeof(dns_hdr));
 		if (ConfigurationParameter.Parameter_Header.ID == 0)
 		{
@@ -333,7 +333,7 @@ size_t __fastcall SendProcess(
 		}
 	}
 
-//Send requesting.
+//Send request.
 #if defined(PLATFORM_WIN)
 	if (QueryPerformanceFrequency(&CPUFrequency) == 0 || QueryPerformanceCounter(&BeforeTime) == 0)
 	{
@@ -388,9 +388,9 @@ size_t __fastcall SendProcess(
 
 //Get waiting time.
 #if defined(PLATFORM_WIN)
-	long double Result = (long double)((AfterTime.QuadPart - BeforeTime.QuadPart) * (long double)MICROSECOND_TO_MILLISECOND / (long double)CPUFrequency.QuadPart);
+	auto Result = (long double)((AfterTime.QuadPart - BeforeTime.QuadPart) * (long double)MICROSECOND_TO_MILLISECOND / (long double)CPUFrequency.QuadPart);
 #elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
-	long double Result = (long double)(AfterTime.tv_sec - BeforeTime.tv_sec) * (long double)SECOND_TO_MILLISECOND;
+	auto Result = (long double)(AfterTime.tv_sec - BeforeTime.tv_sec) * (long double)SECOND_TO_MILLISECOND;
 	if (AfterTime.tv_sec >= BeforeTime.tv_sec)
 		Result += (long double)(AfterTime.tv_usec - BeforeTime.tv_usec) / (long double)MICROSECOND_TO_MILLISECOND;
 	else
@@ -926,7 +926,7 @@ void __fastcall PrintDescription(
 #elif defined(PLATFORM_MACX)
 	fwprintf(stderr, L"(Mac)\n");
 #endif
-	fwprintf_s(stderr, L"Ping with DNS requesting.\n");
+	fwprintf_s(stderr, L"Ping with DNS request.\n");
 	fwprintf_s(stderr, COPYRIGHT_MESSAGE);
 	fwprintf_s(stderr, L"--------------------------------------------------\n");
 
@@ -974,7 +974,7 @@ void __fastcall PrintDescription(
 	fwprintf_s(stderr, L"   -edns             Send with EDNS Label.\n");
 	fwprintf_s(stderr, L"   -payload length   Specifie EDNS Label UDP Payload length.\n");
 	fwprintf_s(stderr, L"                     Payload length must between 512 - 0xFFFF/65535.\n");
-	fwprintf_s(stderr, L"   -dnssec           Send with DNSSEC requesting.\n");
+	fwprintf_s(stderr, L"   -dnssec           Send with DNSSEC request.\n");
 	fwprintf_s(stderr, L"                     EDNS Label will enable when DNSSEC is enable.\n");
 	fwprintf_s(stderr, L"   -qt type          Specifie Query type.\n");
 	fwprintf_s(stderr, L"                     Query type must between 0x0001 - 0xFFFF/65535.\n");
@@ -1043,7 +1043,7 @@ void __fastcall PrintDescription(
 	fwprintf_s(stderr, L"                            FileName must less than 260 bytes.\n");
 	fwprintf_s(stderr, L"   -6                       Using IPv6.\n");
 	fwprintf_s(stderr, L"   -4                       Using IPv4.\n");
-	fwprintf_s(stderr, L"   domain                   A domain name which will make requesting to send\n");
+	fwprintf_s(stderr, L"   domain                   A domain name which will make request to send\n");
 	fwprintf_s(stderr, L"                            to DNS server.\n");
 	fwprintf_s(stderr, L"   target                   Target of DNSPing, support IPv4/IPv6 address and\n");
 	fwprintf_s(stderr, L"                            domain.\n");

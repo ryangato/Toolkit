@@ -1,5 +1,5 @@
 ﻿// This code is part of DNSPing
-// Ping with DNS requesting.
+// Ping with DNS request.
 // Copyright (C) 2014-2016 Chengr28
 // 
 // This program is free software; you can redistribute it and/or
@@ -21,7 +21,7 @@
 
 //Minimum supported system of Windows Version Helpers is Windows Vista.
 #if defined(PLATFORM_WIN_XP)
-//Check operation system which higher than Windows 7.
+//Check current operation system which higher than Windows 7.
 bool __fastcall IsLowerThanWin8(
 	void)
 {

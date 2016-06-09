@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D94D21FC1D094BDF007072CB /* Initialization.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D94D21FB1D094BDF007072CB /* Initialization.cpp */; };
 		D9AC82BA1C68764100619942 /* Console.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D9AC82AE1C68764100619942 /* Console.cpp */; };
 		D9AC82BB1C68764100619942 /* Main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D9AC82B01C68764100619942 /* Main.cpp */; };
 		D9AC82BC1C68764100619942 /* Process.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D9AC82B21C68764100619942 /* Process.cpp */; };
@@ -28,6 +29,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		D94D21FB1D094BDF007072CB /* Initialization.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Initialization.cpp; sourceTree = "<group>"; };
 		D98B82B01C6875A0003F7018 /* DNSPing */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = DNSPing; sourceTree = BUILT_PRODUCTS_DIR; };
 		D9989D721C771EB000A5B435 /* Process.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Process.h; sourceTree = "<group>"; };
 		D9AC82AD1C68764100619942 /* Base.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Base.h; sourceTree = "<group>"; };
@@ -79,6 +81,7 @@
 			isa = PBXGroup;
 			children = (
 				D9AC82AE1C68764100619942 /* Console.cpp */,
+				D94D21FB1D094BDF007072CB /* Initialization.cpp */,
 				D9AC82B01C68764100619942 /* Main.cpp */,
 				D9AC82B21C68764100619942 /* Process.cpp */,
 				D9AC82B41C68764100619942 /* Protocol.cpp */,
@@ -161,6 +164,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D94D21FC1D094BDF007072CB /* Initialization.cpp in Sources */,
 				D9AC82BB1C68764100619942 /* Main.cpp in Sources */,
 				D9AC82BC1C68764100619942 /* Process.cpp in Sources */,
 				D9AC82BA1C68764100619942 /* Console.cpp in Sources */,

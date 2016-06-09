@@ -48,7 +48,7 @@
    -edns0            Send with EDNS0 Label.
    -payload length   Specifie EDNS0 Label UDP Payload length.
                      Payload length must between 512 - 0xFFFF/65535.
-   -dnssec           Send with DNSSEC requesting.
+   -dnssec           Send with DNSSEC request.
                      EDNS0 Label will enable when DNSSEC is enable.
    -qt type          Specifie Query type.
                      Query type must between 0x0001 - 0xFFFF/65535.
@@ -117,7 +117,7 @@
                             FileName must less than 260 bytes.
    -6                       Using IPv6.
    -4                       Using IPv4.
-   domain                   A domain name which will make requesting to send
+   domain                   A domain name which will make request to send
                             to DNS server.
    target                   Target of DNSPing, support IPv4/IPv6 address and domain.
 
@@ -129,8 +129,8 @@
 
 ### Release Hash[SHA-3(256)]
 * Windows
-  * DNSPing.exe: 3AC9ADAC60A7CFFA77F6A22EEB0AB12CECFD01796E635A04DC4100A676368242
-  * DNSPing_x86.exe: A5E8FEF5F66A320257BFFD5F6EF054705E47C6D7D8027CD586CB5C65921D075C
-  * DNSPing_XP.exe: BAC6AD8227B6C60D21770004CCAE0551E07F6AB2C42CFCA8FBFACE8E7AD26F5D
+  * DNSPing.exe: 225D4D553870F2C65DE9362667CAD86F9ACAD37D3E3F3A94AF87560EDB1B3F80
+  * DNSPing_x86.exe: 37C81484853A99AE5363CDEAD45C92D8160AC57D8F48831F0E60D0EFCAE6E644
+  * DNSPing_XP.exe: 86C9A328A5DD21D5BF90CD459616B8FF679D5B5C20D6DD88449EC1CCBB761495
 * Mac
-  * DNSPing: 9C49D881D8A52B11444FF3F9CDFBCD997CE28CA3959D38979FBDFE2534AC7A75
+  * DNSPing: 694E18400AE80F37D223916C1D7564873BFB449F9EFCD2D096BE3C8E8800591A

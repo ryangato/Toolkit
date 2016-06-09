@@ -1,9 +1,9 @@
 ﻿DNSPing
 =======
-Ping with DNS requesting.
+Ping with DNS request.
 
 ### Updated
-**0.2.5.0**
+**0.2.6.0**
 
 ### Usage
 * Windows/Linux/Mac - Please visit [ReadMe documents](https://github.com/chengr28/DNSPing/tree/master/Documents).

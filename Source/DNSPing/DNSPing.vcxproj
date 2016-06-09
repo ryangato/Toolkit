@@ -265,6 +265,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Console.cpp" />
+    <ClCompile Include="Initialization.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Process.cpp" />
     <ClCompile Include="Protocol.cpp" />

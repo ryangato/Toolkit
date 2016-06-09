@@ -1,5 +1,5 @@
 ﻿// This code is part of DNSPing
-// Ping with DNS requesting.
+// Ping with DNS request.
 // Copyright (C) 2014-2016 Chengr28
 // 
 // This program is free software; you can redistribute it and/or
@@ -34,5 +34,5 @@
 
 
 //Resource including and defining
-#define FULL_VERSION      L"0.2.5.0"
-#define DETACH_VERSION    0,2,5,0
+#define FULL_VERSION      L"0.2.6.0"
+#define DETACH_VERSION    0,2,6,0

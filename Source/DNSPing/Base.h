@@ -1,5 +1,5 @@
 ﻿// This code is part of DNSPing
-// Ping with DNS requesting.
+// Ping with DNS request.
 // Copyright (C) 2014-2016 Chengr28
 // 
 // This program is free software; you can redistribute it and/or
@@ -56,7 +56,7 @@
 #define DNS_PACKET_MINSIZE           (sizeof(dns_hdr) + 4U + sizeof(dns_qry))   //Minimum DNS packet size(DNS Header + Minimum Domain + DNS Query)
 
 //Version definitions
-#define FULL_VERSION                                  L"0.2.5.0"
+#define FULL_VERSION                                  L"0.2.6.0"
 #define COPYRIGHT_MESSAGE                             L"Copyright (C) 2014-2016 Chengr28"
 
 
@@ -67,7 +67,6 @@
 	#define SD_RECV                                                          SHUT_RD
 	#define SD_SEND                                                          SHUT_WR
 	#define __fastcall
-	#define WSACleanup()
 	#define closesocket                                                      close
 	#define fwprintf_s                                                       fwprintf
 	#define GetCurrentProcessId                                              pthread_self
@@ -141,6 +140,12 @@ struct ConfigurationTable
 	std::string OutputFileName;
 #endif
 	std::shared_ptr<char> RawData;
+
+#if defined(PLATFORM_WIN)
+//Member functions
+	~ConfigurationTable(
+		void);
+#endif
 };
 
 //Protocol.h
