@@ -256,7 +256,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Base.h" />
-    <ClInclude Include="Main.h" />
     <ClInclude Include="Process.h" />
     <ClInclude Include="Protocol.h" />
     <ClInclude Include="Resolver.h" />
@@ -266,7 +265,7 @@
   <ItemGroup>
     <ClCompile Include="Console.cpp" />
     <ClCompile Include="Initialization.cpp" />
-    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="DNSPing.cpp" />
     <ClCompile Include="Process.cpp" />
     <ClCompile Include="Protocol.cpp" />
     <ClCompile Include="Resolver.cpp" />

@@ -1,5 +1,5 @@
-﻿// This code is part of DNSPing
-// Ping with DNS request.
+﻿// This code is part of Toolkit(DNSPing)
+// A useful and powerful toolkit(DNSPing)
 // Copyright (C) 2014-2016 Chengr28
 // 
 // This program is free software; you can redistribute it and/or
@@ -926,16 +926,16 @@ void __fastcall PrintDescription(
 #elif defined(PLATFORM_MACX)
 	fwprintf(stderr, L"(Mac)\n");
 #endif
-	fwprintf_s(stderr, L"Ping with DNS request.\n");
+	fwprintf_s(stderr, L"A useful and powerful toolkit(DNSPing)\n");
 	fwprintf_s(stderr, COPYRIGHT_MESSAGE);
 	fwprintf_s(stderr, L"--------------------------------------------------\n");
 
 //Usage
-	fwprintf_s(stderr, L"\nUsage: DNSPing [-options] domain target\n");
+	fwprintf_s(stderr, L"\n     DNSPing [-options] domain target\n");
 	fwprintf_s(stderr, L"  e.g. DNSPing -a -qt AAAA -n 5 -w 500 -edns www.google.com 8.8.4.4\n");
 
-//Options
-	fwprintf_s(stderr, L"\nOptions:\n");
+//Supported options:
+	fwprintf_s(stderr, L"\nSupported options:\n");
 	fwprintf_s(stderr, L"   ?/-h              Description.\n");
 	fwprintf_s(stderr, L"   -t                Pings the specified host until stopped.\n");
 	fwprintf_s(stderr, L"                     To see statistics and continue type Control-Break.\n");

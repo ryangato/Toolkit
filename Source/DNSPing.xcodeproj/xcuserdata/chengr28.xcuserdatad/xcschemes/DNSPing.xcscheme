@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "0710"
+   LastUpgradeVersion = "0720"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "D98B82AF1C6875A0003F7018"
+               BlueprintIdentifier = "D99427BB1D12F0FE00280D91"
                BuildableName = "DNSPing"
                BlueprintName = "DNSPing"
                ReferencedContainer = "container:DNSPing.xcodeproj">
@@ -32,7 +32,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "D98B82AF1C6875A0003F7018"
+            BlueprintIdentifier = "D99427BB1D12F0FE00280D91"
             BuildableName = "DNSPing"
             BlueprintName = "DNSPing"
             ReferencedContainer = "container:DNSPing.xcodeproj">
@@ -55,7 +55,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "D98B82AF1C6875A0003F7018"
+            BlueprintIdentifier = "D99427BB1D12F0FE00280D91"
             BuildableName = "DNSPing"
             BlueprintName = "DNSPing"
             ReferencedContainer = "container:DNSPing.xcodeproj">
@@ -74,7 +74,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "D98B82AF1C6875A0003F7018"
+            BlueprintIdentifier = "D99427BB1D12F0FE00280D91"
             BuildableName = "DNSPing"
             BlueprintName = "DNSPing"
             ReferencedContainer = "container:DNSPing.xcodeproj">

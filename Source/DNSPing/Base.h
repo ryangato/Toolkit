@@ -1,5 +1,5 @@
-﻿// This code is part of DNSPing
-// Ping with DNS request.
+﻿// This code is part of Toolkit(DNSPing)
+// A useful and powerful toolkit(DNSPing)
 // Copyright (C) 2014-2016 Chengr28
 // 
 // This program is free software; you can redistribute it and/or
@@ -56,7 +56,7 @@
 #define DNS_PACKET_MINSIZE           (sizeof(dns_hdr) + 4U + sizeof(dns_qry))   //Minimum DNS packet size(DNS Header + Minimum Domain + DNS Query)
 
 //Version definitions
-#define FULL_VERSION                                  L"0.2.6.0"
+#define FULL_VERSION                                  L"0.3.0.0"
 #define COPYRIGHT_MESSAGE                             L"Copyright (C) 2014-2016 Chengr28"
 
 
@@ -156,14 +156,51 @@ public:
 		void);
 };
 
+//Console.h
+#if defined(PLATFORM_WIN)
+BOOL __fastcall CtrlHandler(
+	const DWORD fdwCtrlType);
+#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
+void SIG_Handler(
+	const int Signal);
+#endif
+
+//DNSPing.cpp
+size_t __fastcall ConfigurationInitialization(
+	void);
+#if defined(PLATFORM_WIN)
+size_t __fastcall ReadCommands(
+	int argc, 
+	wchar_t* argv[]);
+#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
+size_t __fastcall ReadCommands(
+	int argc, 
+	char *argv[]);
+#endif
+size_t __fastcall OutputResultToFile(
+	void);
+void __fastcall PrintHeaderToScreen(
+	const std::wstring wTargetAddressString, 
+	const std::wstring wTestDomain);
+
+//Process.h
+size_t __fastcall SendProcess(
+	const sockaddr_storage &Target, 
+	const bool LastSend);
+size_t __fastcall PrintProcess(
+	const bool IsPacketStatistics, 
+	const bool IsTimeStatistics);
+void __fastcall PrintDescription(
+	void);
+
 //Protocol.h
 bool __fastcall CheckEmptyBuffer(
 	const void *Buffer, 
 	const size_t Length);
 #if (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
-	void MBSToWCSString(
-		std::wstring &Target, 
-		const char *Buffer);
+void MBSToWCSString(
+	std::wstring &Target, 
+	const char *Buffer);
 #endif
 size_t __fastcall CaseConvert(
 	const bool IsLowerUpper, 
@@ -200,16 +237,6 @@ void __fastcall PrintDateTime(
 	const time_t Time, 
 	FILE *FileHandle);
 
-//Process.h
-size_t __fastcall SendProcess(
-	const sockaddr_storage &Target, 
-	const bool LastSend);
-size_t __fastcall PrintProcess(
-	const bool IsPacketStatistics, 
-	const bool IsTimeStatistics);
-void __fastcall PrintDescription(
-	void);
-
 //Resolver.h
 void __fastcall PrintResponseHex(
 	const char *Buffer, 
@@ -219,12 +246,3 @@ void __fastcall PrintResponse(
 	const char *Buffer, 
 	const size_t Length, 
 	FILE *FileHandle);
-
-//Console.h
-#if defined(PLATFORM_WIN)
-	BOOL __fastcall CtrlHandler(
-		const DWORD fdwCtrlType);
-#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
-	void SIG_Handler(
-		const int Signal);
-#endif

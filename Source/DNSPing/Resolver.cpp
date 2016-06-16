@@ -1,5 +1,5 @@
-﻿// This code is part of DNSPing
-// Ping with DNS request.
+﻿// This code is part of Toolkit(DNSPing)
+// A useful and powerful toolkit(DNSPing)
 // Copyright (C) 2014-2016 Chengr28
 // 
 // This program is free software; you can redistribute it and/or

@@ -1,5 +1,5 @@
-# This code is part of DNSPing
-# Ping with DNS request.
+# This code is part of Toolkit(DNSPing)
+# A useful and powerful toolkit(DNSPing)
 # Copyright (C) 2014-2016 Chengr28
 # 
 # This program is free software; you can redistribute it and/or
@@ -31,13 +31,12 @@ set(CMAKE_BUILD_TYPE "Release")
 # All source files
 set(MAIN_SRC_FILES
 		"Base.h"
-		"Main.h"
 		"Process.h"
 		"Protocol.h"
 		"Resolver.h"
 		"Structures.h"
 		"Initialization.cpp"
-		"Main.cpp"
+		"DNSPing.cpp"
 		"Process.cpp"
 		"Protocol.cpp"
 		"Resolver.cpp"

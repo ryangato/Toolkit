@@ -1,15 +1,13 @@
-﻿### Usage
-       DNSPing [options] domain
+﻿### Build in Linux/Mac
+* Run terminal and enter to Toolkit directory.
+* Run "chmod 755 CMake_Build.sh" to give running privilege to script.
+* Run "./CMake_Build.sh" to build binary.
+
+
+### Usage and options(DNSPing)
+       DNSPing [-options] domain target
   e.g. DNSPing -a -qt AAAA -n 5 -w 500 -edns0 www.google.com 8.8.4.4
 
-
-### Linux Usage
-* Run terminal and enter to DNSPing directory of source directory.
-* Run "cmake ." to build a Makefile and run "make" to compile.
-* After all processes finished, the binary is in current directory.
-
-
-### Options
    ?/-h              Description.
    -t                Pings the specified host until stopped.
                      To see statistics and continue type Control-Break.
@@ -122,15 +120,100 @@
    target                   Target of DNSPing, support IPv4/IPv6 address and domain.
 
 
-### Advanced Ping
-* TCPing: TCPing 53 port of server if you want to using TCP protocol.
-* TraceTCP: TCP traceroute 53 port of server if you want to using TCP protocol.
+### Usage and options(FileHash)
+       FileHash -option/-algorithm [Filename]
+  e.g. FileHash -SHA3 filename
+
+Supported options:
+   -v/--version:     Print current version on screen.
+   -?/-h/--help      Print description.
+
+Supported hash algorithms:
+   * CRC family:     -CRC                        = -CRC32
+                     -CRC8                       CRC 8 bits
+                     -CRC8_ITU                   CRC 8 bits ITU
+                     -CRC8_ATM                   CRC 8 bits ATM
+                     -CRC8_CCITT                 CRC 8 bits CCITT
+                     -CRC8_MAXIM                 CRC 8 bits Maxim
+                     -CRC8_ICODE                 CRC 8 bits Icode
+                     -CRC8_J1850                 CRC 8 bits J1850
+                     -CRC8_WCDMA                 CRC 8 bits WCDMA
+                     -CRC8_ROHC                  CRC 8 bits Rohc
+                     -CRC8_DARC                  CRC 8 bits Darc
+                     -CRC16                      CRC 16 bits
+                     -CRC16_BUYPASS              CRC 16 bits Buypass
+                     -CRC16_DDS_110              CRC 16 bits DDS 110
+                     -CRC16_EN_13757             CRC 16 bits EN 13757
+                     -CRC16_TELEDISK             CRC 16 bits Teledisk
+                     -CRC16_MODBUS               CRC 16 bits Modbus
+                     -CRC16_MAXIM                CRC 16 bits Maxim
+                     -CRC16_USB                  CRC 16 bits USB
+                     -CRC16_T10_DIF              CRC 16 bits T10 DIF
+                     -CRC16_DECT_X               CRC 16 bits DECT X
+                     -CRC16_DECT_R               CRC 16 bits DECT R
+                     -CRC16_SICK                 CRC 16 bits Sick
+                     -CRC16_DNP                  CRC 16 bits DNP
+                     -CRC16_CCITT_XMODEM         CRC 16 bits CCITT Xmodem
+                     -CRC16_CCITT_FFFF           CRC 16 bits CCITT FFFF
+                     -CRC16_CCITT_1D0F           CRC 16 bits CCITT 1D0F
+                     -CRC16_GENIBUS              CRC 16 bits Genibus
+                     -CRC16_KERMIT               CRC 16 bits Kermit
+                     -CRC16_X25                  CRC 16 bits X25
+                     -CRC16_MCRF4XX              CRC 16 bits MCRF4XX
+                     -CRC16_RIELLO               CRC 16 bits Riello
+                     -CRC16_FLETCHER             CRC 16 bits Fletcher
+                     -CRC24                      = -CRC24_R64
+                     -CRC24_FLEXRAY_A            CRC 24 bits Flexray A
+                     -CRC24_FLEXRAY_B            CRC 24 bits Flexray B
+                     -CRC24_R64                  CRC 24 bits R64
+                     -CRC32                      CRC 32 bits
+                     -CRC32_JAM                  CRC 32 bits JamCRC
+                     -CRC32C                     CRC 32 bits C
+                     -CRC32D                     CRC 32 bits D
+                     -CRC32_BZIP2                CRC 32 bits BZIP2
+                     -CRC32_MPEG2                CRC 32 bits MPEG2
+                     -CRC32_POSIX                CRC 32 bits POSIX
+                     -CRC32K                     CRC 32 bits K
+                     -CRC32Q                     CRC 32 bits Q
+                     -CRC40                      CRC 40 bits
+                     -CRC64                      CRC 64 bits
+                     -CRC64_1B                   CRC 64 bits 1B
+                     -CRC64_WE                   CRC 64 bits WE
+                     -CRC64_JONES                CRC 64 bits JONES
+   * Checksum:       -CHECKSUM                   Internet protocol checksum
+   * MD2:            -MD2
+   * MD4 family:     -MD4
+                     -ED2K                       eDonkey/eMule hash algorithm
+   * MD5:            -MD5
+   * SHA-1:          -SHA1
+   * SHA-2 family:   -SHA2                       = -SHA2_256
+                     -SHA224/-SHA2_224           SHA-2 224 bits
+                     -SHA256/-SHA2_256           SHA-2 256 bits
+                     -SHA384/-SHA2_384           SHA-2 384 bits
+                     -SHA512/-SHA2_512           SHA-2 512 bits
+                     -SHA512_224/-SHA2_512_224   SHA-2 512/224 bits truncated
+                     -SHA512_256/-SHA2_512_256   SHA-2 512/256 bits truncated
+   * SHA-3 family:   -SHA3                       = -SHA3_256
+                     -SHA3_224                   SHA-3 224 bits
+                     -SHA3_256                   SHA-3 256 bits
+                     -SHA3_384                   SHA-3 384 bits
+                     -SHA3_512                   SHA-3 512 bits
+                     -SHA3_SHAKE                 = -SHA3_SHAKE_128
+                     -SHA3_SHAKE=Size            = -SHA3_SHAKE_128=Size
+                     -SHA3_SHAKE_128=Size        SHA-3 SHAKE 128 bits
+                                                 Size = Digest output length
+                     -SHA3_SHAKE_256=Size        SHA-3 SHAKE 256 bits
+                                                 Size = Digest output length
 
 
 ### Release Hash[SHA-3(256)]
 * Windows
-  * DNSPing.exe: AC0336BDB39F4E9E88FD859FB8B8446A54C3C949D568488FCAFDDB6564C167D4
-  * DNSPing_x86.exe: 5E478BEE08C71006FF51F69F6680F06CB6BC4F056A6858FDC38D8B1107CE14B2
-  * DNSPing_XP.exe: F7420E2E5A1C71B834A03C694CCE2E7331BCB8134F5CFE1B11278193A259CE1A
+  * DNSPing.exe: 
+  * DNSPing_x86.exe: 
+  * DNSPing_XP.exe: 
+  * FileHash.exe: 
+  * FileHash_x86.exe: 
+  * FileHash_XP.exe: 
 * Mac
-  * DNSPing: 694E18400AE80F37D223916C1D7564873BFB449F9EFCD2D096BE3C8E8800591A
+  * DNSPing: 
+  * FileHash: 

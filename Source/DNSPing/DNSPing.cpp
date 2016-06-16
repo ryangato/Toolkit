@@ -1,5 +1,5 @@
-﻿// This code is part of DNSPing
-// Ping with DNS request.
+﻿// This code is part of Toolkit(DNSPing)
+// A useful and powerful toolkit(DNSPing)
 // Copyright (C) 2014-2016 Chengr28
 // 
 // This program is free software; you can redistribute it and/or
@@ -17,7 +17,10 @@
 // Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 
-#include "Main.h"
+#include "Base.h"
+
+//Global variables
+ConfigurationTable ConfigurationParameter;
 
 //Main function of program
 #if defined(PLATFORM_WIN)

@@ -1,6 +1,6 @@
-﻿// This code is part of DNSPing
-// Ping with DNS request.
-// Copyright (C) 2014-2016 Chengr28
+﻿// This code is part of Toolkit(FileHash)
+// A useful and powerful toolkit(FileHash)
+// Copyright (C) 2012-2016 Chengr28
 // 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -17,25 +17,23 @@
 // Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 
-#include "Base.h"
+//{{NO_DEPENDENCIES}}
+// Microsoft Visual C++ generated include file.
+// Used by FileHash.rc
 
-//Global variables
-ConfigurationTable ConfigurationParameter;
-
-//Functions
-size_t __fastcall ConfigurationInitialization(
-	void);
-#if defined(PLATFORM_WIN)
-size_t __fastcall ReadCommands(
-	int argc, 
-	wchar_t* argv[]);
-#elif (defined(PLATFORM_LINUX) || defined(PLATFORM_MACX))
-size_t __fastcall ReadCommands(
-	int argc, 
-	char *argv[]);
+// 新对象的下一组默认值
+// 
+#ifdef APSTUDIO_INVOKED
+#ifndef APSTUDIO_READONLY_SYMBOLS
+#define _APS_NEXT_RESOURCE_VALUE        101
+#define _APS_NEXT_COMMAND_VALUE         40001
+#define _APS_NEXT_CONTROL_VALUE         1001
+#define _APS_NEXT_SYMED_VALUE           101
 #endif
-size_t __fastcall OutputResultToFile(
-	void);
-void __fastcall PrintHeaderToScreen(
-	const std::wstring wTargetAddressString, 
-	const std::wstring wTestDomain);
+#endif
+
+
+//Resource including and defining
+#define FULL_VERSION        L"0.3.0.0"
+#define DETACH_VERSION      0,3,0,0
+#define COPYRIGHT_MESSAGE   L"Copyright (C) 2012-2016 Chengr28"

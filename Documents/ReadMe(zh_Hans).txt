@@ -1,15 +1,13 @@
-﻿### 用法
+﻿### Linux/Mac 用法
+* 打开终端，并进入 Toolkit 目录
+* 运行 chmod 755 CMake_Build.sh 基于编译脚本运行权限
+* 运行 ./CMake_Build.sh 生成二进制可执行文件
+
+
+### DNSPing 用法和选项
        DNSPing [-options] domain target
   e.g. DNSPing -a -qt AAAA -n 5 -w 500 -edns0 www.google.com 8.8.4.4
 
-
-### Linux 用法
-* 打开终端，并进入源代码的 DNSPing 目录
-* 运行 cmake . 生成 Makefile 文件，再运行 make 进行编译
-* 所有编译完成后当前目录内将出现编译好的二进制文件
-
-
-### 选项
    ?/-h              打印说明
    -t                直到按下 Control-Break 或 Control-C 才停止 Ping
                      想看从 Ping 开始到按下时的统计信息但不想停止请按 Control-Break
@@ -121,15 +119,100 @@
    target                   Ping 的目标，支持 IPv4/IPv6 地址和域名
 
 
-### 高级 Ping
-* TCPing：直接使用 TCPing 对目标服务器的 53 端口进行 Ping 即可
-* TraceTCP：直接使用 TraceTCP 对目标服务器的 53 端口进行路由追踪即可
+### FileHash 用法和选项
+       FileHash -option/-algorithm [Filename]
+  e.g. FileHash -SHA3 filename
+
+支持的选项:
+   -v/--version:     输出当前程序的版本号
+   -?/-h/--help      输出程序的帮助信息
+
+支持的 Hash 算法:
+   * CRC family:     -CRC                        = -CRC32
+                     -CRC8                       CRC 8 位
+                     -CRC8_ITU                   CRC 8 位 ITU
+                     -CRC8_ATM                   CRC 8 位 ATM
+                     -CRC8_CCITT                 CRC 8 位 CCITT
+                     -CRC8_MAXIM                 CRC 8 位 Maxim
+                     -CRC8_ICODE                 CRC 8 位 Icode
+                     -CRC8_J1850                 CRC 8 位 J1850
+                     -CRC8_WCDMA                 CRC 8 位 WCDMA
+                     -CRC8_ROHC                  CRC 8 位 Rohc
+                     -CRC8_DARC                  CRC 8 位 Darc
+                     -CRC16                      CRC 16 位
+                     -CRC16_BUYPASS              CRC 16 位 Buypass
+                     -CRC16_DDS_110              CRC 16 位 DDS 110
+                     -CRC16_EN_13757             CRC 16 位 EN 13757
+                     -CRC16_TELEDISK             CRC 16 位 Teledisk
+                     -CRC16_MODBUS               CRC 16 位 Modbus
+                     -CRC16_MAXIM                CRC 16 位 Maxim
+                     -CRC16_USB                  CRC 16 位 USB
+                     -CRC16_T10_DIF              CRC 16 位 T10 DIF
+                     -CRC16_DECT_X               CRC 16 位 DECT X
+                     -CRC16_DECT_R               CRC 16 位 DECT R
+                     -CRC16_SICK                 CRC 16 位 Sick
+                     -CRC16_DNP                  CRC 16 位 DNP
+                     -CRC16_CCITT_XMODEM         CRC 16 位 CCITT Xmodem
+                     -CRC16_CCITT_FFFF           CRC 16 位 CCITT FFFF
+                     -CRC16_CCITT_1D0F           CRC 16 位 CCITT 1D0F
+                     -CRC16_GENIBUS              CRC 16 位 Genibus
+                     -CRC16_KERMIT               CRC 16 位 Kermit
+                     -CRC16_X25                  CRC 16 位 X25
+                     -CRC16_MCRF4XX              CRC 16 位 MCRF4XX
+                     -CRC16_RIELLO               CRC 16 位 Riello
+                     -CRC16_FLETCHER             CRC 16 位 Fletcher
+                     -CRC24                      = -CRC24_R64
+                     -CRC24_FLEXRAY_A            CRC 24 位 Flexray A
+                     -CRC24_FLEXRAY_B            CRC 24 位 Flexray B
+                     -CRC24_R64                  CRC 24 位 R64
+                     -CRC32                      CRC 32 位
+                     -CRC32_JAM                  CRC 32 位 JamCRC
+                     -CRC32C                     CRC 32 位 C
+                     -CRC32D                     CRC 32 位 D
+                     -CRC32_BZIP2                CRC 32 位 BZIP2
+                     -CRC32_MPEG2                CRC 32 位 MPEG2
+                     -CRC32_POSIX                CRC 32 位 POSIX
+                     -CRC32K                     CRC 32 位 K
+                     -CRC32Q                     CRC 32 位 Q
+                     -CRC40                      CRC 40 位
+                     -CRC64                      CRC 64 位
+                     -CRC64_1B                   CRC 64 位 1B
+                     -CRC64_WE                   CRC 64 位 WE
+                     -CRC64_JONES                CRC 64 位 JONES
+   * Checksum:       -CHECKSUM                   Internet 协议检验和
+   * MD2:            -MD2
+   * MD4 family:     -MD4
+                     -ED2K                       eDonkey/eMule Hash 算法
+   * MD5:            -MD5
+   * SHA-1:          -SHA1
+   * SHA-2 family:   -SHA2                       = -SHA2_256
+                     -SHA224/-SHA2_224           SHA-2 224 位
+                     -SHA256/-SHA2_256           SHA-2 256 位
+                     -SHA384/-SHA2_384           SHA-2 384 位
+                     -SHA512/-SHA2_512           SHA-2 512 位
+                     -SHA512_224/-SHA2_512_224   SHA-2 512/224 位截断
+                     -SHA512_256/-SHA2_512_256   SHA-2 512/256 位截断
+   * SHA-3 family:   -SHA3                       = -SHA3_256
+                     -SHA3_224                   SHA-3 224 位
+                     -SHA3_256                   SHA-3 256 位
+                     -SHA3_384                   SHA-3 384 位
+                     -SHA3_512                   SHA-3 512 位
+                     -SHA3_SHAKE                 = -SHA3_SHAKE_128
+                     -SHA3_SHAKE=Size            = -SHA3_SHAKE_128=Size
+                     -SHA3_SHAKE_128=Size        SHA-3 SHAKE 128 位
+                                                 Size = 输出长度
+                     -SHA3_SHAKE_256=Size        SHA-3 SHAKE 256 位
+                                                 Size = 输出长度
 
 
 ### Release Hash[SHA-3(256)]
 * Windows
-  * DNSPing.exe: AC0336BDB39F4E9E88FD859FB8B8446A54C3C949D568488FCAFDDB6564C167D4
-  * DNSPing_x86.exe: 5E478BEE08C71006FF51F69F6680F06CB6BC4F056A6858FDC38D8B1107CE14B2
-  * DNSPing_XP.exe: F7420E2E5A1C71B834A03C694CCE2E7331BCB8134F5CFE1B11278193A259CE1A
+  * DNSPing.exe: 
+  * DNSPing_x86.exe: 
+  * DNSPing_XP.exe: 
+  * FileHash.exe: 
+  * FileHash_x86.exe: 
+  * FileHash_XP.exe: 
 * Mac
-  * DNSPing: 694E18400AE80F37D223916C1D7564873BFB449F9EFCD2D096BE3C8E8800591A
+  * DNSPing: 
+  * FileHash: 
