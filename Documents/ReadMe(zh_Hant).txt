@@ -1,6 +1,6 @@
 ﻿### Linux/Mac 用法
 * 打開終端，並進入 Toolkit 目錄
-* 運行 chmod 755 CMake_Build.sh 基於編譯腳本運行許可權
+* 運行 chmod 755 CMake_Build.sh 給予編譯腳本運行許可權
 * 運行 ./CMake_Build.sh 生成二進位可執行檔
 
 

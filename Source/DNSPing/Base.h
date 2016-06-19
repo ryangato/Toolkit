@@ -152,8 +152,10 @@ public:
 //Member functions
 	ConfigurationTable(
 		void);
+#if (defined(PLATFORM_WIN) || defined(PLATFORM_LINUX))
 	~ConfigurationTable(
 		void);
+#endif
 };
 
 //Console.h

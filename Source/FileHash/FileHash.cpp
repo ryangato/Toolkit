@@ -176,7 +176,12 @@ int main(int argc, char *argv[])
 		}
 	}
 
+//Close all file and network handles.
 	fclose(FileHandle);
+#if (defined(PLATFORM_WIN) || (defined(PLATFORM_LINUX) && !defined(PLATFORM_OPENWRT)))
+	_fcloseall();
+#endif
+
 	return EXIT_SUCCESS;
 }
 

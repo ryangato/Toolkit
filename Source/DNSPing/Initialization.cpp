@@ -41,18 +41,20 @@ ConfigurationTable::ConfigurationTable(
 	return;
 }
 
+#if (defined(PLATFORM_WIN) || defined(PLATFORM_LINUX))
 //GlobalStatus class destructor
 ConfigurationTable::~ConfigurationTable(
 	void)
 {
 //Close all file and network handles.
-#if (defined(PLATFORM_WIN) || defined(PLATFORM_LINUX))
+#if !defined(PLATFORM_OPENWRT)
 	_fcloseall();
-	#if defined(PLATFORM_WIN)
-		if (Initialization_WinSock)
-			WSACleanup();
-	#endif
+#endif
+#if defined(PLATFORM_WIN)
+	if (Initialization_WinSock)
+		WSACleanup();
 #endif
 
 	return;
 }
+#endif
