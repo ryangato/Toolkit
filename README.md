@@ -7,7 +7,7 @@ A useful and powerful toolkit
 
 ### Usage
 * Windows/Linux/Mac - Please visit [ReadMe documents](https://github.com/chengr28/Toolkit/tree/master/Documents).
-* OpenWrt/LEDE - Please visit [openwrt-DNSPing project](https://github.com/wongsyrone/openwrt-DNSPing).
+* OpenWrt/LEDE - Please visit [openwrt-Toolkit project](https://github.com/wongsyrone/openwrt-Toolkit).
 
 ### Binary files
 * [Release branch(Windows)](https://github.com/chengr28/Toolkit/tree/Release/Windows)
